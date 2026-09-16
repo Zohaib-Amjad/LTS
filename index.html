@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartLuggage AI</title>
+    <meta
+      name="description"
+      content="SmartLuggage AI - Frontend-only smart luggage transportation system"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <div class="brand">
+          <div class="brand-icon"><i class="fa-solid fa-suitcase-rolling"></i></div>
+          <div>
+            <h2>SmartLuggage AI</h2>
+          </div>
+        </div>
+
+        <nav class="nav-menu">
+          <button class="nav-item active" data-section="home"><i class="fa-solid fa-house"></i><span>Dashboard</span></button>
+          <button class="nav-item" data-section="booking"><i class="fa-solid fa-plus-circle"></i><span>Book Luggage</span></button>
+          <button class="nav-item" data-section="luggage"><i class="fa-solid fa-bag-shopping"></i><span>My Luggage</span></button>
+          <button class="nav-item" data-section="bookings"><i class="fa-solid fa-table-list"></i><span>My Bookings</span></button>
+          <button class="nav-item" data-section="tracking"><i class="fa-solid fa-location-crosshairs"></i><span>Track Luggage</span></button>
+          <button class="nav-item" data-section="assistant"><i class="fa-solid fa-robot"></i><span>AI Assistant</span></button>
+          <button class="nav-item" data-section="cost"><i class="fa-solid fa-calculator"></i><span>Cost Estimator</span></button>
+          <button class="nav-item" data-section="routes"><i class="fa-solid fa-route"></i><span>Delivery Routes</span></button>
+          <button class="nav-item" data-section="notifications"><i class="fa-solid fa-bell"></i><span>Notifications</span></button>
+          <button class="nav-item" data-section="reports"><i class="fa-solid fa-chart-line"></i><span>Reports</span></button>
+          <button class="nav-item" data-section="partners"><i class="fa-solid fa-handshake"></i><span>Partners</span></button>
+          <button class="nav-item" data-section="profile"><i class="fa-solid fa-user"></i><span>Profile</span></button>
+          <button class="nav-item" data-section="settings"><i class="fa-solid fa-gear"></i><span>Settings</span></button>
+          <button class="nav-item" data-section="support"><i class="fa-solid fa-circle-question"></i><span>Help &amp; Support</span></button>
+          <button class="nav-item danger" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></button>
+        </nav>
+      </aside>
+
+      <div class="content-area">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+              <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="page-title-wrap">
+              <p class="eyebrow">Smart Logistics Platform</p>
+              <h1 id="pageTitle">Dashboard</h1>
+            </div>
+          </div>
+
+          <div class="topbar-actions">
+            <div class="search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="globalSearch" placeholder="Search bookings, luggage, routes..." />
+            </div>
+            <button class="icon-btn" id="themeToggle">
+              <i class="fa-solid fa-moon"></i>
+            </button>
+            <button class="icon-btn notifications-btn" id="notificationQuickBtn">
+              <i class="fa-solid fa-bell"></i>
+              <span class="badge" id="headerBadge">0</span>
+            </button>
+            <div class="profile-pill">
+              <div class="avatar" id="avatarCircle">AK</div>
+              <div>
+                <strong id="topUserName">Demo User</strong>
+                <small>Premium Member</small>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main class="main-content">
+          <section class="page-section active" id="homeSection">
+            <div class="hero">
+              <div class="hero-copy">
+                <p class="eyebrow accent">AI-Powered Logistics</p>
+                <h2>Smart Luggage Transportation Powered by AI</h2>
+                <p>
+                  Book, track, manage, and transport your luggage smarter, faster, and safer.
+                </p>
+                <div class="hero-actions">
+                  <button class="btn btn-primary" data-open-section="booking">Book Luggage</button>
+                  <button class="btn btn-secondary" data-open-section="tracking">Track Luggage</button>
+                </div>
+                <div class="hero-metrics">
+                  <div>
+                    <strong class="count" data-target="12500">0</strong>
+                    <span>Luggage Delivered</span>
+                  </div>
+                  <div>
+                    <strong class="count" data-target="985">0</strong>
+                    <span>Successful Deliveries</span>
+                  </div>
+                  <div>
+                    <strong class="count" data-target="250">0</strong>
+                    <span>Transport Partners</span>
+                  </div>
+                  <div>
+                    <strong class="count" data-target="35">0</strong>
+                    <span>Cities Covered</span>
+                  </div>
+                </div>
+              </div>
+              <div class="hero-visual">
+                <div class="visual-card primary">
+                  <div class="mini-chart">
+                    <span></span><span></span><span></span><span></span><span></span>
+                  </div>
+                  <div class="route-summary">
+                    <small>AI Optimized Route</small>
+                    <strong>Islamabad → Lahore → Karachi</strong>
+                    <div class="route-tags">
+                      <span>98% Efficient</span>
+                      <span>On Time</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-grid">
+              <div class="feature-card">
+                <i class="fa-solid fa-route"></i>
+                <h3>AI Route Optimization</h3>
+                <p>Auto-suggests the most efficient route for luggage based on traffic and distance.</p>
+              </div>
+              <div class="feature-card">
+                <i class="fa-solid fa-dollar-sign"></i>
+                <h3>Smart Cost Estimation</h3>
+                <p>Calculates pricing with dynamic, AI-inspired recommendations for your shipment.</p>
+              </div>
+              <div class="feature-card">
+                <i class="fa-solid fa-location-dot"></i>
+                <h3>Real-Time Tracking</h3>
+                <p>Monitor delivery progress, current location, ETA, and timeline updates.</p>
+              </div>
+              <div class="feature-card">
+                <i class="fa-solid fa-shield-heart"></i>
+                <h3>Secure Luggage Handling</h3>
+                <p>Special handling, fragile item alerts, and intelligent verification for safety.</p>
+              </div>
+              <div class="feature-card">
+                <i class="fa-solid fa-brain"></i>
+                <h3>Delivery Prediction</h3>
+                <p>Forecast expected delivery date and risk with simulation-driven AI logic.</p>
+              </div>
+              <div class="feature-card">
+                <i class="fa-solid fa-bell"></i>
+                <h3>Smart Notifications</h3>
+                <p>Stay updated through booking confirmations, alerts, and AI recommendation prompts.</p>
+              </div>
+            </div>
+
+            <div class="how-it-works">
+              <div class="section-heading">
+                <p class="eyebrow">How It Works</p>
+                <h3>Simple 4-Step Process</h3>
+              </div>
+              <div class="steps-grid">
+                <div class="step-card">
+                  <span>01</span>
+                  <h4>Enter luggage details</h4>
+                </div>
+                <div class="step-card">
+                  <span>02</span>
+                  <h4>Select pickup &amp; destination</h4>
+                </div>
+                <div class="step-card">
+                  <span>03</span>
+                  <h4>AI calculates best option</h4>
+                </div>
+                <div class="step-card">
+                  <span>04</span>
+                  <h4>Track your luggage</h4>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="page-section" id="dashboardSection">
+            <div class="dashboard-summaries">
+              <div class="summary-card purple">
+                <div class="summary-icon"><i class="fa-solid fa-suitcase"></i></div>
+                <div>
+                  <p>Total Luggage</p>
+                  <h3 id="totalLuggageStat">0</h3>
+                </div>
+              </div>
+              <div class="summary-card blue">
+                <div class="summary-icon"><i class="fa-solid fa-bookmark"></i></div>
+                <div>
+                  <p>Active Bookings</p>
+                  <h3 id="activeBookingsStat">0</h3>
+                </div>
+              </div>
+              <div class="summary-card green">
+                <div class="summary-icon"><i class="fa-solid fa-check-circle"></i></div>
+                <div>
+                  <p>Delivered Luggage</p>
+                  <h3 id="deliveredStat">0</h3>
+                </div>
+              </div>
+              <div class="summary-card orange">
+                <div class="summary-icon"><i class="fa-solid fa-clock"></i></div>
+                <div>
+                  <p>Pending Deliveries</p>
+                  <h3 id="pendingStat">0</h3>
+                </div>
+              </div>
+              <div class="summary-card coral">
+                <div class="summary-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
+                <div>
+                  <p>Total Transportation Cost</p>
+                  <h3 id="totalCostStat">$0</h3>
+                </div>
+              </div>
+            </div>
+
+            <div class="quick-actions">
+              <button class="quick-action" data-open-section="booking"><i class="fa-solid fa-plus"></i> New Booking</button>
+              <button class="quick-action" data-open-section="luggage"><i class="fa-solid fa-box-open"></i> Add Luggage</button>
+              <button class="quick-action" data-open-section="tracking"><i class="fa-solid fa-location-arrow"></i> Track Luggage</button>
+              <button class="quick-action" data-open-section="cost"><i class="fa-solid fa-calculator"></i> Calculate Cost</button>
+              <button class="quick-action" data-open-section="assistant"><i class="fa-solid fa-robot"></i> AI Recommendation</button>
+              <button class="quick-action" data-open-section="reports"><i class="fa-solid fa-chart-column"></i> View Reports</button>
+            </div>
+
+            <div class="content-grid dashboard-grid">
+              <div class="panel large-panel">
+                <div class="panel-header">
+                  <h3>Recent Bookings</h3>
+                  <button class="text-btn" data-open-section="bookings">View All</button>
+                </div>
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Booking ID</th>
+                        <th>Luggage ID</th>
+                        <th>Pickup</th>
+                        <th>Destination</th>
+                        <th>Delivery Date</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Cost</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="recentBookingsTable"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-header">
+                  <h3>Active Delivery</h3>
+                </div>
+                <div id="activeDeliveryCard"></div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-header">
+                  <h3>AI Recommendation</h3>
+                </div>
+                <div id="dashboardAIRecommendation"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="page-section" id="bookingSection">
+            <div class="section-heading">
+              <p class="eyebrow">Booking</p>
+              <h3>Smart Luggage Booking Form</h3>
+            </div>
+            <form id="bookingForm" class="form-grid">
+              <div class="form-card full-width">
+                <h4>Customer Information</h4>
+                <div class="two-col">
+                  <div class="input-group">
+                    <label for="customerFullName">Full Name</label>
+                    <input id="customerFullName" name="customerFullName" type="text" required />
+                  </div>
+                  <div class="input-group">
+                    <label for="customerEmail">Email</label>
+                    <input id="customerEmail" name="customerEmail" type="email" required />
+                  </div>
+                  <div class="input-group">
+                    <label for="customerPhone">Phone Number</label>
+                    <input id="customerPhone" name="customerPhone" type="tel" required />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-card full-width">
+                <h4>Pickup Information</h4>
+                <div class="two-col">
+                  <div class="input-group">
+                    <label for="pickupAddress">Pickup Address</label>
+                    <input id="pickupAddress" name="pickupAddress" type="text" required />
+                  </div>
+                  <div class="input-group">
+                    <label for="pickupCity">City</label>
+                    <select id="pickupCity" name="pickupCity" required>
+                      <option value="Islamabad">Islamabad</option>
+                      <option value="Lahore">Lahore</option>
+                      <option value="Karachi">Karachi</option>
+                      <option value="Peshawar">Peshawar</option>
+                      <option value="Multan">Multan</option>
+                      <option value="Rawalpindi">Rawalpindi</option>
+                      <option value="Faisalabad">Faisalabad</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label for="pickupDate">Pickup Date</label>
+                    <input id="pickupDate" name="pickupDate" type="date" required />
+                  </div>
+                  <div class="input-group">
+                    <label for="pickupTime">Pickup Time</label>
+                    <input id="pickupTime" name="pickupTime" type="time" required />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-card full-width">
+                <h4>Delivery Information</h4>
+                <div class="two-col">
+                  <div class="input-group">
+                    <label for="destinationAddress">Destination Address</label>
+                    <input id="destinationAddress" name="destinationAddress" type="text" required />
+                  </div>
+                  <div class="input-group">
+                    <label for="destinationCity">Destination City</label>
+                    <select id="destinationCity" name="destinationCity" required>
+                      <option value="Islamabad">Islamabad</option>
+                      <option value="Lahore">Lahore</option>
+                      <option value="Karachi">Karachi</option>
+                      <option value="Peshawar">Peshawar</option>
+                      <option value="Multan">Multan</option>
+                      <option value="Rawalpindi">Rawalpindi</option>
+                      <option value="Faisalabad">Faisalabad</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label for="deliveryDate">Delivery Date</label>
+                    <input id="deliveryDate" name="deliveryDate" type="date" required />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-card full-width">
+                <h4>Luggage Details</h4>
+                <div class="two-col">
+                  <div class="input-group">
+                    <label for="luggageType">Luggage Type</label>
+                    <select id="luggageType" name="luggageType">
+                      <option value="Suitcase">Suitcase</option>
+                      <option value="Backpack">Backpack</option>
+                      <option value="Box">Box</option>
+                      <option value="Travel Bag">Travel Bag</option>
+                      <option value="Fragile Package">Fragile Package</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label for="numberOfBags">Number of Bags</label>
+                    <input id="numberOfBags" name="numberOfBags" type="number" min="1" value="1" required />
+                  </div>
+                  <div class="input-group">
+                    <label for="weightPerBag">Weight per Bag (kg)</label>
+                    <input id="weightPerBag" name="weightPerBag" type="number" min="1" step="0.1" value="5" required />
+                  </div>
+                  <div class="input-group">
+                    <label for="totalWeight">Total Weight (kg)</label>
+                    <input id="totalWeight" name="totalWeight" type="number" min="1" step="0.1" value="5" required />
+                  </div>
+                  <div class="input-group">
+                    <label for="length">Length (cm)</label>
+                    <input id="length" name="length" type="number" min="1" value="40" required />
+                  </div>
+                  <div class="input-group">
+                    <label for="width">Width (cm)</label>
+                    <input id="width" name="width" type="number" min="1" value="25" required />
+                  </div>
+                  <div class="input-group">
+                    <label for="height">Height (cm)</label>
+                    <input id="height" name="height" type="number" min="1" value="20" required />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-card full-width">
+                <h4>Additional Information</h4>
+                <div class="three-col check-row">
+                  <label class="checkbox-field"><input type="checkbox" id="isFragile" /> Fragile?</label>
+                  <label class="checkbox-field"><input type="checkbox" id="hasValuableItems" /> Valuable Items?</label>
+                  <label class="checkbox-field"><input type="checkbox" id="specialHandling" /> Special Handling Required?</label>
+                </div>
+                <div class="input-group">
+                  <label for="additionalNotes">Additional Notes</label>
+                  <textarea id="additionalNotes" rows="3" placeholder="Any additional delivery instructions..."></textarea>
+                </div>
+              </div>
+
+              <div class="form-card full-width">
+                <h4>Transportation Type</h4>
+                <div class="transport-options" id="transportOptions">
+                  <label class="transport-card">
+                    <input type="radio" name="transportType" value="Economy" checked />
+                    <span class="card-header">Economy</span>
+                    <small>Affordable, 4-5 days</small>
+                  </label>
+                  <label class="transport-card">
+                    <input type="radio" name="transportType" value="Standard" />
+                    <span class="card-header">Standard</span>
+                    <small>Balanced cost, 3 days</small>
+                  </label>
+                  <label class="transport-card">
+                    <input type="radio" name="transportType" value="Express" />
+                    <span class="card-header">Express</span>
+                    <small>Faster delivery, priority</small>
+                  </label>
+                  <label class="transport-card">
+                    <input type="radio" name="transportType" value="Premium" />
+                    <span class="card-header">Premium</span>
+                    <small>Luxury handling and service</small>
+                  </label>
+                </div>
+                <div class="estimate-box" id="bookingEstimateBox">
+                  <div class="estimate-row">
+                    <span>Price</span>
+                    <strong id="bookingEstimatePrice">$0.00</strong>
+                  </div>
+                  <div class="estimate-row">
+                    <span>Delivery Time</span>
+                    <strong id="bookingEstimateTime">--</strong>
+                  </div>
+                  <div class="estimate-row">
+                    <span>Features</span>
+                    <strong id="bookingEstimateFeatures">--</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-actions full-width">
+                <button type="button" class="btn btn-secondary" id="bookingResetBtn">Reset</button>
+                <button type="submit" class="btn btn-primary">Get AI Recommendation</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="page-section" id="luggageSection">
+            <div class="section-header-row">
+              <div class="section-heading">
+                <p class="eyebrow">Luggage Management</p>
+                <h3>My Luggage</h3>
+              </div>
+              <button class="btn btn-primary" id="openLuggageModalBtn">+ Add New Luggage</button>
+            </div>
+            <div id="luggageGrid" class="card-grid"></div>
+          </section>
+
+          <section class="page-section" id="bookingsSection">
+            <div class="section-heading">
+              <p class="eyebrow">Booking Management</p>
+              <h3>My Bookings</h3>
+            </div>
+            <div class="toolbar">
+              <div class="filter-pills" id="bookingFilters">
+                <button class="filter-pill active" data-filter="All">All</button>
+                <button class="filter-pill" data-filter="Pending">Pending</button>
+                <button class="filter-pill" data-filter="Confirmed">Confirmed</button>
+                <button class="filter-pill" data-filter="In Transit">In Transit</button>
+                <button class="filter-pill" data-filter="Delivered">Delivered</button>
+                <button class="filter-pill" data-filter="Cancelled">Cancelled</button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Booking ID</th>
+                    <th>Customer</th>
+                    <th>Luggage</th>
+                    <th>Pickup</th>
+                    <th>Destination</th>
+                    <th>Booking Date</th>
+                    <th>Delivery Date</th>
+                    <th>Cost</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="bookingsTableBody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="page-section" id="trackingSection">
+            <div class="section-heading">
+              <p class="eyebrow">Tracking</p>
+              <h3>Luggage Tracking System</h3>
+            </div>
+            <div class="track-form-wrap">
+              <form id="trackingForm" class="inline-form">
+                <input type="text" id="trackingInput" placeholder="Enter Luggage ID / Tracking Number" required />
+                <button type="submit" class="btn btn-primary">Track</button>
+              </form>
+            </div>
+            <div id="trackingResult" class="tracking-result"></div>
+          </section>
+
+          <section class="page-section" id="assistantSection">
+            <div class="section-heading">
+              <p class="eyebrow">AI Assistant</p>
+              <h3>LuggageAI Assistant</h3>
+            </div>
+            <div class="assistant-shell">
+              <div class="chat-box" id="chatBox"></div>
+              <div class="chat-suggestions" id="chatSuggestions"></div>
+              <form id="chatForm" class="chat-form">
+                <input type="text" id="chatInput" placeholder="Ask about booking, costs, tracking..." required />
+                <button type="submit" class="btn btn-primary">Send</button>
+                <button type="button" class="btn btn-secondary" id="clearChatBtn">Clear Chat</button>
+              </form>
+            </div>
+          </section>
+
+          <section class="page-section" id="costSection">
+            <div class="section-heading">
+              <p class="eyebrow">AI-Powered Cost Estimator</p>
+              <h3>Estimate Transportation Cost</h3>
+            </div>
+            <form id="costEstimatorForm" class="form-grid">
+              <div class="form-card">
+                <div class="input-group">
+                  <label for="costPickupCity">Pickup City</label>
+                  <select id="costPickupCity">
+                    <option>Islamabad</option>
+                    <option>Lahore</option>
+                    <option>Karachi</option>
+                    <option>Peshawar</option>
+                    <option>Multan</option>
+                    <option>Rawalpindi</option>
+                    <option>Faisalabad</option>
+                  </select>
+                </div>
+                <div class="input-group">
+                  <label for="costDestinationCity">Destination City</label>
+                  <select id="costDestinationCity">
+                    <option>Karachi</option>
+                    <option>Lahore</option>
+                    <option>Islamabad</option>
+                    <option>Peshawar</option>
+                    <option>Multan</option>
+                    <option>Rawalpindi</option>
+                    <option>Faisalabad</option>
+                  </select>
+                </div>
+                <div class="input-group">
+                  <label for="costWeight">Weight (kg)</label>
+                  <input id="costWeight" type="number" min="1" value="8" />
+                </div>
+                <div class="input-group">
+                  <label for="costItemCount">Number of Luggage Items</label>
+                  <input id="costItemCount" type="number" min="1" value="2" />
+                </div>
+              </div>
+              <div class="form-card">
+                <div class="input-group">
+                  <label for="costTransportType">Transportation Type</label>
+                  <select id="costTransportType">
+                    <option>Economy</option>
+                    <option>Standard</option>
+                    <option>Express</option>
+                    <option>Premium</option>
+                  </select>
+                </div>
+                <div class="input-group">
+                  <label for="costDistance">Distance (km)</label>
+                  <input id="costDistance" type="number" min="1" value="240" />
+                </div>
+                <div class="three-col check-row">
+                  <label class="checkbox-field"><input type="checkbox" id="costFragile" /> Fragile Item</label>
+                  <label class="checkbox-field"><input type="checkbox" id="costExpress" /> Express Delivery</label>
+                </div>
+                <button type="submit" class="btn btn-primary full-width">Calculate Cost</button>
+              </div>
+            </form>
+            <div id="costResult" class="result-panel"></div>
+          </section>
+
+          <section class="page-section" id="routesSection">
+            <div class="section-heading">
+              <p class="eyebrow">AI Travel / Route Optimization</p>
+              <h3>AI Optimized Route</h3>
+            </div>
+            <form id="routeForm" class="form-grid compact-form">
+              <div class="form-card">
+                <div class="input-group">
+                  <label for="routePickup">Pickup Location</label>
+                  <input id="routePickup" value="Islamabad" />
+                </div>
+                <div class="input-group">
+                  <label for="routeDestination">Destination</label>
+                  <input id="routeDestination" value="Karachi" />
+                </div>
+                <div class="input-group">
+                  <label for="routeDeadline">Delivery Deadline</label>
+                  <input id="routeDeadline" type="date" />
+                </div>
+                <div class="input-group">
+                  <label for="routeWeight">Luggage Weight (kg)</label>
+                  <input id="routeWeight" type="number" value="12" />
+                </div>
+                <div class="input-group">
+                  <label for="routePriority">Priority</label>
+                  <select id="routePriority">
+                    <option>Normal</option>
+                    <option>Urgent</option>
+                    <option>Critical</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary full-width">Optimize Route</button>
+              </div>
+            </form>
+            <div id="routeResult" class="result-panel"></div>
+          </section>
+
+          <section class="page-section" id="notificationsSection">
+            <div class="section-heading">
+              <p class="eyebrow">Notifications</p>
+              <h3>Notification Center</h3>
+            </div>
+            <div class="notifications-toolbar">
+              <button class="btn btn-secondary" id="markAllReadBtn">Mark All as Read</button>
+            </div>
+            <div id="notificationsList" class="notifications-list"></div>
+          </section>
+
+          <section class="page-section" id="reportsSection">
+            <div class="section-heading">
+              <p class="eyebrow">Reports &amp; Analytics</p>
+              <h3>Professional Reports Dashboard</h3>
+            </div>
+            <div class="report-filters">
+              <button class="report-filter active" data-range="This Month">This Month</button>
+              <button class="report-filter" data-range="This Year">This Year</button>
+              <button class="report-filter" data-range="Today">Today</button>
+              <button class="report-filter" data-range="This Week">This Week</button>
+              <button class="report-filter" data-range="Custom">Custom</button>
+            </div>
+            <div class="report-grid">
+              <div class="stat-badges" id="reportStatBadges"></div>
+              <div class="chart-panel">
+                <canvas id="monthlyChart"></canvas>
+              </div>
+              <div class="chart-panel">
+                <canvas id="typesChart"></canvas>
+              </div>
+              <div class="chart-panel">
+                <canvas id="statusChart"></canvas>
+              </div>
+              <div class="chart-panel wide">
+                <canvas id="revenueChart"></canvas>
+              </div>
+              <div class="chart-panel">
+                <canvas id="destinationsChart"></canvas>
+              </div>
+            </div>
+          </section>
+
+          <section class="page-section" id="partnersSection">
+            <div class="section-heading">
+              <p class="eyebrow">Transportation Partners</p>
+              <h3>Trusted Delivery Partners</h3>
+            </div>
+            <div class="toolbar">
+              <div class="filter-pills" id="partnerFilters">
+                <button class="partner-filter active" data-partner-filter="All">All</button>
+                <button class="partner-filter" data-partner-filter="Cheapest">Cheapest</button>
+                <button class="partner-filter" data-partner-filter="Fastest">Fastest</button>
+                <button class="partner-filter" data-partner-filter="Highest Rated">Highest Rated</button>
+                <button class="partner-filter" data-partner-filter="Available Now">Available Now</button>
+              </div>
+            </div>
+            <div id="partnersGrid" class="card-grid partners-grid"></div>
+          </section>
+
+          <section class="page-section" id="profileSection">
+            <div class="section-heading">
+              <p class="eyebrow">Profile</p>
+              <h3>Profile Management</h3>
+            </div>
+            <form id="profileForm" class="form-grid">
+              <div class="form-card full-width">
+                <div class="profile-card-header">
+                  <div class="avatar large" id="profileAvatar">AK</div>
+                  <div>
+                    <h4>Profile Picture</h4>
+                    <input type="file" id="profilePic" accept="image/*" />
+                  </div>
+                </div>
+              </div>
+              <div class="form-card">
+                <div class="input-group">
+                  <label for="profileFullName">Full Name</label>
+                  <input id="profileFullName" type="text" required />
+                </div>
+                <div class="input-group">
+                  <label for="profileEmail">Email</label>
+                  <input id="profileEmail" type="email" required />
+                </div>
+                <div class="input-group">
+                  <label for="profilePhone">Phone</label>
+                  <input id="profilePhone" type="tel" required />
+                </div>
+              </div>
+              <div class="form-card">
+                <div class="input-group">
+                  <label for="profileAddress">Address</label>
+                  <input id="profileAddress" type="text" />
+                </div>
+                <div class="input-group">
+                  <label for="profileCity">City</label>
+                  <input id="profileCity" type="text" />
+                </div>
+                <div class="input-group">
+                  <label for="profileCountry">Country</label>
+                  <input id="profileCountry" type="text" />
+                </div>
+              </div>
+              <div class="form-actions full-width">
+                <button type="button" class="btn btn-secondary" id="profileEditBtn">Edit Profile</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <button type="button" class="btn btn-secondary" id="changePasswordBtn">Change Password</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="page-section" id="settingsSection">
+            <div class="section-heading">
+              <p class="eyebrow">Settings</p>
+              <h3>Preferences</h3>
+            </div>
+            <form id="settingsForm" class="form-grid">
+              <div class="form-card">
+                <h4>General</h4>
+                <div class="input-group">
+                  <label for="languageSelect">Language</label>
+                  <select id="languageSelect">
+                    <option>English</option>
+                    <option>Urdu</option>
+                    <option>French</option>
+                  </select>
+                </div>
+                <div class="input-group">
+                  <label for="currencySelect">Currency</label>
+                  <select id="currencySelect">
+                    <option>USD</option>
+                    <option>PKR</option>
+                    <option>EUR</option>
+                  </select>
+                </div>
+                <div class="input-group">
+                  <label for="timezoneSelect">Time Zone</label>
+                  <select id="timezoneSelect">
+                    <option>UTC</option>
+                    <option>PKT (UTC+5)</option>
+                    <option>EST (UTC-5)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-card">
+                <h4>Notifications</h4>
+                <label class="checkbox-field"><input type="checkbox" id="emailNotifications" checked /> Email Notifications</label>
+                <label class="checkbox-field"><input type="checkbox" id="smsNotifications" checked /> SMS Notifications</label>
+                <label class="checkbox-field"><input type="checkbox" id="deliveryNotifications" checked /> Delivery Notifications</label>
+                <label class="checkbox-field"><input type="checkbox" id="aiRecommendations" checked /> AI Recommendations</label>
+              </div>
+              <div class="form-card">
+                <h4>Appearance</h4>
+                <label class="checkbox-field"><input type="checkbox" id="lightMode" checked /> Light Mode</label>
+                <label class="checkbox-field"><input type="checkbox" id="darkMode" /> Dark Mode</label>
+                <label class="checkbox-field"><input type="checkbox" id="compactMode" /> Compact Mode</label>
+              </div>
+              <div class="form-actions full-width">
+                <button type="submit" class="btn btn-primary">Save Preferences</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="page-section" id="supportSection">
+            <div class="section-heading">
+              <p class="eyebrow">Help &amp; Support</p>
+              <h3>Support Center</h3>
+            </div>
+            <div class="support-layout">
+              <div class="support-pane">
+                <h4>FAQ</h4>
+                <div class="faq-list" id="faqList"></div>
+              </div>
+              <div class="support-pane">
+                <h4>Contact Support</h4>
+                <form id="supportForm" class="form-grid">
+                  <div class="input-group">
+                    <label for="supportName">Name</label>
+                    <input id="supportName" type="text" required />
+                  </div>
+                  <div class="input-group">
+                    <label for="supportEmail">Email</label>
+                    <input id="supportEmail" type="email" required />
+                  </div>
+                  <div class="input-group">
+                    <label for="supportBookingId">Booking ID</label>
+                    <input id="supportBookingId" type="text" />
+                  </div>
+                  <div class="input-group">
+                    <label for="supportIssueType">Issue Type</label>
+                    <select id="supportIssueType">
+                      <option>Booking Issue</option>
+                      <option>Tracking Issue</option>
+                      <option>Payment Concern</option>
+                      <option>Delivery Delay</option>
+                      <option>General Inquiry</option>
+                    </select>
+                  </div>
+                  <div class="input-group full-width">
+                    <label for="supportMessage">Message</label>
+                    <textarea id="supportMessage" rows="4" required></textarea>
+                  </div>
+                  <div class="input-group full-width">
+                    <label for="supportAttachment">Attachment UI</label>
+                    <input id="supportAttachment" type="file" />
+                  </div>
+                  <div class="form-actions full-width">
+                    <button type="submit" class="btn btn-primary">Submit Support Request</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <div class="support-pane feedback-pane">
+              <h4>Feedback</h4>
+              <form id="feedbackForm" class="inline-form">
+                <input type="text" id="feedbackInput" placeholder="Share your feedback..." required />
+                <button type="submit" class="btn btn-primary">Send Feedback</button>
+              </form>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="authModal">
+      <div class="modal-card auth-card">
+        <button class="modal-close" id="closeAuthModal">×</button>
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-auth-tab="login">Login</button>
+          <button class="auth-tab" data-auth-tab="register">Register</button>
+        </div>
+        <div class="auth-panel active" id="loginPanel">
+          <h3>Welcome Back</h3>
+          <form id="loginForm">
+            <div class="input-group">
+              <label for="loginEmail">Email</label>
+              <input id="loginEmail" type="email" required />
+            </div>
+            <div class="input-group">
+              <label for="loginPassword">Password</label>
+              <div class="password-wrap">
+                <input id="loginPassword" type="password" required />
+                <button type="button" class="toggle-password" data-target="loginPassword"><i class="fa-solid fa-eye"></i></button>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary full-width">Login</button>
+          </form>
+        </div>
+        <div class="auth-panel" id="registerPanel">
+          <h3>Create Account</h3>
+          <form id="registerForm">
+            <div class="input-group">
+              <label for="registerName">Full Name</label>
+              <input id="registerName" type="text" required />
+            </div>
+            <div class="input-group">
+              <label for="registerEmail">Email</label>
+              <input id="registerEmail" type="email" required />
+            </div>
+            <div class="input-group">
+              <label for="registerPassword">Password</label>
+              <div class="password-wrap">
+                <input id="registerPassword" type="password" required />
+                <button type="button" class="toggle-password" data-target="registerPassword"><i class="fa-solid fa-eye"></i></button>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary full-width">Register</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="luggageModal">
+      <div class="modal-card large-modal">
+        <button class="modal-close" data-close-modal="luggageModal">×</button>
+        <h3>Add New Luggage</h3>
+        <form id="luggageForm" class="form-grid">
+          <div class="form-card full-width">
+            <div class="two-col">
+              <div class="input-group">
+                <label for="newLuggageType">Luggage Type</label>
+                <select id="newLuggageType">
+                  <option>Suitcase</option>
+                  <option>Backpack</option>
+                  <option>Box</option>
+                  <option>Travel Bag</option>
+                  <option>Fragile Package</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="input-group">
+                <label for="newLuggageWeight">Weight (kg)</label>
+                <input id="newLuggageWeight" type="number" min="1" value="5" required />
+              </div>
+              <div class="input-group">
+                <label for="newLuggageDimensions">Dimensions</label>
+                <input id="newLuggageDimensions" type="text" value="40x25x20 cm" required />
+              </div>
+              <div class="input-group">
+                <label for="newLuggageStatus">Current Status</label>
+                <select id="newLuggageStatus">
+                  <option>Ready for Pickup</option>
+                  <option>In Transit</option>
+                  <option>Delayed</option>
+                  <option>Delivered</option>
+                </select>
+              </div>
+              <div class="input-group">
+                <label for="newLuggageCurrentLocation">Current Location</label>
+                <input id="newLuggageCurrentLocation" type="text" value="Islamabad" required />
+              </div>
+              <div class="input-group">
+                <label for="newLuggageDestination">Destination</label>
+                <input id="newLuggageDestination" type="text" value="Lahore" required />
+              </div>
+              <div class="input-group">
+                <label for="newLuggageBookingId">Booking ID</label>
+                <input id="newLuggageBookingId" type="text" required />
+              </div>
+              <div class="input-group">
+                <label for="newLuggageDeliveryDate">Delivery Date</label>
+                <input id="newLuggageDeliveryDate" type="date" required />
+              </div>
+            </div>
+          </div>
+          <div class="form-actions full-width">
+            <button type="button" class="btn btn-secondary" data-close-modal="luggageModal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Luggage</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
