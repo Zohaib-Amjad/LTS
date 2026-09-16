@@ -766,7 +766,7 @@ function handleBookingSubmit(event) {
   localStorage.setItem(STORAGE_KEYS.notifications, JSON.stringify(appState.notifications));
 
   renderAll();
-  form.reset();
+  resetBookingForm();
   showToast('Booking created successfully.');
 }
 
