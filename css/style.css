@@ -41,6 +41,7 @@ body.dark-mode {
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
@@ -48,6 +49,7 @@ body {
   font-family: 'Inter', sans-serif;
   background: linear-gradient(135deg, var(--bg-soft), var(--bg));
   color: var(--text);
+  overflow-x: hidden;
 }
 
 button, input, select, textarea {
@@ -678,6 +680,11 @@ body.dark-mode .topbar {
   display: grid;
   grid-template-columns: 1.8fr 1fr;
   gap: 18px;
+  min-width: 0;
+}
+
+.content-grid > * {
+  min-width: 0;
 }
 
 .panel {
@@ -708,7 +715,9 @@ body.dark-mode .topbar {
 }
 
 .table-wrap {
+  max-width: 100%;
   overflow-x: auto;
+  contain: inline-size;
 }
 
 table {
@@ -1496,6 +1505,7 @@ input:focus, select:focus, textarea:focus {
 
   .topbar {
     padding: 16px 18px;
+    gap: 12px;
   }
 
   .topbar-actions {
@@ -1551,7 +1561,8 @@ input:focus, select:focus, textarea:focus {
   }
 
   .main-content {
-    padding: 18px;
+    width: 100%;
+    padding: 16px 12px 28px;
   }
 
   .two-col,
@@ -1568,13 +1579,47 @@ input:focus, select:focus, textarea:focus {
     display: none;
   }
 
-  .topbar-actions {
-    width: 100%;
-    justify-content: flex-end;
+  .topbar {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 12px;
   }
 
   .topbar-left {
-    width: 100%;
+    min-width: 0;
+    width: auto;
+  }
+
+  .topbar-actions {
+    width: auto;
+    justify-content: space-between;
+    gap: 7px;
+  }
+
+  .profile-pill {
+    min-width: 0;
+    flex: 1;
+    padding: 5px 8px;
+  }
+
+  .profile-pill > div:last-child {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .profile-pill strong,
+  .profile-pill small {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .icon-btn,
+  .mobile-menu-btn {
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
   }
 
   .page-title-wrap h1 {
@@ -1583,6 +1628,54 @@ input:focus, select:focus, textarea:focus {
 
   .hero {
     padding: 18px;
+  }
+
+  .hero-copy h2 {
+    font-size: 2rem;
+  }
+
+  .hero-actions .btn,
+  .form-actions .btn,
+  .inline-form .btn,
+  .chat-form .btn {
+    width: 100%;
+  }
+
+  .panel,
+  .form-card,
+  .card,
+  .support-pane {
+    min-width: 0;
+    padding: 16px;
+  }
+
+  .dashboard-grid,
+  .dashboard-grid > * {
+    min-width: 0;
+  }
+
+  .section-header-row,
+  .panel-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .section-header-row .btn {
+    width: 100%;
+  }
+
+  .stat-badges {
+    grid-template-columns: 1fr;
+  }
+
+  .toast-container {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+  }
+
+  .toast {
+    min-width: 0;
   }
 
   .workflow-strip {
