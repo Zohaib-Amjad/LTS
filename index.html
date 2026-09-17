@@ -21,7 +21,48 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <div class="app-shell">
+    <section class="auth-screen" id="authScreen">
+      <div class="auth-visual">
+        <div class="auth-brand"><div class="brand-icon"><i class="fa-solid fa-suitcase-rolling"></i></div><strong>SmartLuggage AI</strong></div>
+        <div class="auth-visual-copy">
+          <p class="eyebrow accent">Domestic luggage transportation</p>
+          <h1>Move every journey forward.</h1>
+          <p>Book smarter, get an AI-powered estimate, and follow your luggage from pickup to delivery.</p>
+          <div class="auth-highlights"><span><i class="fa-solid fa-brain"></i> AI cost prediction</span><span><i class="fa-solid fa-location-dot"></i> Live status updates</span></div>
+        </div>
+      </div>
+      <div class="auth-form-side">
+        <div class="auth-form-card">
+          <div class="auth-tabs">
+            <button class="auth-tab active" data-auth-tab="login">Login</button>
+            <button class="auth-tab" data-auth-tab="register">Register</button>
+          </div>
+          <div class="auth-panel active" id="loginPanel">
+            <p class="eyebrow">Welcome back</p>
+            <h2>Sign in to your dashboard</h2>
+            <p class="auth-helper">Manage bookings, estimates, drivers, and delivery status in one place.</p>
+            <form id="loginForm">
+              <div class="input-group"><label for="loginEmail">Email</label><input id="loginEmail" type="email" placeholder="you@example.com" required /></div>
+              <div class="input-group"><label for="loginPassword">Password</label><div class="password-wrap"><input id="loginPassword" type="password" placeholder="Enter your password" required /><button type="button" class="toggle-password" data-target="loginPassword"><i class="fa-solid fa-eye"></i></button></div></div>
+              <button type="submit" class="btn btn-primary full-width">Login to Dashboard <i class="fa-solid fa-arrow-right"></i></button>
+            </form>
+          </div>
+          <div class="auth-panel" id="registerPanel">
+            <p class="eyebrow">Get started</p>
+            <h2>Create your account</h2>
+            <p class="auth-helper">Start your first domestic luggage delivery with a clear AI estimate.</p>
+            <form id="registerForm">
+              <div class="input-group"><label for="registerName">Full Name</label><input id="registerName" type="text" placeholder="Your full name" required /></div>
+              <div class="input-group"><label for="registerEmail">Email</label><input id="registerEmail" type="email" placeholder="you@example.com" required /></div>
+              <div class="input-group"><label for="registerPassword">Password</label><div class="password-wrap"><input id="registerPassword" type="password" placeholder="Create a password" required /><button type="button" class="toggle-password" data-target="registerPassword"><i class="fa-solid fa-eye"></i></button></div></div>
+              <button type="submit" class="btn btn-primary full-width">Create Account <i class="fa-solid fa-arrow-right"></i></button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="app-shell" id="appShell">
       <aside class="sidebar" id="sidebar">
         <div class="brand">
           <div class="brand-icon"><i class="fa-solid fa-suitcase-rolling"></i></div>
@@ -872,54 +913,6 @@
             </div>
           </section>
         </main>
-      </div>
-    </div>
-
-    <div class="modal-overlay" id="authModal">
-      <div class="modal-card auth-card">
-        <button class="modal-close" id="closeAuthModal">×</button>
-        <div class="auth-tabs">
-          <button class="auth-tab active" data-auth-tab="login">Login</button>
-          <button class="auth-tab" data-auth-tab="register">Register</button>
-        </div>
-        <div class="auth-panel active" id="loginPanel">
-          <h3>Welcome Back</h3>
-          <form id="loginForm">
-            <div class="input-group">
-              <label for="loginEmail">Email</label>
-              <input id="loginEmail" type="email" required />
-            </div>
-            <div class="input-group">
-              <label for="loginPassword">Password</label>
-              <div class="password-wrap">
-                <input id="loginPassword" type="password" required />
-                <button type="button" class="toggle-password" data-target="loginPassword"><i class="fa-solid fa-eye"></i></button>
-              </div>
-            </div>
-            <button type="submit" class="btn btn-primary full-width">Login</button>
-          </form>
-        </div>
-        <div class="auth-panel" id="registerPanel">
-          <h3>Create Account</h3>
-          <form id="registerForm">
-            <div class="input-group">
-              <label for="registerName">Full Name</label>
-              <input id="registerName" type="text" required />
-            </div>
-            <div class="input-group">
-              <label for="registerEmail">Email</label>
-              <input id="registerEmail" type="email" required />
-            </div>
-            <div class="input-group">
-              <label for="registerPassword">Password</label>
-              <div class="password-wrap">
-                <input id="registerPassword" type="password" required />
-                <button type="button" class="toggle-password" data-target="registerPassword"><i class="fa-solid fa-eye"></i></button>
-              </div>
-            </div>
-            <button type="submit" class="btn btn-primary full-width">Register</button>
-          </form>
-        </div>
       </div>
     </div>
 

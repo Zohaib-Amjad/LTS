@@ -272,7 +272,6 @@ function bindEvents() {
   document.getElementById('chatForm').addEventListener('submit', handleChatSubmit);
   document.getElementById('markAllReadBtn').addEventListener('click', markAllNotificationsRead);
   document.getElementById('logoutBtn').addEventListener('click', logoutUser);
-  document.getElementById('closeAuthModal').addEventListener('click', closeAuthModal);
   document.getElementById('loginForm').addEventListener('submit', handleLogin);
   document.getElementById('registerForm').addEventListener('submit', handleRegister);
 
@@ -1139,9 +1138,9 @@ function resetBookingForm() {
 
 function openAuthModalIfNeeded() {
   const auth = JSON.parse(localStorage.getItem(STORAGE_KEYS.auth) || '{}');
-  if (!auth.loggedIn) {
-    openModal('authModal');
-  }
+  const isLoggedIn = Boolean(auth.loggedIn);
+  document.getElementById('authScreen').classList.toggle('visible', !isLoggedIn);
+  document.getElementById('appShell').classList.toggle('visible', isLoggedIn);
 }
 
 authModalLogic();
@@ -1162,7 +1161,7 @@ function handleLogin(event) {
   event.preventDefault();
   const auth = { loggedIn: true };
   localStorage.setItem(STORAGE_KEYS.auth, JSON.stringify(auth));
-  closeModal('authModal');
+  openAuthModalIfNeeded();
   showToast('Login demo successful.');
 }
 
@@ -1170,13 +1169,13 @@ function handleRegister(event) {
   event.preventDefault();
   const auth = { loggedIn: true };
   localStorage.setItem(STORAGE_KEYS.auth, JSON.stringify(auth));
-  closeModal('authModal');
+  openAuthModalIfNeeded();
   showToast('Registration demo successful.');
 }
 
 function logoutUser() {
   localStorage.setItem(STORAGE_KEYS.auth, JSON.stringify({ loggedIn: false }));
-  openModal('authModal');
+  openAuthModalIfNeeded();
   showToast('Logged out.');
 }
 
