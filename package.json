@@ -1,0 +1,34 @@
+{
+  "name": "smartluggage-ai",
+  "version": "1.0.0",
+  "description": "Smart Online Luggage Transportation Platform using AI - Final Year Project (FYP)",
+  "type": "module",
+  "scripts": {
+    "test": "node test/foundation.test.js && node test/auth_rbac.test.js && node test/distance_providers.test.js && node test/booking_workflow.test.js && node test/ml_prediction.test.js && node test/driver_management.test.js && node test/tracking_status.test.js && node test/delivery_feedback.test.js && node test/admin_dashboard.test.js && node test/notifications_edge_cases.test.js && node test/security_performance.test.js && node test/e2e_demo_scenarios.test.js",
+    "test:foundation": "node test/foundation.test.js",
+    "test:auth": "node test/auth_rbac.test.js",
+    "test:distance": "node test/distance_providers.test.js",
+    "test:booking": "node test/booking_workflow.test.js",
+    "test:ml": "node test/ml_prediction.test.js",
+    "test:driver": "node test/driver_management.test.js",
+    "test:tracking": "node test/tracking_status.test.js",
+    "test:feedback": "node test/delivery_feedback.test.js",
+    "test:admin": "node test/admin_dashboard.test.js",
+    "test:notifications": "node test/notifications_edge_cases.test.js",
+    "test:security": "node test/security_performance.test.js",
+    "test:demo": "node test/e2e_demo_scenarios.test.js",
+    "build": "node -e \"console.log('Executing production build verification...');\" && npm test",
+    "start": "npx serve -l 3000 .",
+    "check": "npm test"
+  },
+  "keywords": [
+    "logistics",
+    "luggage-transportation",
+    "ai",
+    "machine-learning",
+    "regression",
+    "fyp"
+  ],
+  "author": "FYP Lead Full-Stack Engineer",
+  "license": "ISC"
+}

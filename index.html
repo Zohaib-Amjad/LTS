@@ -1,985 +1,2371 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SmartLuggage AI</title>
-    <meta
-      name="description"
-      content="SmartLuggage AI - Frontend-only smart luggage transportation system"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <link rel="stylesheet" href="css/style.css" />
-  </head>
-  <body>
-    <section class="auth-screen" id="authScreen">
-      <div class="auth-visual">
-        <div class="auth-brand"><div class="brand-icon"><i class="fa-solid fa-suitcase-rolling"></i></div><strong>SmartLuggage AI</strong></div>
-        <div class="auth-visual-copy">
-          <p class="eyebrow accent">Domestic luggage transportation</p>
-          <h1>Move every journey forward.</h1>
-          <p>Book smarter, get an AI-powered estimate, and follow your luggage from pickup to delivery.</p>
-          <div class="auth-highlights"><span><i class="fa-solid fa-brain"></i> AI cost prediction</span><span><i class="fa-solid fa-location-dot"></i> Live status updates</span></div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#3b82f6" />
+  <meta name="robots" content="index, follow" />
+  
+  <title>SmartLuggage AI — Domestic Luggage Transportation & Prediction Platform</title>
+  <meta name="description" content="AI-Powered Domestic Luggage Transportation Platform with Supervised Machine Learning Cost & Delivery Time Prediction across Pakistan." />
+  <meta name="keywords" content="luggage transportation, ai logistics, machine learning prediction, baggage shipping, Pakistan courier, smart transport" />
+  <meta name="author" content="SmartLuggage AI Team" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://smartluggage.pk/" />
+  <meta property="og:title" content="SmartLuggage AI — Smart Domestic Luggage Transportation Platform" />
+  <meta property="og:description" content="Instant AI-predicted transportation costs and delivery timelines with real-time milestone tracking." />
+  <meta property="og:site_name" content="SmartLuggage AI" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="SmartLuggage AI — AI-Powered Baggage Logistics" />
+  <meta name="twitter:description" content="Supervised machine learning cost and delivery time prediction for intercity luggage transport." />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233b82f6'><path d='M19 7h-3V6a4 4 0 0 0-8 0v1H5a2 2 0 0 0-2 2v10a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3V9a2 2 0 0 0-2-2zm-9-1a2 2 0 0 1 4 0v1h-4V6zm10 13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V9h14v10z'/></svg>" />
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- =========================================================================
+       Demo Role Switcher Bar (FYP Evaluation Header)
+       ========================================================================= -->
+  <div class="demo-top-bar" id="demoTopBar">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span class="demo-bar-badge"><i class="fa-solid fa-graduation-cap"></i> FYP Prototype</span>
+      <span style="font-size: 0.8rem; color: #94a3b8; display: none; @media(min-width: 600px){display:inline;}">Role Switcher:</span>
+    </div>
+    <div class="demo-role-switchers">
+      <button class="demo-role-btn" data-switch-role="LANDING"><i class="fa-solid fa-globe"></i> Public Landing</button>
+      <button class="demo-role-btn" data-switch-role="AUTH"><i class="fa-solid fa-right-to-bracket"></i> Login / Register</button>
+      <button class="demo-role-btn active" data-switch-role="CUSTOMER"><i class="fa-solid fa-user"></i> Customer</button>
+      <button class="demo-role-btn" data-switch-role="DRIVER"><i class="fa-solid fa-truck"></i> Driver</button>
+      <button class="demo-role-btn" data-switch-role="ADMIN"><i class="fa-solid fa-shield-halved"></i> Admin</button>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       AUTH SCREEN: LOGIN & REGISTRATION
+       ========================================================================= -->
+  <div class="landing-viewport" id="authScreenView" style="display: none; padding: 60px 20px; min-height: 85vh; background: var(--bg-surface-secondary);">
+    <div class="card" style="max-width: 480px; margin: 0 auto; box-shadow: var(--shadow-xl); border-radius: var(--radius-xl);">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <div class="brand-logo-icon" style="margin: 0 auto 12px; width: 48px; height: 48px; font-size: 1.4rem;"><i class="fa-solid fa-suitcase-rolling"></i></div>
+        <h2 style="font-size: 1.5rem;">SmartLuggage AI</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Domestic Luggage Transportation & AI Logistics</p>
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+        <button class="btn btn-ghost btn-sm active" id="authTabLogin" style="flex: 1; font-weight: 700; border-bottom: 2px solid var(--brand-primary); border-radius: 0;">Sign In</button>
+        <button class="btn btn-ghost btn-sm" id="authTabRegister" style="flex: 1; font-weight: 600; border-radius: 0;">Create Account</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="appLoginForm">
+        <div class="form-group">
+          <label class="form-label">Email Address <span class="required-star">*</span></label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-envelope"></i>
+            <input type="email" class="form-input" id="loginEmailInput" placeholder="name@example.pk" value="customer@smartluggage.pk" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password <span class="required-star">*</span></label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" class="form-input" id="loginPasswordInput" placeholder="Enter password" value="customer123" required />
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 10px;"><i class="fa-solid fa-right-to-bracket"></i> Sign In to Portal</button>
+
+        <!-- Quick Demo Credentials Chips -->
+        <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+          <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; display: block; margin-bottom: 8px;">Quick Demo Accounts:</span>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-secondary btn-sm" id="quickCredCust"><i class="fa-solid fa-user"></i> Customer</button>
+            <button type="button" class="btn btn-secondary btn-sm" id="quickCredDrv"><i class="fa-solid fa-truck"></i> Driver</button>
+            <button type="button" class="btn btn-secondary btn-sm" id="quickCredAdm"><i class="fa-solid fa-shield-halved"></i> Admin</button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Register Form -->
+      <form id="appRegisterForm" style="display: none;">
+        <div class="form-group">
+          <label class="form-label">Full Name <span class="required-star">*</span></label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" class="form-input" id="regFullName" placeholder="e.g. Tariq Mehmood" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address <span class="required-star">*</span></label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-envelope"></i>
+            <input type="email" class="form-input" id="regEmail" placeholder="tariq@example.pk" required />
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="text" class="form-input" id="regPhone" placeholder="+92 300 1234567" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">City</label>
+            <select class="form-select" id="regCity">
+              <option value="Islamabad">Islamabad</option>
+              <option value="Rawalpindi">Rawalpindi</option>
+              <option value="Lahore">Lahore</option>
+              <option value="Karachi">Karachi</option>
+              <option value="Peshawar">Peshawar</option>
+              <option value="Multan">Multan</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Password <span class="required-star">*</span></label>
+            <input type="password" class="form-input" id="regPassword" placeholder="Min. 6 chars" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm Password <span class="required-star">*</span></label>
+            <input type="password" class="form-input" id="regConfirmPassword" placeholder="Repeat password" required />
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 10px;"><i class="fa-solid fa-user-plus"></i> Create Customer Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       PUBLIC LANDING PAGE (11 Complete Product Sections)
+       ========================================================================= -->
+  <div class="landing-viewport" id="landingView" style="display: none;">
+    <!-- 1. Hero Section -->
+    <header class="landing-hero">
+      <div class="hero-pill"><i class="fa-solid fa-brain"></i> Supervised AI Regression Core</div>
+      <h1 class="hero-title">Smarter, Safer Domestic Luggage <span class="hero-title-highlight">Transportation</span></h1>
+      <p class="hero-desc">Send your baggage between any domestic cities in Pakistan with instant AI cost prediction, guaranteed courier safety, and transparent real-time tracking.</p>
+      <div class="hero-cta-group">
+        <button class="btn btn-primary btn-lg" id="landingBookNowBtn"><i class="fa-solid fa-suitcase-rolling"></i> Book Luggage Now</button>
+        <button class="btn btn-secondary btn-lg" id="landingGetQuoteBtn"><i class="fa-solid fa-calculator"></i> Calculate AI Quote</button>
+      </div>
+    </header>
+
+    <!-- 2. Value Proposition -->
+    <section class="section-container">
+      <div class="section-header-center">
+        <p class="section-eyebrow">Why SmartLuggage AI</p>
+        <h2 class="section-heading">Engineered for Hassle-Free Domestic Travel</h2>
+        <p class="section-subheading">Travel light without dragging heavy suitcases across terminals or bus stations. We pick up from your doorstep and deliver to your destination.</p>
+      </div>
+      <div class="feature-grid-3">
+        <div class="feature-card">
+          <div class="feature-icon-wrap"><i class="fa-solid fa-bolt"></i></div>
+          <h3>Instant AI Quoting</h3>
+          <p style="color: var(--text-muted); margin-top: 8px;">Trained supervised machine learning regression predicts precise shipping costs and delivery transit times in milliseconds.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-wrap"><i class="fa-solid fa-shield-check"></i></div>
+          <h3>Tamper-Proof Protection</h3>
+          <p style="color: var(--text-muted); margin-top: 8px;">Every luggage item is tagged, barcoded, sealed, and handled by verified logistics drivers.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-wrap"><i class="fa-solid fa-route"></i></div>
+          <h3>Inter-City Highway Network</h3>
+          <p style="color: var(--text-muted); margin-top: 8px;">Scheduled courier corridors between Islamabad, Lahore, Karachi, Peshawar, Multan, Faisalabad, and Quetta.</p>
         </div>
       </div>
-      <div class="auth-form-side">
-        <div class="auth-form-card">
-          <div class="auth-tabs">
-            <button class="auth-tab active" data-auth-tab="login">Login</button>
-            <button class="auth-tab" data-auth-tab="register">Register</button>
+    </section>
+
+    <!-- 3. AI Prediction Explanation Section -->
+    <section style="background: var(--bg-surface-secondary); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);">
+      <div class="section-container">
+        <div class="section-header-center">
+          <p class="section-eyebrow">Core FYP Innovation</p>
+          <h2 class="section-heading">How Our Supervised AI Regression Works</h2>
+          <p class="section-subheading">Our dual-target regression models analyse multi-dimensional logistics features to generate reliable fair-fare pricing.</p>
+        </div>
+        <div class="ai-prediction-card" style="max-width: 900px; margin: 0 auto;">
+          <div class="ai-badge-chip"><i class="fa-solid fa-microchip"></i> Random Forest & XGBoost Regression Engine</div>
+          <h3 style="font-size: 1.4rem; margin-bottom: 8px;">Multi-Feature Predictive Intelligence</h3>
+          <p style="color: #cbd5e1; font-size: 0.9rem; margin-bottom: 20px;">The model processes distance (km), volumetric dimensions, gross weight, luggage fragility, and dispatch urgency.</p>
+          <div class="ai-estimate-grid">
+            <div class="ai-metric-box">
+              <div class="label">Primary Output 1</div>
+              <div class="value">Cost (PKR)</div>
+              <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">Supervised Fair Fare Regression</p>
+            </div>
+            <div class="ai-metric-box">
+              <div class="label">Primary Output 2</div>
+              <div class="value">Time (Hours)</div>
+              <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">Highway Transit Speed Model</p>
+            </div>
+            <div class="ai-metric-box">
+              <div class="label">Model Quality</div>
+              <div class="value">R² 0.946</div>
+              <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">High Predictive Confidence</p>
+            </div>
           </div>
-          <div class="auth-panel active" id="loginPanel">
-            <p class="eyebrow">Welcome back</p>
-            <h2>Sign in to your dashboard</h2>
-            <p class="auth-helper">Manage bookings, estimates, drivers, and delivery status in one place.</p>
-            <form id="loginForm">
-              <div class="input-group"><label for="loginEmail">Email</label><input id="loginEmail" type="email" placeholder="you@example.com" required /></div>
-              <div class="input-group"><label for="loginPassword">Password</label><div class="password-wrap"><input id="loginPassword" type="password" placeholder="Enter your password" required /><button type="button" class="toggle-password" data-target="loginPassword"><i class="fa-solid fa-eye"></i></button></div></div>
-              <button type="submit" class="btn btn-primary full-width">Login to Dashboard <i class="fa-solid fa-arrow-right"></i></button>
-            </form>
-          </div>
-          <div class="auth-panel" id="registerPanel">
-            <p class="eyebrow">Get started</p>
-            <h2>Create your account</h2>
-            <p class="auth-helper">Start your first domestic luggage delivery with a clear AI estimate.</p>
-            <form id="registerForm">
-              <div class="input-group"><label for="registerName">Full Name</label><input id="registerName" type="text" placeholder="Your full name" required /></div>
-              <div class="input-group"><label for="registerEmail">Email</label><input id="registerEmail" type="email" placeholder="you@example.com" required /></div>
-              <div class="input-group"><label for="registerPassword">Password</label><div class="password-wrap"><input id="registerPassword" type="password" placeholder="Create a password" required /><button type="button" class="toggle-password" data-target="registerPassword"><i class="fa-solid fa-eye"></i></button></div></div>
-              <button type="submit" class="btn btn-primary full-width">Create Account <i class="fa-solid fa-arrow-right"></i></button>
-            </form>
+          <div class="ai-disclaimer-bar">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>Transparent FYP Design: AI estimates represent regression predictions based on historical domestic transit data.</span>
           </div>
         </div>
       </div>
     </section>
 
-    <div class="app-shell" id="appShell">
-      <aside class="sidebar" id="sidebar">
-        <div class="brand">
-          <div class="brand-icon"><i class="fa-solid fa-suitcase-rolling"></i></div>
-          <div>
-            <h2>SmartLuggage AI</h2>
+    <!-- 4. How It Works -->
+    <section class="section-container">
+      <div class="section-header-center">
+        <p class="section-eyebrow">Seamless 4-Step Process</p>
+        <h2 class="section-heading">How Booking Works</h2>
+      </div>
+      <div class="feature-grid-3">
+        <div class="feature-card">
+          <span style="font-size: 2rem; font-weight: 800; color: var(--brand-primary); font-family: var(--font-heading);">01</span>
+          <h4 style="margin-top: 10px; font-size: 1.15rem;">Enter Locations</h4>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Select pickup city/address and destination city within Pakistan.</p>
+        </div>
+        <div class="feature-card">
+          <span style="font-size: 2rem; font-weight: 800; color: var(--brand-primary); font-family: var(--font-heading);">02</span>
+          <h4 style="margin-top: 10px; font-size: 1.15rem;">Luggage Specs</h4>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Specify luggage type (Suitcase, Box, Fragile), weight, and dimensions.</p>
+        </div>
+        <div class="feature-card">
+          <span style="font-size: 2rem; font-weight: 800; color: var(--brand-primary); font-family: var(--font-heading);">03</span>
+          <h4 style="margin-top: 10px; font-size: 1.15rem;">Instant AI Quote</h4>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">View estimated cost, delivery time, and choose your preferred transport tier.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Service Tiers -->
+    <section style="background: var(--bg-surface-secondary); padding: 80px 24px;">
+      <div class="section-container" style="padding: 0;">
+        <div class="section-header-center">
+          <p class="section-eyebrow">Flexible Options</p>
+          <h2 class="section-heading">Tailored Transport Tiers</h2>
+        </div>
+        <div class="feature-grid-3">
+          <div class="card" style="border-top: 4px solid var(--text-muted);">
+            <h3>Standard Ground</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 8px 0 16px;">Economical inter-city transport for routine deliveries.</p>
+            <ul style="padding-left: 20px; font-size: 0.875rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px;">
+              <li>Doorstep pickup & delivery</li>
+              <li>Standard road transit speed</li>
+              <li>Live milestone tracking</li>
+            </ul>
+          </div>
+          <div class="card" style="border-top: 4px solid var(--brand-primary); box-shadow: var(--shadow-md);">
+            <span class="badge badge-confirmed" style="margin-bottom: 8px;">Most Popular</span>
+            <h3>Express Priority</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 8px 0 16px;">Fast highway dispatch with dedicated van allocation.</p>
+            <ul style="padding-left: 20px; font-size: 0.875rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px;">
+              <li>Priority pickup within 2 hours</li>
+              <li>Accelerated direct highway transit</li>
+              <li>SMS & WhatsApp milestone alerts</li>
+            </ul>
+          </div>
+          <div class="card" style="border-top: 4px solid var(--brand-indigo);">
+            <h3>Premium White-Glove</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 8px 0 16px;">Special handling for fragile, valuable, and oversized items.</p>
+            <ul style="padding-left: 20px; font-size: 0.875rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px;">
+              <li>Cushioned secure vehicle strapping</li>
+              <li>Dedicated handler assigned</li>
+              <li>Declared value protection warranty</li>
+            </ul>
           </div>
         </div>
+      </div>
+    </section>
 
-        <nav class="nav-menu">
-          <button class="nav-item active" data-section="home"><i class="fa-solid fa-house"></i><span>Dashboard</span></button>
-          <button class="nav-item" data-section="booking"><i class="fa-solid fa-plus-circle"></i><span>Book Luggage</span></button>
-          <button class="nav-item" data-section="luggage"><i class="fa-solid fa-bag-shopping"></i><span>My Luggage</span></button>
-          <button class="nav-item" data-section="bookings"><i class="fa-solid fa-table-list"></i><span>My Bookings</span></button>
-          <button class="nav-item" data-section="tracking"><i class="fa-solid fa-location-crosshairs"></i><span>Track Luggage</span></button>
-          <button class="nav-item" data-section="assistant"><i class="fa-solid fa-robot"></i><span>AI Assistant</span></button>
-          <button class="nav-item" data-section="cost"><i class="fa-solid fa-calculator"></i><span>Cost Estimator</span></button>
-          <button class="nav-item" data-section="routes"><i class="fa-solid fa-route"></i><span>Delivery Routes</span></button>
-          <button class="nav-item" data-section="notifications"><i class="fa-solid fa-bell"></i><span>Notifications</span></button>
-          <button class="nav-item" data-section="reports"><i class="fa-solid fa-chart-line"></i><span>Reports</span></button>
-          <button class="nav-item" data-section="partners"><i class="fa-solid fa-handshake"></i><span>Partners</span></button>
-          <button class="nav-item" data-section="profile"><i class="fa-solid fa-user"></i><span>Profile</span></button>
-          <button class="nav-item" data-section="settings"><i class="fa-solid fa-gear"></i><span>Settings</span></button>
-          <button class="nav-item" data-section="support"><i class="fa-solid fa-circle-question"></i><span>Help &amp; Support</span></button>
-          <button class="nav-item danger" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></button>
-        </nav>
-      </aside>
+    <!-- 6. Trust & Safety -->
+    <section class="section-container">
+      <div class="section-header-center">
+        <p class="section-eyebrow">Peace of Mind</p>
+        <h2 class="section-heading">Safety & Luggage Integrity</h2>
+      </div>
+      <div class="feature-grid-3">
+        <div class="feature-card">
+          <div class="feature-icon-wrap" style="background: #ecfdf5; color: #10b981;"><i class="fa-solid fa-id-card-clip"></i></div>
+          <h3>Verified Drivers</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">All logistics partners are identity-verified with background security checks.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-wrap" style="background: #eff6ff; color: #3b82f6;"><i class="fa-solid fa-tag"></i></div>
+          <h3>Digital Barcode Seal</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Tamper-evident seals and photo checkpoints at every handover.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-wrap" style="background: #f5f3ff; color: #8b5cf6;"><i class="fa-solid fa-clipboard-check"></i></div>
+          <h3>Audit State Machine</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Every status transition is logged with timestamp, user ID, and geolocation.</p>
+        </div>
+      </div>
+    </section>
 
-      <div class="content-area">
-        <header class="topbar">
-          <div class="topbar-left">
-            <button class="mobile-menu-btn" id="mobileMenuBtn">
-              <i class="fa-solid fa-bars"></i>
-            </button>
-            <div class="page-title-wrap">
-              <p class="eyebrow">Smart Logistics Platform</p>
-              <h1 id="pageTitle">Dashboard</h1>
-            </div>
+    <!-- 7. FAQ Accordion -->
+    <section class="section-container" style="max-width: 800px;">
+      <div class="section-header-center">
+        <p class="section-eyebrow">Got Questions?</p>
+        <h2 class="section-heading">Frequently Asked Questions</h2>
+      </div>
+      <div class="faq-accordion-item">
+        <div class="faq-header">How does the AI price prediction work? <i class="fa-solid fa-chevron-down"></i></div>
+        <div class="faq-body">Our supervised machine learning model (Random Forest / XGBoost) is trained on domestic highway routes, taking into account road distance, total luggage weight, bag count, category fragility, and transport urgency to predict fair market prices.</div>
+      </div>
+      <div class="faq-accordion-item">
+        <div class="faq-header">Which cities are currently supported? <i class="fa-solid fa-chevron-down"></i></div>
+        <div class="faq-body">We support all major domestic corridors in Pakistan including Islamabad, Rawalpindi, Lahore, Karachi, Peshawar, Multan, Faisalabad, and Quetta.</div>
+      </div>
+      <div class="faq-accordion-item">
+        <div class="faq-header">Can I track my luggage in real time? <i class="fa-solid fa-chevron-down"></i></div>
+        <div class="faq-body">Yes! The tracking portal shows step-by-step milestone progression from "Confirmed" to "Driver Assigned", "Picked Up", "In Transit", and "Delivered".</div>
+      </div>
+    </section>
+
+    <!-- 8. Final CTA -->
+    <section style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); color: white; padding: 70px 24px; text-align: center;">
+      <div style="max-width: 700px; margin: 0 auto;">
+        <h2 style="font-size: 2.2rem; margin-bottom: 16px; color: white;">Ready to Move Your Luggage?</h2>
+        <p style="color: #cbd5e1; font-size: 1.05rem; margin-bottom: 30px;">Experience the modern way to travel across Pakistan without luggage hassle.</p>
+        <button class="btn btn-primary btn-lg" id="landingFinalCtaBtn"><i class="fa-solid fa-arrow-right"></i> Open Customer Portal</button>
+      </div>
+    </section>
+
+    <!-- 9. Footer -->
+    <footer class="landing-footer">
+      <div class="footer-grid">
+        <div>
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+            <div class="brand-logo-icon" style="width: 32px; height: 32px; font-size: 1rem;"><i class="fa-solid fa-suitcase-rolling"></i></div>
+            <strong style="color: white; font-size: 1.1rem;">SmartLuggage AI</strong>
           </div>
+          <p style="font-size: 0.85rem; line-height: 1.6;">Domestic Online Luggage Transportation Platform powered by Supervised Machine Learning Regression.</p>
+        </div>
+        <div>
+          <h4 style="color: white; font-size: 0.9rem; margin-bottom: 14px;">Platform</h4>
+          <p style="margin-bottom: 8px;"><a href="#" style="color: inherit;">AI Cost Prediction</a></p>
+          <p style="margin-bottom: 8px;"><a href="#" style="color: inherit;">Domestic Corridors</a></p>
+          <p style="margin-bottom: 8px;"><a href="#" style="color: inherit;">Tracking Portal</a></p>
+        </div>
+        <div>
+          <h4 style="color: white; font-size: 0.9rem; margin-bottom: 14px;">Portals</h4>
+          <p style="margin-bottom: 8px;"><a href="#" style="color: inherit;" data-switch-role="CUSTOMER">Customer Login</a></p>
+          <p style="margin-bottom: 8px;"><a href="#" style="color: inherit;" data-switch-role="DRIVER">Driver Dispatch</a></p>
+          <p style="margin-bottom: 8px;"><a href="#" style="color: inherit;" data-switch-role="ADMIN">Admin Console</a></p>
+        </div>
+        <div>
+          <h4 style="color: white; font-size: 0.9rem; margin-bottom: 14px;">FYP Project</h4>
+          <p style="font-size: 0.8125rem;">Final Year Project (FYP)<br>Smart Logistics using Machine Learning Regression.</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 SmartLuggage AI. All rights reserved.</p>
+        <p>Built with Supervised ML Regression Core</p>
+      </div>
+    </footer>
+  </div>
 
-          <div class="topbar-actions">
-            <div class="search-box">
-              <i class="fa-solid fa-magnifying-glass"></i>
-              <input type="text" id="globalSearch" placeholder="Search bookings, luggage, routes..." />
-            </div>
-            <button class="icon-btn" id="themeToggle">
-              <i class="fa-solid fa-moon"></i>
-            </button>
-            <button class="icon-btn notifications-btn" id="notificationQuickBtn">
+  <!-- =========================================================================
+       MAIN APP SHELL (Sidebar Navigation & Active Views)
+       ========================================================================= -->
+  <div class="app-wrapper" id="appWrapper">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="appSidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo-icon"><i class="fa-solid fa-suitcase-rolling"></i></div>
+        <div class="brand-logo-text">
+          <h2>SmartLuggage</h2>
+          <span>AI Logistics Platform</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" id="sidebarNavMenu">
+        <!-- Dynamically injected navigation links based on user role -->
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-badge">
+          <div class="avatar-circle" id="userAvatarCircle">AK</div>
+          <div class="user-info-text">
+            <div class="name" id="userNameLabel">Ali Khan</div>
+            <div class="role" id="userRoleLabel">Customer</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="logoutBtn" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Navbar -->
+      <header class="top-navbar">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <button class="mobile-toggle-btn" id="mobileSidebarToggle"><i class="fa-solid fa-bars"></i></button>
+          <div class="navbar-breadcrumb">
+            <span class="breadcrumb-root">Portal</span>
+            <span class="breadcrumb-sep">/</span>
+            <span class="breadcrumb-current" id="breadcrumbCurrentView">Dashboard</span>
+          </div>
+        </div>
+        <div class="navbar-actions">
+          <button class="btn btn-secondary btn-sm" id="quickNewBookingNavBtn"><i class="fa-solid fa-plus"></i> New Booking</button>
+          
+          <!-- Notification Bell & Dropdown Wrapper (Phase 11) -->
+          <div class="notif-dropdown-wrapper" id="notifDropdownWrapper">
+            <button class="btn btn-ghost btn-icon" id="notifBellBtn" title="In-App Notifications">
               <i class="fa-solid fa-bell"></i>
-              <span class="badge" id="headerBadge">0</span>
+              <span class="notif-unread-badge" id="notifUnreadBadge" style="display: none;">0</span>
             </button>
-            <div class="profile-pill">
-              <div class="avatar" id="avatarCircle">AK</div>
-              <div>
-                <strong id="topUserName">Demo User</strong>
-                <small>Premium Member</small>
+
+            <!-- Notification Dropdown Panel -->
+            <div class="notif-dropdown-menu" id="notifDropdownMenu">
+              <div class="notif-dropdown-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <h4 style="font-size: 0.95rem; margin: 0; font-weight: 700;"><i class="fa-solid fa-bell"></i> Notifications</h4>
+                  <span class="badge badge-confirmed" id="notifHeaderUnreadCount">0 new</span>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                  <button class="btn btn-ghost btn-sm" id="notifMarkAllReadBtn" title="Mark all notifications as read" style="font-size: 0.75rem; padding: 3px 8px;">Mark read</button>
+                  <button class="btn btn-ghost btn-sm" id="notifClearAllBtn" title="Clear all" style="font-size: 0.75rem; padding: 3px 8px;"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+              </div>
+              <div class="notif-dropdown-list" id="notifDropdownList">
+                <!-- Notifications injected dynamically -->
               </div>
             </div>
           </div>
-        </header>
 
-        <main class="main-content">
-          <section class="page-section active" id="homeSection">
-            <div class="hero">
-              <div class="hero-copy">
-                <p class="eyebrow accent">AI-Powered Logistics</p>
-                <h2>Smart Luggage Transportation Powered by AI</h2>
-                <p>
-                  Book, track, manage, and transport your luggage smarter, faster, and safer.
-                </p>
-                <div class="hero-actions">
-                  <button class="btn btn-primary" data-open-section="booking">Book Luggage</button>
-                  <button class="btn btn-secondary" data-open-section="tracking">Track Luggage</button>
-                </div>
-                <div class="hero-metrics">
-                  <div>
-                    <strong class="count" data-target="12500">0</strong>
-                    <span>Luggage Delivered</span>
-                  </div>
-                  <div>
-                    <strong class="count" data-target="985">0</strong>
-                    <span>Successful Deliveries</span>
-                  </div>
-                  <div>
-                    <strong class="count" data-target="250">0</strong>
-                    <span>Transport Partners</span>
-                  </div>
-                  <div>
-                    <strong class="count" data-target="35">0</strong>
-                    <span>Cities Covered</span>
-                  </div>
-                </div>
+          <button class="btn btn-ghost btn-icon" id="themeToggleBtn" title="Toggle Theme"><i class="fa-solid fa-moon"></i></button>
+        </div>
+      </header>
+
+      <!-- Content Viewport -->
+      <div class="content-viewport" id="contentViewport">
+
+        <!-- ===================================================================
+             VIEW 1: CUSTOMER DASHBOARD
+             =================================================================== -->
+        <section class="view-pane" id="view-customer-dashboard">
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Active Bookings</div>
+                <div class="stat-value" id="custStatActive">1</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-truck-fast"></i> In Transit to Karachi</div>
               </div>
-              <div class="hero-visual">
-                <div class="visual-card primary">
-                  <div class="mini-chart">
-                    <span></span><span></span><span></span><span></span><span></span>
-                  </div>
-                  <div class="route-summary">
-                    <small>AI Optimized Route</small>
-                    <strong>Islamabad → Lahore → Karachi</strong>
-                    <div class="route-tags">
-                      <span>98% Efficient</span>
-                      <span>On Time</span>
-                    </div>
-                  </div>
-                </div>
+              <div class="stat-icon blue"><i class="fa-solid fa-box-open"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Total Completed</div>
+                <div class="stat-value" id="custStatCompleted">1</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-check"></i> 100% Safe Delivery</div>
+              </div>
+              <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Saved Luggage</div>
+                <div class="stat-value" id="custStatLuggage">4</div>
+                <div class="stat-trend neutral"><i class="fa-solid fa-suitcase"></i> Ready in catalog</div>
+              </div>
+              <div class="stat-icon purple"><i class="fa-solid fa-briefcase"></i></div>
+            </div>
+          </div>
+
+          <!-- Quick Actions & Active Delivery Banner -->
+          <div class="card" style="margin-bottom: 24px; background: linear-gradient(135deg, #1e293b, #0f172a); color: white;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+              <div>
+                <span class="badge badge-in-transit badge-pulse" style="margin-bottom: 8px;">Active Shipment: BK-2026-001</span>
+                <h3 style="font-size: 1.35rem; color: white;">Islamabad → Karachi (1,410 km)</h3>
+                <p style="color: #94a3b8; font-size: 0.875rem; margin-top: 4px;">Assigned Driver: Bilal Tariq (Toyota HiAce Cargo)</p>
+              </div>
+              <div>
+                <button class="btn btn-primary" id="trackActiveBookingQuickBtn"><i class="fa-solid fa-location-dot"></i> Live Tracking</button>
               </div>
             </div>
+          </div>
 
-            <div class="feature-grid">
-              <div class="feature-card">
-                <i class="fa-solid fa-route"></i>
-                <h3>AI Route Optimization</h3>
-                <p>Auto-suggests the most efficient route for luggage based on traffic and distance.</p>
+          <!-- Recent Customer Bookings Table -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Recent Domestic Bookings</h3>
+                <p class="card-subtitle">Your luggage shipments across domestic routes</p>
               </div>
-              <div class="feature-card">
-                <i class="fa-solid fa-dollar-sign"></i>
-                <h3>Smart Cost Estimation</h3>
-                <p>Calculates pricing with dynamic, AI-inspired recommendations for your shipment.</p>
-              </div>
-              <div class="feature-card">
-                <i class="fa-solid fa-location-dot"></i>
-                <h3>Real-Time Tracking</h3>
-                <p>Monitor delivery progress, current location, ETA, and timeline updates.</p>
-              </div>
-              <div class="feature-card">
-                <i class="fa-solid fa-shield-heart"></i>
-                <h3>Secure Luggage Handling</h3>
-                <p>Special handling, fragile item alerts, and intelligent verification for safety.</p>
-              </div>
-              <div class="feature-card">
-                <i class="fa-solid fa-brain"></i>
-                <h3>Delivery Prediction</h3>
-                <p>Forecast expected delivery date and risk with simulation-driven AI logic.</p>
-              </div>
-              <div class="feature-card">
-                <i class="fa-solid fa-bell"></i>
-                <h3>Smart Notifications</h3>
-                <p>Stay updated through booking confirmations, alerts, and AI recommendation prompts.</p>
-              </div>
+              <button class="btn btn-primary btn-sm" id="dashCreateBookingBtn"><i class="fa-solid fa-plus"></i> Book Luggage</button>
             </div>
-
-            <div class="how-it-works">
-              <div class="section-heading">
-                <p class="eyebrow">How It Works</p>
-                <h3>Simple 4-Step Process</h3>
-              </div>
-              <div class="steps-grid">
-                <div class="step-card">
-                  <span>01</span>
-                  <h4>Enter luggage details</h4>
-                </div>
-                <div class="step-card">
-                  <span>02</span>
-                  <h4>Select pickup &amp; destination</h4>
-                </div>
-                <div class="step-card">
-                  <span>03</span>
-                  <h4>AI calculates best option</h4>
-                </div>
-                <div class="step-card">
-                  <span>04</span>
-                  <h4>Track your luggage</h4>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section class="page-section" id="dashboardSection">
-            <div class="dashboard-summaries">
-              <div class="summary-card purple">
-                <div class="summary-icon"><i class="fa-solid fa-suitcase"></i></div>
-                <div>
-                  <p>Total Luggage</p>
-                  <h3 id="totalLuggageStat">0</h3>
-                </div>
-              </div>
-              <div class="summary-card blue">
-                <div class="summary-icon"><i class="fa-solid fa-bookmark"></i></div>
-                <div>
-                  <p>Active Bookings</p>
-                  <h3 id="activeBookingsStat">0</h3>
-                </div>
-              </div>
-              <div class="summary-card green">
-                <div class="summary-icon"><i class="fa-solid fa-check-circle"></i></div>
-                <div>
-                  <p>Delivered Luggage</p>
-                  <h3 id="deliveredStat">0</h3>
-                </div>
-              </div>
-              <div class="summary-card orange">
-                <div class="summary-icon"><i class="fa-solid fa-clock"></i></div>
-                <div>
-                  <p>Pending Deliveries</p>
-                  <h3 id="pendingStat">0</h3>
-                </div>
-              </div>
-              <div class="summary-card coral">
-                <div class="summary-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
-                <div>
-                  <p>Total Transportation Cost</p>
-                  <h3 id="totalCostStat">$0</h3>
-                </div>
-              </div>
-            </div>
-
-            <div class="quick-actions">
-              <button class="quick-action" data-open-section="booking"><i class="fa-solid fa-plus"></i> New Booking</button>
-              <button class="quick-action" data-open-section="luggage"><i class="fa-solid fa-box-open"></i> Add Luggage</button>
-              <button class="quick-action" data-open-section="tracking"><i class="fa-solid fa-location-arrow"></i> Track Luggage</button>
-              <button class="quick-action" data-open-section="cost"><i class="fa-solid fa-calculator"></i> Calculate Cost</button>
-              <button class="quick-action" data-open-section="assistant"><i class="fa-solid fa-robot"></i> AI Recommendation</button>
-              <button class="quick-action" data-open-section="reports"><i class="fa-solid fa-chart-column"></i> View Reports</button>
-            </div>
-
-            <div class="content-grid dashboard-grid">
-              <div class="panel large-panel">
-                <div class="panel-header">
-                  <h3>Recent Bookings</h3>
-                  <button class="text-btn" data-open-section="bookings">View All</button>
-                </div>
-                <div class="table-wrap">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Booking ID</th>
-                        <th>Luggage ID</th>
-                        <th>Pickup</th>
-                        <th>Destination</th>
-                        <th>Delivery Date</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Cost</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody id="recentBookingsTable"></tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div class="panel">
-                <div class="panel-header">
-                  <h3>Active Delivery</h3>
-                </div>
-                <div id="activeDeliveryCard"></div>
-              </div>
-
-              <div class="panel">
-                <div class="panel-header">
-                  <h3>AI Recommendation</h3>
-                </div>
-                <div id="dashboardAIRecommendation"></div>
-              </div>
-            </div>
-          </section>
-
-          <section class="page-section" id="bookingSection">
-            <div class="section-heading">
-              <p class="eyebrow">Customer Booking Workflow</p>
-              <h3>Book domestic luggage transportation</h3>
-              <p class="section-lead">Enter your route and luggage details. Our AI estimate shows the expected cost and delivery time before you confirm.</p>
-            </div>
-            <div class="workflow-strip" aria-label="Booking workflow">
-              <div class="workflow-step active"><span>01</span><strong>Request</strong><small>Route &amp; luggage</small></div>
-              <div class="workflow-line"></div>
-              <div class="workflow-step"><span>02</span><strong>AI Estimate</strong><small>Cost &amp; delivery</small></div>
-              <div class="workflow-line"></div>
-              <div class="workflow-step"><span>03</span><strong>Assignment</strong><small>Driver arranged</small></div>
-              <div class="workflow-line"></div>
-              <div class="workflow-step"><span>04</span><strong>Delivery</strong><small>Track to feedback</small></div>
-            </div>
-            <form id="bookingForm" class="form-grid">
-              <div class="form-card full-width">
-                <h4>Customer Information</h4>
-                <div class="two-col">
-                  <div class="input-group">
-                    <label for="customerFullName">Full Name</label>
-                    <input id="customerFullName" name="customerFullName" type="text" required />
-                  </div>
-                  <div class="input-group">
-                    <label for="customerEmail">Email</label>
-                    <input id="customerEmail" name="customerEmail" type="email" required />
-                  </div>
-                  <div class="input-group">
-                    <label for="customerPhone">Phone Number</label>
-                    <input id="customerPhone" name="customerPhone" type="tel" required />
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-card full-width">
-                <h4>Pickup Information</h4>
-                <div class="two-col">
-                  <div class="input-group">
-                    <label for="pickupAddress">Pickup Address</label>
-                    <input id="pickupAddress" name="pickupAddress" type="text" required />
-                  </div>
-                  <div class="input-group">
-                    <label for="pickupCity">City</label>
-                    <select id="pickupCity" name="pickupCity" required>
-                      <option value="Islamabad">Islamabad</option>
-                      <option value="Lahore">Lahore</option>
-                      <option value="Karachi">Karachi</option>
-                      <option value="Peshawar">Peshawar</option>
-                      <option value="Multan">Multan</option>
-                      <option value="Rawalpindi">Rawalpindi</option>
-                      <option value="Faisalabad">Faisalabad</option>
-                    </select>
-                  </div>
-                  <div class="input-group">
-                    <label for="pickupDate">Pickup Date</label>
-                    <input id="pickupDate" name="pickupDate" type="date" required />
-                  </div>
-                  <div class="input-group">
-                    <label for="pickupTime">Pickup Time</label>
-                    <input id="pickupTime" name="pickupTime" type="time" required />
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-card full-width">
-                <h4>Delivery Information</h4>
-                <div class="two-col">
-                  <div class="input-group">
-                    <label for="destinationAddress">Destination Address</label>
-                    <input id="destinationAddress" name="destinationAddress" type="text" required />
-                  </div>
-                  <div class="input-group">
-                    <label for="destinationCity">Destination City</label>
-                    <select id="destinationCity" name="destinationCity" required>
-                      <option value="Islamabad">Islamabad</option>
-                      <option value="Lahore">Lahore</option>
-                      <option value="Karachi">Karachi</option>
-                      <option value="Peshawar">Peshawar</option>
-                      <option value="Multan">Multan</option>
-                      <option value="Rawalpindi">Rawalpindi</option>
-                      <option value="Faisalabad">Faisalabad</option>
-                    </select>
-                  </div>
-                  <div class="input-group">
-                    <label for="deliveryDate">Delivery Date</label>
-                    <input id="deliveryDate" name="deliveryDate" type="date" required />
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-card full-width">
-                <h4>Luggage Details</h4>
-                <div class="two-col">
-                  <div class="input-group">
-                    <label for="luggageType">Luggage Type</label>
-                    <select id="luggageType" name="luggageType">
-                      <option value="Suitcase">Suitcase</option>
-                      <option value="Backpack">Backpack</option>
-                      <option value="Box">Box</option>
-                      <option value="Travel Bag">Travel Bag</option>
-                      <option value="Fragile Package">Fragile Package</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
-                  <div class="input-group">
-                    <label for="numberOfBags">Number of Bags</label>
-                    <input id="numberOfBags" name="numberOfBags" type="number" min="1" value="1" required />
-                  </div>
-                  <div class="input-group">
-                    <label for="weightPerBag">Weight per Bag (kg)</label>
-                    <input id="weightPerBag" name="weightPerBag" type="number" min="1" step="0.1" value="5" required />
-                  </div>
-                  <div class="input-group">
-                    <label for="totalWeight">Total Weight (kg)</label>
-                    <input id="totalWeight" name="totalWeight" type="number" min="1" step="0.1" value="5" required />
-                  </div>
-                  <div class="input-group">
-                    <label for="length">Length (cm)</label>
-                    <input id="length" name="length" type="number" min="1" value="40" required />
-                  </div>
-                  <div class="input-group">
-                    <label for="width">Width (cm)</label>
-                    <input id="width" name="width" type="number" min="1" value="25" required />
-                  </div>
-                  <div class="input-group">
-                    <label for="height">Height (cm)</label>
-                    <input id="height" name="height" type="number" min="1" value="20" required />
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-card full-width">
-                <h4>Additional Information</h4>
-                <div class="three-col check-row">
-                  <label class="checkbox-field"><input type="checkbox" id="isFragile" /> Fragile?</label>
-                  <label class="checkbox-field"><input type="checkbox" id="hasValuableItems" /> Valuable Items?</label>
-                  <label class="checkbox-field"><input type="checkbox" id="specialHandling" /> Special Handling Required?</label>
-                </div>
-                <div class="input-group">
-                  <label for="additionalNotes">Additional Notes</label>
-                  <textarea id="additionalNotes" rows="3" placeholder="Any additional delivery instructions..."></textarea>
-                </div>
-              </div>
-
-              <div class="form-card full-width">
-                <h4>Transportation Type</h4>
-                <div class="transport-options" id="transportOptions">
-                  <label class="transport-card">
-                    <input type="radio" name="transportType" value="Economy" checked />
-                    <span class="card-header">Economy</span>
-                    <small>Affordable, 4-5 days</small>
-                  </label>
-                  <label class="transport-card">
-                    <input type="radio" name="transportType" value="Standard" />
-                    <span class="card-header">Standard</span>
-                    <small>Balanced cost, 3 days</small>
-                  </label>
-                  <label class="transport-card">
-                    <input type="radio" name="transportType" value="Express" />
-                    <span class="card-header">Express</span>
-                    <small>Faster delivery, priority</small>
-                  </label>
-                  <label class="transport-card">
-                    <input type="radio" name="transportType" value="Premium" />
-                    <span class="card-header">Premium</span>
-                    <small>Luxury handling and service</small>
-                  </label>
-                </div>
-                <div class="estimate-box" id="bookingEstimateBox">
-                  <div class="estimate-row">
-                    <span>Price</span>
-                    <strong id="bookingEstimatePrice">$0.00</strong>
-                  </div>
-                  <div class="estimate-row">
-                    <span>Delivery Time</span>
-                    <strong id="bookingEstimateTime">--</strong>
-                  </div>
-                  <div class="estimate-row">
-                    <span>Features</span>
-                    <strong id="bookingEstimateFeatures">--</strong>
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-actions full-width">
-                <button type="button" class="btn btn-secondary" id="bookingResetBtn">Reset</button>
-                <button type="submit" class="btn btn-primary">Get AI Recommendation</button>
-              </div>
-            </form>
-          </section>
-
-          <section class="page-section" id="luggageSection">
-            <div class="section-header-row">
-              <div class="section-heading">
-                <p class="eyebrow">Luggage Management</p>
-                <h3>My Luggage</h3>
-              </div>
-              <button class="btn btn-primary" id="openLuggageModalBtn">+ Add New Luggage</button>
-            </div>
-            <div id="luggageGrid" class="card-grid"></div>
-          </section>
-
-          <section class="page-section" id="bookingsSection">
-            <div class="section-heading">
-              <p class="eyebrow">Booking Management</p>
-              <h3>My Bookings</h3>
-            </div>
-            <div class="toolbar">
-              <div class="filter-pills" id="bookingFilters">
-                <button class="filter-pill active" data-filter="All">All</button>
-                <button class="filter-pill" data-filter="Pending">Pending</button>
-                <button class="filter-pill" data-filter="Confirmed">Confirmed</button>
-                <button class="filter-pill" data-filter="In Transit">In Transit</button>
-                <button class="filter-pill" data-filter="Delivered">Delivered</button>
-                <button class="filter-pill" data-filter="Cancelled">Cancelled</button>
-              </div>
-            </div>
-            <div class="table-wrap">
-              <table>
+            <div class="table-responsive">
+              <table class="data-table">
                 <thead>
                   <tr>
-                    <th>Booking ID</th>
-                    <th>Customer</th>
+                    <th>Booking #</th>
+                    <th>Route</th>
                     <th>Luggage</th>
-                    <th>Pickup</th>
-                    <th>Destination</th>
-                    <th>Booking Date</th>
-                    <th>Delivery Date</th>
-                    <th>Cost</th>
+                    <th>AI Quoted Cost</th>
+                    <th>Est. Time</th>
                     <th>Status</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
-                <tbody id="bookingsTableBody"></tbody>
+                <tbody id="custRecentBookingsTbody">
+                  <!-- Injected dynamically -->
+                </tbody>
               </table>
             </div>
-          </section>
+          </div>
+        </section>
 
-          <section class="page-section" id="trackingSection">
-            <div class="section-heading">
-              <p class="eyebrow">Tracking</p>
-              <h3>Luggage Tracking System</h3>
+        <!-- ===================================================================
+             VIEW 2: CREATE BOOKING (4-STEP GUIDED WIZARD)
+             =================================================================== -->
+        <section class="view-pane" id="view-create-booking" style="display: none;">
+          <div class="card" style="max-width: 900px; margin: 0 auto;">
+            <!-- Stepper Progress Bar -->
+            <div class="booking-stepper">
+              <div class="step-item active" data-step="1">
+                <div class="step-bubble">1</div>
+                <div class="step-label">Locations</div>
+              </div>
+              <div class="step-item" data-step="2">
+                <div class="step-bubble">2</div>
+                <div class="step-label">Luggage Details</div>
+              </div>
+              <div class="step-item" data-step="3">
+                <div class="step-bubble">3</div>
+                <div class="step-label">AI Estimate</div>
+              </div>
+              <div class="step-item" data-step="4">
+                <div class="step-bubble">4</div>
+                <div class="step-label">Confirmation</div>
+              </div>
             </div>
-            <div class="track-form-wrap">
-              <form id="trackingForm" class="inline-form">
-                <input type="text" id="trackingInput" placeholder="Enter Luggage ID / Tracking Number" required />
-                <button type="submit" class="btn btn-primary">Track</button>
-              </form>
-            </div>
-            <div id="trackingResult" class="tracking-result"></div>
-          </section>
 
-          <section class="page-section" id="assistantSection">
-            <div class="section-heading">
-              <p class="eyebrow">AI Assistant</p>
-              <h3>LuggageAI Assistant</h3>
-            </div>
-            <div class="assistant-shell">
-              <div class="chat-box" id="chatBox"></div>
-              <div class="chat-suggestions" id="chatSuggestions"></div>
-              <form id="chatForm" class="chat-form">
-                <input type="text" id="chatInput" placeholder="Ask about booking, costs, tracking..." required />
-                <button type="submit" class="btn btn-primary">Send</button>
-                <button type="button" class="btn btn-secondary" id="clearChatBtn">Clear Chat</button>
-              </form>
-            </div>
-          </section>
-
-          <section class="page-section" id="costSection">
-            <div class="section-heading">
-              <p class="eyebrow">AI-Powered Cost Estimator</p>
-              <h3>Estimate Transportation Cost</h3>
-            </div>
-            <form id="costEstimatorForm" class="form-grid">
-              <div class="form-card">
-                <div class="input-group">
-                  <label for="costPickupCity">Pickup City</label>
-                  <select id="costPickupCity">
-                    <option>Islamabad</option>
-                    <option>Lahore</option>
-                    <option>Karachi</option>
-                    <option>Peshawar</option>
-                    <option>Multan</option>
-                    <option>Rawalpindi</option>
-                    <option>Faisalabad</option>
+            <!-- Step 1: Locations -->
+            <div class="step-pane active" id="bookingStep1">
+              <h3 style="margin-bottom: 6px;">Step 1: Domestic Pickup & Destination Hubs</h3>
+              <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 24px;">Select the origin and destination domestic cities in Pakistan.</p>
+              
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label">Pickup City <span class="required-star">*</span></label>
+                  <select class="form-select" id="bookPickupCity">
+                    <option value="Islamabad" selected>Islamabad</option>
+                    <option value="Rawalpindi">Rawalpindi</option>
+                    <option value="Lahore">Lahore</option>
+                    <option value="Karachi">Karachi</option>
+                    <option value="Peshawar">Peshawar</option>
+                    <option value="Multan">Multan</option>
+                    <option value="Faisalabad">Faisalabad</option>
+                    <option value="Quetta">Quetta</option>
                   </select>
                 </div>
-                <div class="input-group">
-                  <label for="costDestinationCity">Destination City</label>
-                  <select id="costDestinationCity">
-                    <option>Karachi</option>
-                    <option>Lahore</option>
-                    <option>Islamabad</option>
-                    <option>Peshawar</option>
-                    <option>Multan</option>
-                    <option>Rawalpindi</option>
-                    <option>Faisalabad</option>
+                <div class="form-group">
+                  <label class="form-label">Destination City <span class="required-star">*</span></label>
+                  <select class="form-select" id="bookDestCity">
+                    <option value="Lahore" selected>Lahore</option>
+                    <option value="Islamabad">Islamabad</option>
+                    <option value="Rawalpindi">Rawalpindi</option>
+                    <option value="Karachi">Karachi</option>
+                    <option value="Peshawar">Peshawar</option>
+                    <option value="Multan">Multan</option>
+                    <option value="Faisalabad">Faisalabad</option>
+                    <option value="Quetta">Quetta</option>
                   </select>
                 </div>
-                <div class="input-group">
-                  <label for="costWeight">Weight (kg)</label>
-                  <input id="costWeight" type="number" min="1" value="8" />
-                </div>
-                <div class="input-group">
-                  <label for="costItemCount">Number of Luggage Items</label>
-                  <input id="costItemCount" type="number" min="1" value="2" />
-                </div>
               </div>
-              <div class="form-card">
-                <div class="input-group">
-                  <label for="costTransportType">Transportation Type</label>
-                  <select id="costTransportType">
-                    <option>Economy</option>
-                    <option>Standard</option>
-                    <option>Express</option>
-                    <option>Premium</option>
-                  </select>
-                </div>
-                <div class="input-group">
-                  <label for="costDistance">Distance (km)</label>
-                  <input id="costDistance" type="number" min="1" value="240" />
-                </div>
-                <div class="three-col check-row">
-                  <label class="checkbox-field"><input type="checkbox" id="costFragile" /> Fragile Item</label>
-                  <label class="checkbox-field"><input type="checkbox" id="costExpress" /> Express Delivery</label>
-                </div>
-                <button type="submit" class="btn btn-primary full-width">Calculate Cost</button>
-              </div>
-            </form>
-            <div id="costResult" class="result-panel"></div>
-          </section>
 
-          <section class="page-section" id="routesSection">
-            <div class="section-heading">
-              <p class="eyebrow">AI Travel / Route Optimization</p>
-              <h3>AI Optimized Route</h3>
-            </div>
-            <form id="routeForm" class="form-grid compact-form">
-              <div class="form-card">
-                <div class="input-group">
-                  <label for="routePickup">Pickup Location</label>
-                  <input id="routePickup" value="Islamabad" />
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label">Pickup Address Line <span class="required-star">*</span></label>
+                  <input type="text" class="form-input" id="bookPickupAddress" placeholder="House/Flat #, Street, Sector" value="House 12, Street 4, F-7/2" />
                 </div>
-                <div class="input-group">
-                  <label for="routeDestination">Destination</label>
-                  <input id="routeDestination" value="Karachi" />
+                <div class="form-group">
+                  <label class="form-label">Destination Address Line <span class="required-star">*</span></label>
+                  <input type="text" class="form-input" id="bookDestAddress" placeholder="House/Flat #, Street, Area" value="Plaza 5B, Main Boulevard, Gulberg III" />
                 </div>
-                <div class="input-group">
-                  <label for="routeDeadline">Delivery Deadline</label>
-                  <input id="routeDeadline" type="date" />
-                </div>
-                <div class="input-group">
-                  <label for="routeWeight">Luggage Weight (kg)</label>
-                  <input id="routeWeight" type="number" value="12" />
-                </div>
-                <div class="input-group">
-                  <label for="routePriority">Priority</label>
-                  <select id="routePriority">
-                    <option>Normal</option>
-                    <option>Urgent</option>
-                    <option>Critical</option>
-                  </select>
-                </div>
-                <button type="submit" class="btn btn-primary full-width">Optimize Route</button>
               </div>
-            </form>
-            <div id="routeResult" class="result-panel"></div>
-          </section>
 
-          <section class="page-section" id="notificationsSection">
-            <div class="section-heading">
-              <p class="eyebrow">Notifications</p>
-              <h3>Notification Center</h3>
-            </div>
-            <div class="notifications-toolbar">
-              <button class="btn btn-secondary" id="markAllReadBtn">Mark All as Read</button>
-            </div>
-            <div id="notificationsList" class="notifications-list"></div>
-          </section>
-
-          <section class="page-section" id="reportsSection">
-            <div class="section-heading">
-              <p class="eyebrow">Reports &amp; Analytics</p>
-              <h3>Professional Reports Dashboard</h3>
-            </div>
-            <div class="report-filters">
-              <button class="report-filter active" data-range="This Month">This Month</button>
-              <button class="report-filter" data-range="This Year">This Year</button>
-              <button class="report-filter" data-range="Today">Today</button>
-              <button class="report-filter" data-range="This Week">This Week</button>
-              <button class="report-filter" data-range="Custom">Custom</button>
-            </div>
-            <div class="report-grid">
-              <div class="stat-badges" id="reportStatBadges"></div>
-              <div class="chart-panel">
-                <canvas id="monthlyChart"></canvas>
-              </div>
-              <div class="chart-panel">
-                <canvas id="typesChart"></canvas>
-              </div>
-              <div class="chart-panel">
-                <canvas id="statusChart"></canvas>
-              </div>
-              <div class="chart-panel wide">
-                <canvas id="revenueChart"></canvas>
-              </div>
-              <div class="chart-panel">
-                <canvas id="destinationsChart"></canvas>
-              </div>
-            </div>
-          </section>
-
-          <section class="page-section" id="partnersSection">
-            <div class="section-heading">
-              <p class="eyebrow">Transportation Partners</p>
-              <h3>Trusted Delivery Partners</h3>
-            </div>
-            <div class="toolbar">
-              <div class="filter-pills" id="partnerFilters">
-                <button class="partner-filter active" data-partner-filter="All">All</button>
-                <button class="partner-filter" data-partner-filter="Cheapest">Cheapest</button>
-                <button class="partner-filter" data-partner-filter="Fastest">Fastest</button>
-                <button class="partner-filter" data-partner-filter="Highest Rated">Highest Rated</button>
-                <button class="partner-filter" data-partner-filter="Available Now">Available Now</button>
-              </div>
-            </div>
-            <div id="partnersGrid" class="card-grid partners-grid"></div>
-          </section>
-
-          <section class="page-section" id="profileSection">
-            <div class="section-heading">
-              <p class="eyebrow">Profile</p>
-              <h3>Profile Management</h3>
-            </div>
-            <form id="profileForm" class="form-grid">
-              <div class="form-card full-width">
-                <div class="profile-card-header">
-                  <div class="avatar large" id="profileAvatar">AK</div>
+              <!-- Live Route Distance Preview Card -->
+              <div class="card" id="step1DistancePreviewCard" style="background: var(--bg-surface-secondary); margin-top: 8px; border: 1px dashed var(--brand-primary);">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
                   <div>
-                    <h4>Profile Picture</h4>
-                    <input type="file" id="profilePic" accept="image/*" />
+                    <span class="badge badge-confirmed" id="step1CorridorBadge"><i class="fa-solid fa-route"></i> Motorway M-2 Corridor</span>
+                    <h4 style="margin-top: 4px;" id="step1RouteTitle">Islamabad → Lahore</h4>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);" id="step1ProviderInfo">Provider: HighwayMatrixDistanceProvider (Pakistan NHA Network)</p>
+                  </div>
+                  <div style="text-align: right;">
+                    <div style="font-size: 1.5rem; font-weight: 800; color: var(--brand-primary);" id="step1DistanceValue">380 km</div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);" id="step1DrivingTime">Est. Highway Driving: 4.0 Hours</span>
                   </div>
                 </div>
               </div>
-              <div class="form-card">
-                <div class="input-group">
-                  <label for="profileFullName">Full Name</label>
-                  <input id="profileFullName" type="text" required />
-                </div>
-                <div class="input-group">
-                  <label for="profileEmail">Email</label>
-                  <input id="profileEmail" type="email" required />
-                </div>
-                <div class="input-group">
-                  <label for="profilePhone">Phone</label>
-                  <input id="profilePhone" type="tel" required />
-                </div>
-              </div>
-              <div class="form-card">
-                <div class="input-group">
-                  <label for="profileAddress">Address</label>
-                  <input id="profileAddress" type="text" />
-                </div>
-                <div class="input-group">
-                  <label for="profileCity">City</label>
-                  <input id="profileCity" type="text" />
-                </div>
-                <div class="input-group">
-                  <label for="profileCountry">Country</label>
-                  <input id="profileCountry" type="text" />
-                </div>
-              </div>
-              <div class="form-actions full-width">
-                <button type="button" class="btn btn-secondary" id="profileEditBtn">Edit Profile</button>
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-                <button type="button" class="btn btn-secondary" id="changePasswordBtn">Change Password</button>
-              </div>
-            </form>
-          </section>
 
-          <section class="page-section" id="settingsSection">
-            <div class="section-heading">
-              <p class="eyebrow">Settings</p>
-              <h3>Preferences</h3>
+              <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
+                <button class="btn btn-primary" id="step1NextBtn">Continue to Luggage Details <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
             </div>
-            <form id="settingsForm" class="form-grid">
-              <div class="form-card">
-                <h4>General</h4>
-                <div class="input-group">
-                  <label for="languageSelect">Language</label>
-                  <select id="languageSelect">
-                    <option>English</option>
-                    <option>Urdu</option>
-                    <option>French</option>
+
+            <!-- Step 2: Luggage Details -->
+            <div class="step-pane" id="bookingStep2">
+              <h3 style="margin-bottom: 6px;">Step 2: Luggage Specifications & Dimensions</h3>
+              <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 24px;">Provide baggage specifications. Our engine will calculate volumetric weight and size class.</p>
+
+              <div class="form-grid-3">
+                <div class="form-group">
+                  <label class="form-label">Luggage Category <span class="required-star">*</span></label>
+                  <select class="form-select" id="bookLuggageType">
+                    <option value="Suitcase" selected>Suitcase</option>
+                    <option value="Backpack">Backpack</option>
+                    <option value="Cardboard Box">Cardboard Box</option>
+                    <option value="Travel Bag">Travel Bag</option>
+                    <option value="Fragile Item">Fragile Item</option>
+                    <option value="Oversized Cargo">Oversized Cargo</option>
+                    <option value="Document Pouch">Document Pouch</option>
+                    <option value="Other">Other</option>
                   </select>
                 </div>
-                <div class="input-group">
-                  <label for="currencySelect">Currency</label>
-                  <select id="currencySelect">
-                    <option>USD</option>
-                    <option>PKR</option>
-                    <option>EUR</option>
-                  </select>
+                <div class="form-group">
+                  <label class="form-label">Gross Weight (kg) <span class="required-star">*</span></label>
+                  <input type="number" class="form-input" id="bookLuggageWeight" min="1" max="200" value="18" />
                 </div>
-                <div class="input-group">
-                  <label for="timezoneSelect">Time Zone</label>
-                  <select id="timezoneSelect">
-                    <option>UTC</option>
-                    <option>PKT (UTC+5)</option>
-                    <option>EST (UTC-5)</option>
-                  </select>
+                <div class="form-group">
+                  <label class="form-label">Number of Bags <span class="required-star">*</span></label>
+                  <input type="number" class="form-input" id="bookBagCount" min="1" max="20" value="1" />
                 </div>
               </div>
-              <div class="form-card">
-                <h4>Notifications</h4>
-                <label class="checkbox-field"><input type="checkbox" id="emailNotifications" checked /> Email Notifications</label>
-                <label class="checkbox-field"><input type="checkbox" id="smsNotifications" checked /> SMS Notifications</label>
-                <label class="checkbox-field"><input type="checkbox" id="deliveryNotifications" checked /> Delivery Notifications</label>
-                <label class="checkbox-field"><input type="checkbox" id="aiRecommendations" checked /> AI Recommendations</label>
-              </div>
-              <div class="form-card">
-                <h4>Appearance</h4>
-                <label class="checkbox-field"><input type="checkbox" id="lightMode" checked /> Light Mode</label>
-                <label class="checkbox-field"><input type="checkbox" id="darkMode" /> Dark Mode</label>
-                <label class="checkbox-field"><input type="checkbox" id="compactMode" /> Compact Mode</label>
-              </div>
-              <div class="form-actions full-width">
-                <button type="submit" class="btn btn-primary">Save Preferences</button>
-              </div>
-            </form>
-          </section>
 
-          <section class="page-section" id="supportSection">
-            <div class="section-heading">
-              <p class="eyebrow">Help &amp; Support</p>
-              <h3>Support Center</h3>
-            </div>
-            <div class="support-layout">
-              <div class="support-pane">
-                <h4>FAQ</h4>
-                <div class="faq-list" id="faqList"></div>
+              <div class="form-grid-3">
+                <div class="form-group">
+                  <label class="form-label">Length (cm)</label>
+                  <input type="number" class="form-input" id="bookDimL" value="70" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Width (cm)</label>
+                  <input type="number" class="form-input" id="bookDimW" value="45" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Height (cm)</label>
+                  <input type="number" class="form-input" id="bookDimH" value="28" />
+                </div>
               </div>
-              <div class="support-pane">
-                <h4>Contact Support</h4>
-                <form id="supportForm" class="form-grid">
-                  <div class="input-group">
-                    <label for="supportName">Name</label>
-                    <input id="supportName" type="text" required />
-                  </div>
-                  <div class="input-group">
-                    <label for="supportEmail">Email</label>
-                    <input id="supportEmail" type="email" required />
-                  </div>
-                  <div class="input-group">
-                    <label for="supportBookingId">Booking ID</label>
-                    <input id="supportBookingId" type="text" />
-                  </div>
-                  <div class="input-group">
-                    <label for="supportIssueType">Issue Type</label>
-                    <select id="supportIssueType">
-                      <option>Booking Issue</option>
-                      <option>Tracking Issue</option>
-                      <option>Payment Concern</option>
-                      <option>Delivery Delay</option>
-                      <option>General Inquiry</option>
-                    </select>
-                  </div>
-                  <div class="input-group full-width">
-                    <label for="supportMessage">Message</label>
-                    <textarea id="supportMessage" rows="4" required></textarea>
-                  </div>
-                  <div class="input-group full-width">
-                    <label for="supportAttachment">Attachment UI</label>
-                    <input id="supportAttachment" type="file" />
-                  </div>
-                  <div class="form-actions full-width">
-                    <button type="submit" class="btn btn-primary">Submit Support Request</button>
-                  </div>
-                </form>
+
+              <div class="form-group">
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer;">
+                  <input type="checkbox" id="bookIsFragile" /> Contains Fragile / Glass / High-Value Items (Special White-Glove Cushioning)
+                </label>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; margin-top: 24px;">
+                <button class="btn btn-secondary" id="step2BackBtn"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                <button class="btn btn-primary" id="step2NextBtn">Generate Supervised AI Quote <i class="fa-solid fa-brain"></i></button>
               </div>
             </div>
 
-            <div class="support-pane feedback-pane">
-              <h4>Feedback</h4>
-              <form id="feedbackForm" class="inline-form">
-                <input type="text" id="feedbackInput" placeholder="Share your feedback..." required />
-                <button type="submit" class="btn btn-primary">Send Feedback</button>
-              </form>
-            </div>
-          </section>
-        </main>
-      </div>
-    </div>
+            <!-- Step 3: AI Estimate & Tier Selection -->
+            <div class="step-pane" id="bookingStep3">
+              <h3 style="margin-bottom: 6px;">Step 3: Supervised AI Prediction & Transport Tier</h3>
+              <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 20px;">AI regression output based on route distance, weight, volumetric size, and domestic highway speed.</p>
 
-    <div class="modal-overlay" id="luggageModal">
-      <div class="modal-card large-modal">
-        <button class="modal-close" data-close-modal="luggageModal">×</button>
-        <h3>Add New Luggage</h3>
-        <form id="luggageForm" class="form-grid">
-          <div class="form-card full-width">
-            <div class="two-col">
-              <div class="input-group">
-                <label for="newLuggageType">Luggage Type</label>
-                <select id="newLuggageType">
-                  <option>Suitcase</option>
-                  <option>Backpack</option>
-                  <option>Box</option>
-                  <option>Travel Bag</option>
-                  <option>Fragile Package</option>
-                  <option>Other</option>
-                </select>
+              <div class="ai-prediction-card">
+                <div class="ai-badge-chip"><i class="fa-solid fa-robot"></i> Regression Model: Random Forest (v1.4.2)</div>
+                <div class="ai-estimate-grid">
+                  <div class="ai-metric-box">
+                    <div class="label">Estimated Fair Cost</div>
+                    <div class="value" id="aiEstimatedCostDisplay">PKR 1,950</div>
+                    <p style="font-size: 0.75rem; color: #93c5fd; margin-top: 4px;">Regression Cost Estimate</p>
+                  </div>
+                  <div class="ai-metric-box">
+                    <div class="label">Estimated Delivery Time</div>
+                    <div class="value" id="aiEstimatedTimeDisplay">10.0 hrs</div>
+                    <p style="font-size: 0.75rem; color: #93c5fd; margin-top: 4px;">Highway Speed Prediction</p>
+                  </div>
+                  <div class="ai-metric-box">
+                    <div class="label">Calculated Route Distance</div>
+                    <div class="value" id="aiDistanceDisplay">380 km</div>
+                    <p style="font-size: 0.75rem; color: #93c5fd; margin-top: 4px;">Domestic Highway Corridor</p>
+                  </div>
+                </div>
+
+                <div class="ai-disclaimer-bar">
+                  <i class="fa-solid fa-circle-exclamation"></i>
+                  <span>AI Notice: Prices and times are machine-learning statistical regression estimates based on historical logistics corridors.</span>
+                </div>
               </div>
-              <div class="input-group">
-                <label for="newLuggageWeight">Weight (kg)</label>
-                <input id="newLuggageWeight" type="number" min="1" value="5" required />
+
+              <div class="form-group" style="margin-top: 20px;">
+                <label class="form-label">Select Transport Tier</label>
+                <div class="form-grid-3">
+                  <label class="card" style="cursor: pointer; border: 2px solid var(--border-color);" id="tierOptStandard">
+                    <input type="radio" name="transportTier" value="Standard (Ground Transport)" checked />
+                    <strong style="display: block; margin-top: 6px;">Standard Ground</strong>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Baseline scheduled highway transit</span>
+                  </label>
+                  <label class="card" style="cursor: pointer; border: 2px solid var(--border-color);" id="tierOptExpress">
+                    <input type="radio" name="transportTier" value="Express (Priority Dispatch)" />
+                    <strong style="display: block; margin-top: 6px;">Express Priority (+35%)</strong>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Priority direct van dispatch</span>
+                  </label>
+                  <label class="card" style="cursor: pointer; border: 2px solid var(--border-color);" id="tierOptPremium">
+                    <input type="radio" name="transportTier" value="Premium (White-Glove & Dedicated)" />
+                    <strong style="display: block; margin-top: 6px;">Premium White-Glove (+70%)</strong>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Dedicated cushioned handling</span>
+                  </label>
+                </div>
               </div>
-              <div class="input-group">
-                <label for="newLuggageDimensions">Dimensions</label>
-                <input id="newLuggageDimensions" type="text" value="40x25x20 cm" required />
+
+              <div style="display: flex; justify-content: space-between; margin-top: 24px;">
+                <button class="btn btn-secondary" id="step3BackBtn"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                <button class="btn btn-primary" id="step3NextBtn">Proceed to Summary <i class="fa-solid fa-arrow-right"></i></button>
               </div>
-              <div class="input-group">
-                <label for="newLuggageStatus">Current Status</label>
-                <select id="newLuggageStatus">
-                  <option>Ready for Pickup</option>
-                  <option>In Transit</option>
-                  <option>Delayed</option>
-                  <option>Delivered</option>
-                </select>
+            </div>
+
+            <!-- Step 4: Summary & Confirmation -->
+            <div class="step-pane" id="bookingStep4">
+              <h3 style="margin-bottom: 6px;">Step 4: Review & Confirm Booking</h3>
+              <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 24px;">Please review the complete logistics and AI estimation summary before confirming.</p>
+
+              <div class="card" style="background: var(--bg-surface-secondary); margin-bottom: 24px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 0.9rem;">
+                  <div>
+                    <span style="color: var(--text-muted); font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">PICKUP ORIGIN</span>
+                    <p style="font-weight: 700; margin-top: 2px;" id="confPickupSummary">Islamabad (House 12, Street 4, F-7/2)</p>
+                  </div>
+                  <div>
+                    <span style="color: var(--text-muted); font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">DESTINATION</span>
+                    <p style="font-weight: 700; margin-top: 2px;" id="confDestSummary">Lahore (Plaza 5B, Main Blvd, Gulberg III)</p>
+                  </div>
+                  <div>
+                    <span style="color: var(--text-muted); font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">ROUTE & CORRIDOR</span>
+                    <p style="font-weight: 700; margin-top: 2px;" id="confRouteSummary">380 km (Motorway M-2 Corridor)</p>
+                  </div>
+                  <div>
+                    <span style="color: var(--text-muted); font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">LUGGAGE & SIZE</span>
+                    <p style="font-weight: 700; margin-top: 2px;" id="confLuggageSummary">1x Suitcase (18 kg, Large)</p>
+                  </div>
+                  <div>
+                    <span style="color: var(--text-muted); font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">AI ESTIMATED FARE</span>
+                    <p style="font-weight: 800; font-size: 1.35rem; color: var(--brand-primary); margin-top: 2px;" id="confCostSummary">PKR 1,950</p>
+                  </div>
+                  <div>
+                    <span style="color: var(--text-muted); font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">AI ESTIMATED DELIVERY TIME</span>
+                    <p style="font-weight: 700; font-size: 1.1rem; margin-top: 2px;" id="confTimeSummary">10.0 Hours</p>
+                  </div>
+                </div>
               </div>
-              <div class="input-group">
-                <label for="newLuggageCurrentLocation">Current Location</label>
-                <input id="newLuggageCurrentLocation" type="text" value="Islamabad" required />
+
+              <div class="form-group">
+                <label class="form-label">Special Delivery Notes (Optional)</label>
+                <textarea class="form-textarea" id="bookSpecialNotes" rows="2" placeholder="e.g. Call upon arrival at gate or security checkpoint."></textarea>
               </div>
-              <div class="input-group">
-                <label for="newLuggageDestination">Destination</label>
-                <input id="newLuggageDestination" type="text" value="Lahore" required />
-              </div>
-              <div class="input-group">
-                <label for="newLuggageBookingId">Booking ID</label>
-                <input id="newLuggageBookingId" type="text" required />
-              </div>
-              <div class="input-group">
-                <label for="newLuggageDeliveryDate">Delivery Date</label>
-                <input id="newLuggageDeliveryDate" type="date" required />
+
+              <div style="display: flex; justify-content: space-between; margin-top: 24px;">
+                <button class="btn btn-secondary" id="step4BackBtn"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                <button class="btn btn-success btn-lg" id="confirmBookingBtn"><i class="fa-solid fa-check"></i> Confirm & Book Luggage</button>
               </div>
             </div>
           </div>
-          <div class="form-actions full-width">
-            <button type="button" class="btn btn-secondary" data-close-modal="luggageModal">Cancel</button>
-            <button type="submit" class="btn btn-primary">Save Luggage</button>
+        </section>
+
+        <!-- ===================================================================
+             VIEW 3: MY BOOKINGS
+             =================================================================== -->
+        <section class="view-pane" id="view-my-bookings" style="display: none;">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">My Luggage Bookings</h3>
+                <p class="card-subtitle">Track and review all historical and active shipments</p>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn btn-primary btn-sm" id="myBookingsNewBtn"><i class="fa-solid fa-plus"></i> New Booking</button>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Booking #</th>
+                    <th>Route</th>
+                    <th>Distance</th>
+                    <th>Luggage Items</th>
+                    <th>AI Quoted Fare</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="myBookingsFullTbody">
+                  <!-- Injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             VIEW 4: BOOKING TRACKING & STATUS TIMELINE (PHASE 8)
+             =================================================================== -->
+        <section class="view-pane" id="view-booking-tracking" style="display: none;">
+          <!-- Reference Search Bar -->
+          <div class="card" style="margin-bottom: 20px; padding: 14px 20px;">
+            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+              <div style="flex: 1; min-width: 260px;">
+                <div class="input-with-icon">
+                  <i class="fa-solid fa-barcode"></i>
+                  <input type="text" class="form-input" id="trackSearchRefInput" placeholder="Enter Booking Reference (e.g. LUG-2026-XXXXXX or BK-2026-001)..." />
+                </div>
+              </div>
+              <button class="btn btn-primary" id="trackSearchRefBtn"><i class="fa-solid fa-magnifying-glass"></i> Track Shipment</button>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 24px;">
+            <!-- Left: Visual Milestone Timeline & Status History Table -->
+            <div>
+              <div class="card" style="margin-bottom: 24px;">
+                <div class="card-header">
+                  <div>
+                    <h3 class="card-title" id="trackHeaderNumber">Trip Tracking: BK-2026-001</h3>
+                    <p class="card-subtitle" id="trackHeaderRoute">Islamabad → Karachi (1,410 km)</p>
+                  </div>
+                  <span class="badge badge-in-transit badge-pulse" id="trackHeaderBadge">In Transit</span>
+                </div>
+                
+                <!-- Timeline Stepper component -->
+                <div class="tracking-timeline" id="trackingTimelineContainer">
+                  <!-- Injected dynamically -->
+                </div>
+              </div>
+
+              <!-- Status History Audit Trail Table -->
+              <div class="card">
+                <div class="card-header">
+                  <div>
+                    <h3 class="card-title">Booking Status Audit Trail</h3>
+                    <p class="card-subtitle">Verifiable log of every status transition and event timestamp</p>
+                  </div>
+                </div>
+                <div class="table-responsive">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Timestamp</th>
+                        <th>Transition</th>
+                        <th>Actor</th>
+                        <th>Location & Notes</th>
+                      </tr>
+                    </thead>
+                    <tbody id="trackStatusHistoryTbody">
+                      <!-- Injected dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Driver, Luggage & AI Estimation Cards -->
+            <div>
+              <!-- Assigned Driver Card -->
+              <div class="card" style="margin-bottom: 24px;">
+                <h4 style="margin-bottom: 14px;"><i class="fa-solid fa-truck"></i> Assigned Courier Driver</h4>
+                <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
+                  <div class="avatar-circle" style="background: linear-gradient(135deg, #10b981, #06b6d4);" id="trackDriverAvatar">BT</div>
+                  <div>
+                    <strong id="trackDriverName" style="font-size: 1.05rem;">Bilal Tariq</strong>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);" id="trackDriverVehicle">Toyota HiAce Cargo (ICT-LE-4589)</div>
+                  </div>
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px;">
+                  <div><i class="fa-solid fa-star" style="color: #f59e0b;"></i> Driver Rating: <strong id="trackDriverRating">4.88 / 5.0</strong></div>
+                  <div><i class="fa-solid fa-phone"></i> Contact Phone: <strong id="trackDriverPhone">+92 345 9876543</strong></div>
+                  <div><i class="fa-solid fa-location-dot"></i> Hub Base: <strong id="trackDriverCity">Islamabad</strong></div>
+                </div>
+              </div>
+
+              <!-- Luggage Specifications Card -->
+              <div class="card" style="margin-bottom: 24px;">
+                <h4 style="margin-bottom: 14px;"><i class="fa-solid fa-suitcase"></i> Luggage Specifications</h4>
+                <div style="font-size: 0.875rem; display: flex; flex-direction: column; gap: 10px;">
+                  <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-muted);">Luggage Type:</span>
+                    <strong id="trackLuggageType">Suitcase</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-muted);">Weight & Quantity:</span>
+                    <strong id="trackLuggageWeight">18 kg (1 Bag)</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-muted);">Service Tier:</span>
+                    <span class="badge badge-confirmed" id="trackTransportTier">Standard Ground</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-muted);">Fragility Protection:</span>
+                    <span id="trackFragileBadge" class="badge badge-pending">Standard</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- AI Estimation & Fare Breakdown Card -->
+              <div class="card">
+                <h4 style="margin-bottom: 14px;"><i class="fa-solid fa-brain"></i> AI Estimation Breakdown</h4>
+                <div style="font-size: 0.875rem; display: flex; flex-direction: column; gap: 10px;">
+                  <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-muted);">AI Quoted Fare:</span>
+                    <strong id="trackQuotedCost" style="color: var(--brand-primary); font-size: 1.15rem;">PKR 4,850</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-muted);">Est. Transit Time:</span>
+                    <strong id="trackEstTime">32.5 Hours</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-muted);">Confidence Score:</span>
+                    <span class="badge badge-confirmed" id="trackConfidence">94.2%</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-muted);">Model Engine:</span>
+                    <span style="font-family: monospace; font-size: 0.75rem;" id="trackModelEngine">v2.1-rf-domestic</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             VIEW 5: MY LUGGAGE CATALOG
+             =================================================================== -->
+        <section class="view-pane" id="view-my-luggage" style="display: none;">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Saved Luggage Items</h3>
+                <p class="card-subtitle">Manage your registered baggage pieces and dimensions</p>
+              </div>
+              <button class="btn btn-primary btn-sm" id="addNewLuggageBtn"><i class="fa-solid fa-plus"></i> Register New Item</button>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Tag ID</th>
+                    <th>Category</th>
+                    <th>Weight</th>
+                    <th>Dimensions (L×W×H)</th>
+                    <th>Volume</th>
+                    <th>Size Class</th>
+                    <th>Fragile</th>
+                  </tr>
+                </thead>
+                <tbody id="myLuggageTbody">
+                  <!-- Injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             VIEW 6: CUSTOMER PROFILE & PASSWORD MANAGEMENT
+             =================================================================== -->
+        <section class="view-pane" id="view-customer-profile" style="display: none;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 1000px; margin: 0 auto;">
+            <!-- Profile Info Form -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Personal Profile</h3>
+                <span class="badge badge-confirmed" id="profBadgeRole">Customer</span>
+              </div>
+              <form id="customerProfileForm">
+                <div class="form-group">
+                  <label class="form-label">Full Name</label>
+                  <input type="text" class="form-input" id="profFullName" value="Ali Khan" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Email Address (Read-Only)</label>
+                  <input type="email" class="form-input" id="profEmail" value="customer@smartluggage.pk" disabled />
+                </div>
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="text" class="form-input" id="profPhone" value="+92 300 1234567" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">City</label>
+                    <input type="text" class="form-input" id="profCity" value="Islamabad" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Default Address</label>
+                  <input type="text" class="form-input" id="profAddress" value="Sector F-7/2, Street 14, House 22" />
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save Profile Details</button>
+              </form>
+            </div>
+
+            <!-- Password Change Card -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Change Password</h3>
+                <span class="badge badge-pending"><i class="fa-solid fa-key"></i> Security</span>
+              </div>
+              <form id="changePasswordForm">
+                <div class="form-group">
+                  <label class="form-label">Current Password</label>
+                  <input type="password" class="form-input" id="pwdCurrent" placeholder="Enter current password" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">New Password (Min. 6 characters)</label>
+                  <input type="password" class="form-input" id="pwdNew" placeholder="Enter new secure password" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Confirm New Password</label>
+                  <input type="password" class="form-input" id="pwdConfirm" placeholder="Repeat new password" required />
+                </div>
+                <button type="submit" class="btn btn-secondary" style="margin-top: 8px;"><i class="fa-solid fa-shield-halved"></i> Update Password</button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             VIEW 7: CUSTOMER FEEDBACK & RATING (PHASE 9)
+             =================================================================== -->
+        <section class="view-pane" id="view-feedback" style="display: none;">
+          <div style="display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 24px; max-width: 1100px; margin: 0 auto;">
+            <!-- Left: Leave a Review Form -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Rate Completed Luggage Delivery</h3>
+                  <p class="card-subtitle">Share your courier handling & AI accuracy experience</p>
+                </div>
+                <span class="badge badge-confirmed"><i class="fa-solid fa-star"></i> Verified Feedback</span>
+              </div>
+
+              <!-- Unreviewed Bookings Alert / Notice if none -->
+              <div id="feedbackNoEligibleAlert" class="empty-state-box" style="display: none; padding: 24px;">
+                <i class="fa-solid fa-clipboard-check empty-state-icon" style="color: var(--brand-primary); font-size: 2.2rem;"></i>
+                <h4 style="margin-bottom: 6px;">All Completed Deliveries Reviewed!</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">You have no unreviewed delivered bookings at this time. Feedback can only be submitted once per completed shipment.</p>
+                <button class="btn btn-secondary btn-sm" onclick="window.app.navigate('view-my-bookings')"><i class="fa-solid fa-boxes-stacked"></i> View My Bookings</button>
+              </div>
+
+              <form id="customerFeedbackForm">
+                <div class="form-group">
+                  <label class="form-label">Select Delivered Shipment <span class="required-star">*</span></label>
+                  <select class="form-select" id="feedbackBookingSelect" required>
+                    <!-- Injected dynamically -->
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Overall Rating <span class="required-star">*</span></label>
+                  <div class="star-rating-picker" id="feedbackStarPicker">
+                    <i class="fa-solid fa-star selected" data-star="1"></i>
+                    <i class="fa-solid fa-star selected" data-star="2"></i>
+                    <i class="fa-solid fa-star selected" data-star="3"></i>
+                    <i class="fa-solid fa-star selected" data-star="4"></i>
+                    <i class="fa-solid fa-star selected" data-star="5"></i>
+                    <span class="star-label-badge" id="feedbackStarLabel">5.0 ★ Exceptional</span>
+                  </div>
+                  <input type="hidden" id="feedbackRatingValue" value="5" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Key Service Highlights (Click to select)</label>
+                  <div class="aspect-tags-group" id="feedbackTagsContainer">
+                    <button type="button" class="aspect-tag-btn active" data-tag="Safe Handling"><i class="fa-solid fa-shield-halved"></i> Safe Handling</button>
+                    <button type="button" class="aspect-tag-btn active" data-tag="On-Time Delivery"><i class="fa-solid fa-clock"></i> On-Time Delivery</button>
+                    <button type="button" class="aspect-tag-btn" data-tag="Polite Courier"><i class="fa-solid fa-user-tie"></i> Polite Courier</button>
+                    <button type="button" class="aspect-tag-btn" data-tag="Accurate AI Fare"><i class="fa-solid fa-calculator"></i> Accurate AI Fare</button>
+                    <button type="button" class="aspect-tag-btn" data-tag="Careful Loading"><i class="fa-solid fa-box-open"></i> Careful Loading</button>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Your Review & Comments</label>
+                  <textarea class="form-textarea" id="feedbackCommentInput" rows="3" placeholder="Tell us about the courier punctuality, luggage safety, and overall service..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-paper-plane"></i> Submit Verified Review</button>
+              </form>
+            </div>
+
+            <!-- Right: My Submitted Reviews History -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">My Review History</h3>
+                  <p class="card-subtitle">Your past ratings and feedback submissions</p>
+                </div>
+              </div>
+              <div id="customerPastReviewsContainer">
+                <!-- Injected dynamically -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             VIEW 8: DRIVER DASHBOARD & ACTIVE DISPATCHES
+             =================================================================== -->
+        <section class="view-pane" id="view-driver-dashboard" style="display: none;">
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Driver Status</div>
+                <div class="stat-value" style="font-size: 1.35rem; color: #10b981;">On Duty / Available</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-circle"></i> Ready for dispatch</div>
+              </div>
+              <div class="stat-icon green"><i class="fa-solid fa-truck"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Assigned Trips</div>
+                <div class="stat-value" id="driverTripsCount">2</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-road"></i> In Transit & Assigned</div>
+              </div>
+              <div class="stat-icon blue"><i class="fa-solid fa-route"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Lifetime Rating</div>
+                <div class="stat-value">4.88 ★</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-thumbs-up"></i> 142 Completed Trips</div>
+              </div>
+              <div class="stat-icon orange"><i class="fa-solid fa-star"></i></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Driver Assigned Trips & Workflow Actions</h3>
+                <p class="card-subtitle">Advance booking status through the state machine</p>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Booking #</th>
+                    <th>Customer</th>
+                    <th>Route</th>
+                    <th>Luggage</th>
+                    <th>Current Status</th>
+                    <th>Workflow Action</th>
+                  </tr>
+                </thead>
+                <tbody id="driverAssignedTripsTbody">
+                  <!-- Injected dynamically with action buttons -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             VIEW 9: ADMIN DASHBOARD & COMMAND CENTER (PHASE 10)
+             =================================================================== -->
+        <section class="view-pane" id="view-admin-dashboard" style="display: none;">
+          <!-- Comprehensive KPI Overview Grid -->
+          <div class="stat-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Total Customers</div>
+                <div class="stat-value" id="admStatTotalCustomers">0</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-users"></i> Registered Accounts</div>
+              </div>
+              <div class="stat-icon blue"><i class="fa-solid fa-user-group"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Fleet Drivers</div>
+                <div class="stat-value" id="admStatTotalDrivers">0</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-truck"></i> <span id="admStatActiveDrivers">0</span> Active Online</div>
+              </div>
+              <div class="stat-icon purple"><i class="fa-solid fa-van-shuttle"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Total Bookings</div>
+                <div class="stat-value" id="admStatTotalBookings">0</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-boxes-stacked"></i> Platform Volume</div>
+              </div>
+              <div class="stat-icon orange"><i class="fa-solid fa-box-archive"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">In-Transit Shipments</div>
+                <div class="stat-value" id="admStatInTransit">0</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-truck-fast"></i> On Highway Corridors</div>
+              </div>
+              <div class="stat-icon blue"><i class="fa-solid fa-road"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Delivered Shipments</div>
+                <div class="stat-value" id="admStatDelivered">0</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-circle-check"></i> Safely Completed</div>
+              </div>
+              <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Total Volume Revenue</div>
+                <div class="stat-value" id="admStatRevenue">PKR 0</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-money-bill-trend-up"></i> Quoted Fare Volume</div>
+              </div>
+              <div class="stat-icon green"><i class="fa-solid fa-receipt"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Avg. Transportation Cost</div>
+                <div class="stat-value" id="admStatAvgCost">PKR 0</div>
+                <div class="stat-trend neutral"><i class="fa-solid fa-brain"></i> AI Predicted Baseline</div>
+              </div>
+              <div class="stat-icon orange"><i class="fa-solid fa-calculator"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Avg. Delivery Time</div>
+                <div class="stat-value" id="admStatAvgTime">0.0 hrs</div>
+                <div class="stat-trend neutral"><i class="fa-solid fa-clock"></i> AI Predicted Transit</div>
+              </div>
+              <div class="stat-icon purple"><i class="fa-solid fa-hourglass-half"></i></div>
+            </div>
+          </div>
+
+          <!-- Charts & Visual Performance Grid -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+            <!-- Status Distribution Breakdown Chart -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Bookings Lifecycle Status Distribution</h3>
+                  <p class="card-subtitle">Real-time breakdown of shipments across state machine stages</p>
+                </div>
+              </div>
+              <div id="admDashStatusDistribution" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Injected dynamically -->
+              </div>
+            </div>
+
+            <!-- Top Corridor Volume & Revenue Ranking -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Domestic Corridors Volume & Logistics Traffic</h3>
+                  <p class="card-subtitle">Performance breakdown across major domestic highway routes</p>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Corridor Route</th>
+                      <th>Bookings</th>
+                      <th>Total Fare Volume</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admDashTopCorridorsTbody">
+                    <!-- Injected dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Admin Quick Dispatch Table -->
+          <div class="card">
+            <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
+              <div>
+                <h3 class="card-title">Quick Fleet Dispatch Console</h3>
+                <p class="card-subtitle">Manage immediate courier assignments for confirmed bookings</p>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="window.app.navigate('view-admin-bookings')"><i class="fa-solid fa-boxes-stacked"></i> View Full Bookings Directory</button>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Booking #</th>
+                    <th>Customer</th>
+                    <th>Route & Dist</th>
+                    <th>Quoted Fare</th>
+                    <th>Assigned Driver</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admBookingsTbody">
+                  <!-- Injected dynamically with driver assign modals -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             VIEW 10: ADMIN BOOKINGS MANAGEMENT (PHASE 10)
+             =================================================================== -->
+        <section class="view-pane" id="view-admin-bookings" style="display: none;">
+          <div class="card">
+            <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
+              <div>
+                <h3 class="card-title">All System Bookings Management</h3>
+                <p class="card-subtitle">Search, filter, inspect details, and dispatch couriers across all shipments</p>
+              </div>
+            </div>
+
+            <!-- Filter & Search Toolbar -->
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; padding: 14px; background: var(--bg-surface-secondary); border-radius: var(--radius-md);">
+              <div style="flex: 2; min-width: 220px;">
+                <div class="input-with-icon">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input type="text" class="form-input" id="adminBookingsSearchInput" placeholder="Search by Booking # (e.g. LUG-2026-), customer, driver, or city..." />
+                </div>
+              </div>
+              <div style="flex: 1; min-width: 140px;">
+                <select class="form-select" id="adminBookingsStatusFilter">
+                  <option value="ALL">All Statuses</option>
+                  <option value="CONFIRMED">CONFIRMED</option>
+                  <option value="DRIVER_ASSIGNED">DRIVER_ASSIGNED</option>
+                  <option value="PICKED_UP">PICKED_UP</option>
+                  <option value="IN_TRANSIT">IN_TRANSIT</option>
+                  <option value="DELIVERED">DELIVERED</option>
+                  <option value="CANCELLED">CANCELLED</option>
+                  <option value="PENDING">PENDING</option>
+                </select>
+              </div>
+              <div style="flex: 1; min-width: 130px;">
+                <input type="date" class="form-input" id="adminBookingsDateFrom" title="From Date" />
+              </div>
+              <div style="flex: 1; min-width: 130px;">
+                <input type="date" class="form-input" id="adminBookingsDateTo" title="To Date" />
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Booking #</th>
+                    <th>Customer</th>
+                    <th>Route</th>
+                    <th>Distance & Luggage</th>
+                    <th>Fare (PKR)</th>
+                    <th>Courier Driver</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminAllBookingsTbody">
+                  <!-- Injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+          <!-- AI Model Performance & Feature Importance -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Supervised ML Model Diagnostics</h3>
+                <p class="card-subtitle">Feature weights and regression inference audit</p>
+              </div>
+              <span class="badge badge-confirmed">Random Forest Regressor</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+              <div style="padding: 16px; background: var(--bg-surface-secondary); border-radius: var(--radius-md);">
+                <span style="font-size: 0.8rem; color: var(--text-muted);">PRIMARY FEATURE 1</span>
+                <p style="font-weight: 700; font-size: 1.1rem; margin-top: 4px;">Route Distance (km)</p>
+                <div style="height: 6px; background: var(--brand-primary); border-radius: 3px; width: 54%; margin-top: 8px;"></div>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">54% Feature Importance</span>
+              </div>
+              <div style="padding: 16px; background: var(--bg-surface-secondary); border-radius: var(--radius-md);">
+                <span style="font-size: 0.8rem; color: var(--text-muted);">PRIMARY FEATURE 2</span>
+                <p style="font-weight: 700; font-size: 1.1rem; margin-top: 4px;">Gross Luggage Weight (kg)</p>
+                <div style="height: 6px; background: #10b981; border-radius: 3px; width: 24%; margin-top: 8px;"></div>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">24% Feature Importance</span>
+              </div>
+              <div style="padding: 16px; background: var(--bg-surface-secondary); border-radius: var(--radius-md);">
+                <span style="font-size: 0.8rem; color: var(--text-muted);">PRIMARY FEATURE 3</span>
+                <p style="font-weight: 700; font-size: 1.1rem; margin-top: 4px;">Luggage Category / Fragility</p>
+                <div style="height: 6px; background: #8b5cf6; border-radius: 3px; width: 15%; margin-top: 8px;"></div>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">15% Feature Importance</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             VIEW 10: ADMIN USER MANAGEMENT
+             =================================================================== -->
+        <section class="view-pane" id="view-admin-users" style="display: none;">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Registered User Directory</h3>
+                <p class="card-subtitle">Manage customer, driver, and administrator accounts</p>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <select class="form-select" id="adminUserRoleFilter" style="width: auto;">
+                  <option value="ALL">All Roles</option>
+                  <option value="CUSTOMER">Customers Only</option>
+                  <option value="DRIVER">Drivers Only</option>
+                  <option value="ADMIN">Admins Only</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>User ID</th>
+                    <th>Full Name</th>
+                    <th>Email Address</th>
+                    <th>Phone</th>
+                    <th>City</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminUsersTbody">
+                  <!-- Injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             VIEW 11: ADMIN DRIVER FLEET MANAGEMENT (PHASE 7)
+             =================================================================== -->
+        <section class="view-pane" id="view-admin-drivers" style="display: none;">
+          <div class="card">
+            <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
+              <div>
+                <h3 class="card-title">Driver Fleet & Logistics Couriers</h3>
+                <p class="card-subtitle">Manage courier profiles, vehicle registrations, availability, and active assignments</p>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn btn-primary btn-sm" id="openAddDriverModalBtn"><i class="fa-solid fa-user-plus"></i> Add New Fleet Driver</button>
+              </div>
+            </div>
+
+            <!-- Search and Filter Toolbar -->
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; padding: 14px; background: var(--bg-surface-secondary); border-radius: var(--radius-md);">
+              <div style="flex: 2; min-width: 200px;">
+                <div class="input-with-icon">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input type="text" class="form-input" id="adminDriverSearchInput" placeholder="Search by name, phone, plate #, vehicle, or city..." />
+                </div>
+              </div>
+              <div style="flex: 1; min-width: 140px;">
+                <select class="form-select" id="adminDriverAvailFilter">
+                  <option value="ALL">All Availabilities</option>
+                  <option value="AVAILABLE">Available Only</option>
+                  <option value="BUSY">On Trip / Busy</option>
+                  <option value="OFFLINE">Offline / Inactive</option>
+                </select>
+              </div>
+              <div style="flex: 1; min-width: 130px;">
+                <select class="form-select" id="adminDriverStatusFilter">
+                  <option value="ALL">All Accounts</option>
+                  <option value="ACTIVE">Active Accounts</option>
+                  <option value="INACTIVE">Deactivated</option>
+                </select>
+              </div>
+              <div style="flex: 1; min-width: 130px;">
+                <select class="form-select" id="adminDriverCityFilter">
+                  <option value="ALL">All Hub Cities</option>
+                  <option value="Islamabad">Islamabad</option>
+                  <option value="Rawalpindi">Rawalpindi</option>
+                  <option value="Lahore">Lahore</option>
+                  <option value="Karachi">Karachi</option>
+                  <option value="Peshawar">Peshawar</option>
+                  <option value="Multan">Multan</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Driver & ID</th>
+                    <th>Vehicle & Plate #</th>
+                    <th>Hub City</th>
+                    <th>Rating</th>
+                    <th>Trips / Active</th>
+                    <th>Availability</th>
+                    <th>Account</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminDriversTbody">
+                  <!-- Injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             VIEW 12: ADMIN AI PREDICTIONS & MODEL ANALYTICS
+             =================================================================== -->
+        <section class="view-pane" id="view-admin-predictions" style="display: none;">
+          <!-- Model Health & Overview Header -->
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">AI Engine Model</div>
+                <div class="stat-value" style="font-size: 1.25rem;" id="aiModelVersionLabel">v2.1-rf-domestic</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-microchip"></i> Random Forest Ensemble</div>
+              </div>
+              <div class="stat-icon orange"><i class="fa-solid fa-brain"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Total Inferences</div>
+                <div class="stat-value" id="aiStatTotalInferences">0</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-bolt"></i> Logged In Relational DB</div>
+              </div>
+              <div class="stat-icon blue"><i class="fa-solid fa-calculator"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Avg. Predicted Fare</div>
+                <div class="stat-value" id="aiStatAvgCost">PKR 0</div>
+                <div class="stat-trend neutral"><i class="fa-solid fa-money-bill"></i> Target 1 (Cost)</div>
+              </div>
+              <div class="stat-icon green"><i class="fa-solid fa-receipt"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Avg. Predicted Time</div>
+                <div class="stat-value" id="aiStatAvgTime">0.0 hrs</div>
+                <div class="stat-trend neutral"><i class="fa-solid fa-clock"></i> Target 2 (Transit)</div>
+              </div>
+              <div class="stat-icon purple"><i class="fa-solid fa-hourglass-half"></i></div>
+            </div>
+          </div>
+
+          <!-- Model Evaluation Benchmark Comparison (FYP Defense Matrix) -->
+          <div class="card" style="margin-bottom: 24px;">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Supervised ML Model Evaluation & Benchmark Comparison</h3>
+                <p class="card-subtitle">Evaluated on held-out 20% domestic corridor test dataset (N=240, zero data leakage)</p>
+              </div>
+              <span class="badge badge-confirmed"><i class="fa-solid fa-circle-check"></i> Supervised Regression Pipeline</span>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Algorithm</th>
+                    <th>Target 1: Cost MAE (PKR)</th>
+                    <th>Target 1: Cost RMSE (PKR)</th>
+                    <th>Target 1: Cost R² Score</th>
+                    <th>Target 2: Time MAE (Hrs)</th>
+                    <th>Target 2: Time RMSE (Hrs)</th>
+                    <th>Target 2: Time R² Score</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="aiModelEvaluationTbody">
+                  <tr>
+                    <td><strong>Linear Regression (OLS Baseline)</strong></td>
+                    <td>PKR 439.65</td>
+                    <td>PKR 612.83</td>
+                    <td>0.9279</td>
+                    <td>0.80 h</td>
+                    <td>1.02 h</td>
+                    <td>0.9779</td>
+                    <td><span class="badge badge-pending">Baseline</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Decision Tree Regressor (CART)</strong></td>
+                    <td>PKR 621.71</td>
+                    <td>PKR 784.75</td>
+                    <td>0.8817</td>
+                    <td>0.79 h</td>
+                    <td>0.96 h</td>
+                    <td>0.9804</td>
+                    <td><span class="badge badge-cancelled">Sub-optimal</span></td>
+                  </tr>
+                  <tr style="background: rgba(37, 99, 235, 0.05); font-weight: 600;">
+                    <td><strong><i class="fa-solid fa-award" style="color: #f59e0b;"></i> Random Forest Regressor (N=40)</strong></td>
+                    <td>PKR 454.04</td>
+                    <td>PKR 606.15</td>
+                    <td><strong>0.9294</strong></td>
+                    <td>1.10 h</td>
+                    <td>1.53 h</td>
+                    <td><strong>0.9507</strong></td>
+                    <td><span class="badge badge-confirmed">Selected Model</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Gradient Boosted Regressor (GBDT)</strong></td>
+                    <td>PKR 393.27</td>
+                    <td>PKR 503.85</td>
+                    <td>0.9512</td>
+                    <td>0.78 h</td>
+                    <td>1.03 h</td>
+                    <td>0.9777</td>
+                    <td><span class="badge badge-in-transit">High Accuracy</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Feature Importance & Live AI Sandbox Grid -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+            <!-- Feature Importance Card -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Random Forest Feature Importance Weights</h3>
+                  <p class="card-subtitle">Normalized Gini variance reduction across 40 decision trees</p>
+                </div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 14px;">
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px;">
+                    <strong>Route Distance (km)</strong>
+                    <span style="color: var(--brand-primary); font-weight: 700;">49.93%</span>
+                  </div>
+                  <div style="height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden;">
+                    <div style="height: 100%; width: 49.93%; background: var(--brand-primary); border-radius: 4px;"></div>
+                  </div>
+                </div>
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px;">
+                    <strong>Transport Service Tier (Standard/Express/Premium)</strong>
+                    <span style="color: #10b981; font-weight: 700;">19.10%</span>
+                  </div>
+                  <div style="height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden;">
+                    <div style="height: 100%; width: 19.10%; background: #10b981; border-radius: 4px;"></div>
+                  </div>
+                </div>
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px;">
+                    <strong>Luggage Category / Cargo Type</strong>
+                    <span style="color: #8b5cf6; font-weight: 700;">14.22%</span>
+                  </div>
+                  <div style="height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden;">
+                    <div style="height: 100%; width: 14.22%; background: #8b5cf6; border-radius: 4px;"></div>
+                  </div>
+                </div>
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px;">
+                    <strong>Total Luggage Weight (kg)</strong>
+                    <span style="color: #f59e0b; font-weight: 700;">5.16%</span>
+                  </div>
+                  <div style="height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden;">
+                    <div style="height: 100%; width: 5.16%; background: #f59e0b; border-radius: 4px;"></div>
+                  </div>
+                </div>
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px;">
+                    <strong>Volumetric Space (Liters)</strong>
+                    <span style="color: #ec4899; font-weight: 700;">4.69%</span>
+                  </div>
+                  <div style="height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden;">
+                    <div style="height: 100%; width: 4.69%; background: #ec4899; border-radius: 4px;"></div>
+                  </div>
+                </div>
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px;">
+                    <strong>Fragility & Handling Risk</strong>
+                    <span style="color: #ef4444; font-weight: 700;">3.31%</span>
+                  </div>
+                  <div style="height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden;">
+                    <div style="height: 100%; width: 3.31%; background: #ef4444; border-radius: 4px;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Live AI Sandbox Simulator -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Live ML Prediction Sandbox Simulator</h3>
+                  <p class="card-subtitle">Test custom feature vectors against the trained regression engine</p>
+                </div>
+              </div>
+              <form id="aiSandboxForm">
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label class="form-label">Distance (km)</label>
+                    <input type="number" class="form-input" id="sandboxDistance" value="380" min="10" max="2500" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Weight (kg)</label>
+                    <input type="number" class="form-input" id="sandboxWeight" value="18" min="1" max="100" required />
+                  </div>
+                </div>
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label class="form-label">Luggage Type</label>
+                    <select class="form-select" id="sandboxType">
+                      <option value="Suitcase">Suitcase</option>
+                      <option value="Backpack">Backpack</option>
+                      <option value="Cardboard Box">Cardboard Box</option>
+                      <option value="Travel Bag">Travel Bag</option>
+                      <option value="Fragile Item">Fragile Item</option>
+                      <option value="Oversized Cargo">Oversized Cargo</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Transport Tier</label>
+                    <select class="form-select" id="sandboxTier">
+                      <option value="Standard (Ground Transport)">Standard Ground</option>
+                      <option value="Express (Priority Dispatch)">Express Priority</option>
+                      <option value="Premium (White-Glove & Dedicated)">Premium White-Glove</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label class="form-label">Bag Count</label>
+                    <input type="number" class="form-input" id="sandboxBags" value="1" min="1" max="10" />
+                  </div>
+                  <div class="form-group" style="display: flex; align-items: flex-end; padding-bottom: 8px;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">
+                      <input type="checkbox" id="sandboxFragile" /> Fragile Item
+                    </label>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-play"></i> Run Real-Time ML Inference</button>
+              </form>
+
+              <!-- Sandbox Output Display -->
+              <div id="sandboxResultBox" style="margin-top: 16px; padding: 14px; background: var(--bg-surface-secondary); border-radius: var(--radius-md); display: none;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: center;">
+                  <div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700;">PREDICTED COST</span>
+                    <h4 style="color: var(--brand-primary); font-size: 1.25rem;" id="sandboxOutCost">PKR 1,950</h4>
+                  </div>
+                  <div>
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700;">EST. DELIVERY TIME</span>
+                    <h4 style="color: #10b981; font-size: 1.25rem;" id="sandboxOutTime">10.0 Hours</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Relational Prediction Inferences Audit Table -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Recent Supervised Prediction Inferences (Audit Trail)</h3>
+                <p class="card-subtitle">Stored inference logs with feature vector snapshot and model version</p>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Prediction ID</th>
+                    <th>Distance & Route</th>
+                    <th>Luggage Features</th>
+                    <th>Predicted Cost (PKR)</th>
+                    <th>Predicted Time</th>
+                    <th>Confidence</th>
+                    <th>Model Version</th>
+                    <th>Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody id="aiInferenceAuditTbody">
+                  <!-- Injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             VIEW 13: ADMIN CUSTOMER FEEDBACK & REVIEW ANALYTICS (PHASE 9)
+             =================================================================== -->
+        <section class="view-pane" id="view-admin-feedback" style="display: none;">
+          <!-- Overall Rating Metrics Header -->
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Platform Average Rating</div>
+                <div class="stat-value" style="font-size: 1.4rem; color: #f59e0b;" id="admStatAvgRating">4.9 ★</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-star"></i> Based on verified trips</div>
+              </div>
+              <div class="stat-icon orange"><i class="fa-solid fa-star"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Total Verified Reviews</div>
+                <div class="stat-value" id="admStatTotalReviews">0</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-comments"></i> Customer Submissions</div>
+              </div>
+              <div class="stat-icon blue"><i class="fa-solid fa-comment-dots"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">5-Star Satisfaction Rate</div>
+                <div class="stat-value" id="admStatSatisfactionRate">100%</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-heart"></i> Exceptional Ratings</div>
+              </div>
+              <div class="stat-icon green"><i class="fa-solid fa-thumbs-up"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Courier Service Quality</div>
+                <div class="stat-value" style="font-size: 1.25rem;">Exemplary</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-shield-halved"></i> 0 Damage Incidents</div>
+              </div>
+              <div class="stat-icon purple"><i class="fa-solid fa-award"></i></div>
+            </div>
+          </div>
+
+          <!-- Rating Distribution & Service Highlights Grid -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+            <!-- Rating Breakdown Progress Bars -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Rating Star Distribution</h3>
+                  <p class="card-subtitle">Breakdown of customer satisfaction across all ratings</p>
+                </div>
+              </div>
+              <div id="admRatingDistributionContainer">
+                <div class="rating-distribution-bar">
+                  <span style="width: 50px; font-weight: 700;">5 ★</span>
+                  <div class="rating-bar-track"><div class="rating-bar-fill" id="admDistBar5" style="width: 100%;"></div></div>
+                  <span style="width: 45px; text-align: right; color: var(--text-muted);" id="admDistCount5">1 (100%)</span>
+                </div>
+                <div class="rating-distribution-bar">
+                  <span style="width: 50px; font-weight: 700;">4 ★</span>
+                  <div class="rating-bar-track"><div class="rating-bar-fill" id="admDistBar4" style="width: 0%;"></div></div>
+                  <span style="width: 45px; text-align: right; color: var(--text-muted);" id="admDistCount4">0 (0%)</span>
+                </div>
+                <div class="rating-distribution-bar">
+                  <span style="width: 50px; font-weight: 700;">3 ★</span>
+                  <div class="rating-bar-track"><div class="rating-bar-fill" id="admDistBar3" style="width: 0%;"></div></div>
+                  <span style="width: 45px; text-align: right; color: var(--text-muted);" id="admDistCount3">0 (0%)</span>
+                </div>
+                <div class="rating-distribution-bar">
+                  <span style="width: 50px; font-weight: 700;">2 ★</span>
+                  <div class="rating-bar-track"><div class="rating-bar-fill" id="admDistBar2" style="width: 0%;"></div></div>
+                  <span style="width: 45px; text-align: right; color: var(--text-muted);" id="admDistCount2">0 (0%)</span>
+                </div>
+                <div class="rating-distribution-bar">
+                  <span style="width: 50px; font-weight: 700;">1 ★</span>
+                  <div class="rating-bar-track"><div class="rating-bar-fill" id="admDistBar1" style="width: 0%;"></div></div>
+                  <span style="width: 45px; text-align: right; color: var(--text-muted);" id="admDistCount1">0 (0%)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Top Rated Service Attributes -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Top Highlighted Courier Attributes</h3>
+                  <p class="card-subtitle">Most frequently commended features by customers</p>
+                </div>
+              </div>
+              <div id="admTopTagsContainer" style="display: flex; flex-direction: column; gap: 12px;">
+                <!-- Injected dynamically -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Customer Feedback Audit Table -->
+          <div class="card">
+            <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
+              <div>
+                <h3 class="card-title">Customer Feedback & Reviews Directory</h3>
+                <p class="card-subtitle">Full log of customer ratings, feedback comments, and driver evaluations</p>
+              </div>
+            </div>
+
+            <!-- Filter Toolbar -->
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; padding: 14px; background: var(--bg-surface-secondary); border-radius: var(--radius-md);">
+              <div style="flex: 2; min-width: 220px;">
+                <div class="input-with-icon">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input type="text" class="form-input" id="adminFeedbackSearchInput" placeholder="Search by customer name, driver, or booking #..." />
+                </div>
+              </div>
+              <div style="flex: 1; min-width: 140px;">
+                <select class="form-select" id="adminFeedbackRatingFilter">
+                  <option value="ALL">All Ratings</option>
+                  <option value="5">5 Stars Only</option>
+                  <option value="4">4 Stars Only</option>
+                  <option value="3">3 Stars & Below</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th>Booking & Route</th>
+                    <th>Courier Driver</th>
+                    <th>Rating</th>
+                    <th>Review & Tags</th>
+                    <th>Submitted At</th>
+                  </tr>
+                </thead>
+                <tbody id="adminFeedbackTbody">
+                  <!-- Injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             VIEW 14: ADMIN ANALYTICS & CORRIDOR REPORTS (PHASE 10)
+             =================================================================== -->
+        <section class="view-pane" id="view-admin-reports" style="display: none;">
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Domestic Corridors Covered</div>
+                <div class="stat-value" id="admReportCorridorsCount">6</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-map-location-dot"></i> Inter-City Highway Routes</div>
+              </div>
+              <div class="stat-icon blue"><i class="fa-solid fa-route"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">On-Time Transit Rate</div>
+                <div class="stat-value" style="color: #10b981;">98.4%</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-circle-check"></i> Supervised Prediction Alignment</div>
+              </div>
+              <div class="stat-icon green"><i class="fa-solid fa-clock"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Total Freight Volume</div>
+                <div class="stat-value" id="admReportFreightWeight">148 kg</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-boxes-packing"></i> Registered Baggage</div>
+              </div>
+              <div class="stat-icon orange"><i class="fa-solid fa-weight-hanging"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Average Transit Speed</div>
+                <div class="stat-value">62 km/h</div>
+                <div class="stat-trend neutral"><i class="fa-solid fa-gauge-simple-high"></i> Highway Network Matrix</div>
+              </div>
+              <div class="stat-icon purple"><i class="fa-solid fa-car-side"></i></div>
+            </div>
+          </div>
+
+          <!-- Corridors Performance Breakdown Table -->
+          <div class="card" style="margin-bottom: 24px;">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Inter-City Corridor Revenue & Transit Analytics</h3>
+                <p class="card-subtitle">Volume, distance, average fare, and courier performance across domestic highways</p>
+              </div>
+              <button class="btn btn-secondary btn-sm" id="exportCorridorReportBtn"><i class="fa-solid fa-download"></i> Export Corridor Summary</button>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Highway Corridor</th>
+                    <th>Highway ID / Route</th>
+                    <th>Distance</th>
+                    <th>Total Shipments</th>
+                    <th>Quoted Revenue</th>
+                    <th>Avg. Fare</th>
+                    <th>Transit Status</th>
+                  </tr>
+                </thead>
+                <tbody id="admCorridorReportsTbody">
+                  <!-- Injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             VIEW 15: ADMIN PLATFORM SETTINGS & SYSTEM CONFIGURATION (PHASE 10)
+             =================================================================== -->
+        <section class="view-pane" id="view-admin-settings" style="display: none;">
+          <div style="display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 24px; max-width: 1100px; margin: 0 auto;">
+            <!-- Base Pricing & Surcharges Settings -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Logistics Tariff & Fare Parameters</h3>
+                  <p class="card-subtitle">Configure baseline pricing coefficients and service tier markups</p>
+                </div>
+                <span class="badge badge-confirmed"><i class="fa-solid fa-sliders"></i> Tariff Engine</span>
+              </div>
+              <form id="adminSettingsForm">
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label class="form-label">Base Rate per KM (PKR)</label>
+                    <input type="number" step="0.1" class="form-input" id="cfgBaseKm" value="3.5" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Weight Rate per KG (PKR)</label>
+                    <input type="number" step="0.5" class="form-input" id="cfgWeightKg" value="15.0" required />
+                  </div>
+                </div>
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label class="form-label">Minimum Trip Fare (PKR)</label>
+                    <input type="number" class="form-input" id="cfgMinFare" value="800" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Fragile Handling Markup (%)</label>
+                    <input type="number" class="form-input" id="cfgFragileMarkup" value="12" required />
+                  </div>
+                </div>
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label class="form-label">Express Priority Markup (%)</label>
+                    <input type="number" class="form-input" id="cfgExpressMarkup" value="35" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Premium White-Glove Markup (%)</label>
+                    <input type="number" class="form-input" id="cfgPremiumMarkup" value="70" required />
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save Tariff Settings</button>
+              </form>
+            </div>
+
+            <!-- AI Engine & Model Deployment Settings -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">AI Engine Model Configuration</h3>
+                  <p class="card-subtitle">Active regression model version & inference policy</p>
+                </div>
+                <span class="badge badge-confirmed"><i class="fa-solid fa-microchip"></i> Supervised ML</span>
+              </div>
+              <form id="adminAiConfigForm">
+                <div class="form-group">
+                  <label class="form-label">Active Serving Model Version</label>
+                  <select class="form-select" id="cfgActiveModel">
+                    <option value="v2.1-rf-regressor-domestic" selected>v2.1-rf-regressor-domestic (Random Forest N=40, R² 0.929)</option>
+                    <option value="v2.0-gbdt-regressor">v2.0-gbdt-regressor (Gradient Boosted Trees, R² 0.951)</option>
+                    <option value="v1.0-linear-regression">v1.0-linear-regression (OLS Baseline, R² 0.928)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Target Evaluation Currency</label>
+                  <input type="text" class="form-input" value="PKR (Pakistani Rupee)" disabled />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">System Timezone</label>
+                  <input type="text" class="form-input" value="Asia/Karachi (PKT, UTC+5)" disabled />
+                </div>
+                <div class="form-group" style="padding-top: 6px;">
+                  <label style="display: flex; align-items: center; gap: 8px; font-size: 0.875rem; font-weight: 600; cursor: pointer;">
+                    <input type="checkbox" id="cfgMaintenanceMode" /> Enable System Maintenance Mode
+                  </label>
+                </div>
+                <button type="submit" class="btn btn-secondary"><i class="fa-solid fa-rotate"></i> Update AI Configuration</button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             UNAUTHORIZED / ACCESS DENIED VIEW
+             =================================================================== -->
+        <section class="view-pane" id="view-unauthorized" style="display: none; text-align: center; padding: 60px 20px;">
+          <div class="card" style="max-width: 500px; margin: 0 auto; padding: 40px 20px;">
+            <div style="font-size: 3.5rem; color: var(--status-danger); margin-bottom: 16px;"><i class="fa-solid fa-lock"></i></div>
+            <h2 style="font-size: 1.5rem; margin-bottom: 8px;">Access Denied (403 Forbidden)</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px;" id="unauthorizedMessageText">Your current account role does not have permission to view this restricted page.</p>
+            <button class="btn btn-primary" id="returnDashboardBtn"><i class="fa-solid fa-house"></i> Return to Authorized Dashboard</button>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- =========================================================================
+       REUSABLE MODALS
+       ========================================================================= -->
+  <!-- Driver Assignment Modal (Admin) -->
+  <div class="modal-backdrop" id="assignDriverModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="font-size: 1.1rem;">Assign Fleet Driver</h3>
+        <button class="btn btn-ghost btn-sm" id="closeAssignModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="assignModalBookingId" />
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 16px;" id="assignModalBookingInfo">Assigning driver for booking SL-BK-2026-002</p>
+        <div class="form-group">
+          <label class="form-label">Available Driver</label>
+          <select class="form-select" id="assignModalDriverSelect">
+            <option value="DRV-101">Bilal Tariq — Toyota HiAce Cargo (ICT-LE-4589) [Islamabad]</option>
+            <option value="DRV-102">Kamran Shah — Suzuki Every Carrier (LHE-KA-7712) [Lahore]</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" id="cancelAssignModalBtn">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="submitAssignDriverBtn"><i class="fa-solid fa-check"></i> Confirm Assignment</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Register Luggage Modal -->
+  <div class="modal-backdrop" id="addLuggageModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="font-size: 1.1rem;">Register Luggage Item</h3>
+        <button class="btn btn-ghost btn-sm" id="closeAddLuggageModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="addLuggageForm">
+          <div class="form-group">
+            <label class="form-label">Luggage Type</label>
+            <select class="form-select" id="newLugType">
+              <option value="Suitcase">Suitcase</option>
+              <option value="Backpack">Backpack</option>
+              <option value="Cardboard Box">Cardboard Box</option>
+              <option value="Fragile Item">Fragile Item</option>
+              <option value="Oversized Cargo">Oversized Cargo</option>
+            </select>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Weight (kg)</label>
+              <input type="number" class="form-input" id="newLugWeight" value="14" min="1" max="100" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Declared Value (PKR)</label>
+              <input type="number" class="form-input" id="newLugValue" value="25000" />
+            </div>
+          </div>
+          <div class="form-grid-3">
+            <div class="form-group">
+              <label class="form-label">Length (cm)</label>
+              <input type="number" class="form-input" id="newLugL" value="60" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Width (cm)</label>
+              <input type="number" class="form-input" id="newLugW" value="40" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Height (cm)</label>
+              <input type="number" class="form-input" id="newLugH" value="25" />
+            </div>
           </div>
         </form>
       </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" id="cancelAddLuggageModalBtn">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="submitAddLuggageBtn"><i class="fa-solid fa-plus"></i> Add Luggage</button>
+      </div>
     </div>
+  </div>
 
-    <div id="toastContainer" class="toast-container"></div>
+  <!-- Toast Notification Stack -->
+  <div class="toast-container" id="toastContainer"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/app.js"></script>
-  </body>
+  <!-- Add Driver Modal (Admin) -->
+  <div class="modal-backdrop" id="addDriverModal">
+    <div class="modal-card" style="max-width: 540px;">
+      <div class="modal-header">
+        <h3 style="font-size: 1.1rem;"><i class="fa-solid fa-user-plus"></i> Register New Fleet Driver</h3>
+        <button class="btn btn-ghost btn-sm" id="closeAddDriverModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="addDriverForm">
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Full Name <span class="required-star">*</span></label>
+              <input type="text" class="form-input" id="newDrvFullName" placeholder="e.g. Asad Ullah" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Address <span class="required-star">*</span></label>
+              <input type="email" class="form-input" id="newDrvEmail" placeholder="asad@smartluggage.pk" required />
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Phone Number <span class="required-star">*</span></label>
+              <input type="text" class="form-input" id="newDrvPhone" placeholder="+92 312 3456789" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Hub City <span class="required-star">*</span></label>
+              <select class="form-select" id="newDrvCity">
+                <option value="Islamabad">Islamabad</option>
+                <option value="Rawalpindi">Rawalpindi</option>
+                <option value="Lahore">Lahore</option>
+                <option value="Karachi">Karachi</option>
+                <option value="Peshawar">Peshawar</option>
+                <option value="Multan">Multan</option>
+                <option value="Faisalabad">Faisalabad</option>
+                <option value="Quetta">Quetta</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Vehicle Model / Type <span class="required-star">*</span></label>
+              <input type="text" class="form-input" id="newDrvVehicle" placeholder="e.g. Toyota HiAce Van" value="Toyota HiAce Van" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Registration Plate # <span class="required-star">*</span></label>
+              <input type="text" class="form-input" id="newDrvPlate" placeholder="e.g. ICT-MN-8921" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Driving License Number</label>
+            <input type="text" class="form-input" id="newDrvLicense" placeholder="e.g. PK-DL-88231" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Default Driver Password</label>
+            <input type="password" class="form-input" id="newDrvPassword" value="driver123" />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" id="cancelAddDriverModalBtn">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="submitAddDriverBtn"><i class="fa-solid fa-check"></i> Register Driver</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Driver Modal (Admin) -->
+  <div class="modal-backdrop" id="editDriverModal">
+    <div class="modal-card" style="max-width: 500px;">
+      <div class="modal-header">
+        <h3 style="font-size: 1.1rem;"><i class="fa-solid fa-pen-to-square"></i> Edit Driver Profile</h3>
+        <button class="btn btn-ghost btn-sm" id="closeEditDriverModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editDrvId" />
+        <form id="editDriverForm">
+          <div class="form-group">
+            <label class="form-label">Driver Full Name</label>
+            <input type="text" class="form-input" id="editDrvFullName" required />
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Phone Number</label>
+              <input type="text" class="form-input" id="editDrvPhone" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Hub City</label>
+              <input type="text" class="form-input" id="editDrvCity" required />
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Vehicle Type</label>
+              <input type="text" class="form-input" id="editDrvVehicle" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Plate #</label>
+              <input type="text" class="form-input" id="editDrvPlate" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Availability Status</label>
+            <select class="form-select" id="editDrvAvailStatus">
+              <option value="AVAILABLE">AVAILABLE (Ready for assignment)</option>
+              <option value="BUSY">BUSY (On active trip)</option>
+              <option value="OFFLINE">OFFLINE (Off duty)</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" id="cancelEditDriverModalBtn">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="submitEditDriverBtn"><i class="fa-solid fa-floppy-disk"></i> Save Driver Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Driver Trips & Details Modal (Admin) -->
+  <div class="modal-backdrop" id="viewDriverTripsModal">
+    <div class="modal-card" style="max-width: 650px;">
+      <div class="modal-header">
+        <h3 style="font-size: 1.1rem;" id="viewDriverTripsModalTitle"><i class="fa-solid fa-route"></i> Driver Assigned Trips</h3>
+        <button class="btn btn-ghost btn-sm" id="closeViewDriverTripsModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div id="viewDriverTripsContent">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" id="closeViewDriverTripsModalFooterBtn">Close</button>
+      </div>
+    </div>
+  <!-- Deep Booking Details Modal (Admin Inspector - Phase 10) -->
+  <div class="modal-backdrop" id="adminBookingDetailsModal">
+    <div class="modal-card" style="max-width: 780px;">
+      <div class="modal-header">
+        <h3 style="font-size: 1.15rem;" id="adminBookingModalTitle"><i class="fa-solid fa-file-invoice"></i> Booking Details Deep Inspector</h3>
+        <button class="btn btn-ghost btn-sm" id="closeAdminBookingModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div id="adminBookingModalContent">
+          <!-- Injected dynamically with Customer, Driver, Route, Luggage, AI Prediction & Status History -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" id="closeAdminBookingModalFooterBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Details & Booking History Modal (Admin - Phase 10) -->
+  <div class="modal-backdrop" id="adminUserDetailsModal">
+    <div class="modal-card" style="max-width: 700px;">
+      <div class="modal-header">
+        <h3 style="font-size: 1.15rem;" id="adminUserModalTitle"><i class="fa-solid fa-user-gear"></i> User Profile & Booking History</h3>
+        <button class="btn btn-ghost btn-sm" id="closeAdminUserModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div id="adminUserModalContent">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" id="closeAdminUserModalFooterBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Entry Script -->
+  <script type="module" src="js/app.js"></script>
+</body>
 </html>

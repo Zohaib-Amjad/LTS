@@ -1,0 +1,7 @@
+# Robots.txt for SmartLuggage AI Platform
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /driver
+
+Sitemap: https://smartluggage.pk/sitemap.xml

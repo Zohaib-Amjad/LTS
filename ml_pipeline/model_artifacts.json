@@ -1,0 +1,118 @@
+{
+  "metadata": {
+    "modelVersion": "v2.1-rf-regressor-domestic",
+    "algorithmSelected": "Random Forest Regressor",
+    "trainedAt": "2026-10-01T06:49:56.067Z",
+    "datasetSize": 1200,
+    "trainSplitSize": 960,
+    "testSplitSize": 240,
+    "features": [
+      "distanceKm",
+      "totalWeightKg",
+      "bagCount",
+      "volumeLiters",
+      "luggageTypeIdx",
+      "transportTierIdx",
+      "sizeCategoryIdx",
+      "isFragile"
+    ],
+    "targets": [
+      "targetActualCostPKR",
+      "targetActualDeliveryTimeHours"
+    ]
+  },
+  "evaluationMetrics": {
+    "Linear Regression": {
+      "cost": {
+        "mae": 439.65,
+        "rmse": 612.83,
+        "r2": 0.9279
+      },
+      "time": {
+        "mae": 0.8,
+        "rmse": 1.02,
+        "r2": 0.9779
+      }
+    },
+    "Decision Tree Regressor": {
+      "cost": {
+        "mae": 621.71,
+        "rmse": 784.75,
+        "r2": 0.8817
+      },
+      "time": {
+        "mae": 0.79,
+        "rmse": 0.96,
+        "r2": 0.9804
+      }
+    },
+    "Random Forest Regressor": {
+      "cost": {
+        "mae": 454.04,
+        "rmse": 606.15,
+        "r2": 0.9294
+      },
+      "time": {
+        "mae": 1.1,
+        "rmse": 1.53,
+        "r2": 0.9507
+      }
+    },
+    "Gradient Boosted Regressor": {
+      "cost": {
+        "mae": 393.27,
+        "rmse": 503.85,
+        "r2": 0.9512
+      },
+      "time": {
+        "mae": 0.78,
+        "rmse": 1.03,
+        "r2": 0.9777
+      }
+    }
+  },
+  "featureImportances": {
+    "distanceKm": 0.4993,
+    "totalWeightKg": 0.0516,
+    "bagCount": 0.0199,
+    "volumeLiters": 0.0469,
+    "luggageTypeIdx": 0.1422,
+    "transportTierIdx": 0.191,
+    "sizeCategoryIdx": 0.016,
+    "isFragile": 0.0331
+  },
+  "categoricalEncodings": {
+    "luggageTypes": {
+      "Document Pouch": 0,
+      "Backpack": 1,
+      "Suitcase": 2,
+      "Travel Bag": 3,
+      "Cardboard Box": 4,
+      "Other": 5,
+      "Fragile Item": 6,
+      "Oversized Cargo": 7
+    },
+    "transportTiers": {
+      "Standard (Ground Transport)": 0,
+      "Express (Priority Dispatch)": 1,
+      "Premium (White-Glove & Dedicated)": 2
+    },
+    "sizeCategories": {
+      "Small": 0,
+      "Medium": 1,
+      "Large": 2,
+      "Extra Large": 3
+    }
+  },
+  "modelCoefficients": {
+    "baseFarePKR": 450,
+    "kmRate": 2.45,
+    "kgRate": 38,
+    "extraBagFee": 150,
+    "highwaySpeeds": {
+      "standardKmh": 52,
+      "expressKmh": 65,
+      "premiumKmh": 72
+    }
+  }
+}

@@ -1,0 +1,128 @@
+/**
+ * SMART ONLINE LUGGAGE TRANSPORTATION USING AI
+ * Core Domain Constants and Enumerations
+ */
+
+export const USER_ROLES = Object.freeze({
+  CUSTOMER: 'CUSTOMER',
+  DRIVER: 'DRIVER',
+  ADMIN: 'ADMIN'
+});
+
+export const DRIVER_AVAILABILITY = Object.freeze({
+  AVAILABLE: 'AVAILABLE',
+  BUSY: 'BUSY',
+  OFFLINE: 'OFFLINE'
+});
+
+export const BOOKING_STATUS = Object.freeze({
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  DRIVER_ASSIGNED: 'DRIVER_ASSIGNED',
+  PICKED_UP: 'PICKED_UP',
+  IN_TRANSIT: 'IN_TRANSIT',
+  DELIVERED: 'DELIVERED',
+  CANCELLED: 'CANCELLED',
+  FAILED: 'FAILED'
+});
+
+/**
+ * State Machine Transition Rules
+ * Defines valid next states for any given current state and role.
+ */
+export const ALLOWED_STATUS_TRANSITIONS = Object.freeze({
+  [BOOKING_STATUS.PENDING]: {
+    [USER_ROLES.CUSTOMER]: [BOOKING_STATUS.CONFIRMED, BOOKING_STATUS.CANCELLED],
+    [USER_ROLES.ADMIN]: [BOOKING_STATUS.CONFIRMED, BOOKING_STATUS.CANCELLED],
+    [USER_ROLES.DRIVER]: []
+  },
+  [BOOKING_STATUS.CONFIRMED]: {
+    [USER_ROLES.CUSTOMER]: [BOOKING_STATUS.CANCELLED],
+    [USER_ROLES.ADMIN]: [BOOKING_STATUS.DRIVER_ASSIGNED, BOOKING_STATUS.CANCELLED],
+    [USER_ROLES.DRIVER]: []
+  },
+  [BOOKING_STATUS.DRIVER_ASSIGNED]: {
+    [USER_ROLES.CUSTOMER]: [BOOKING_STATUS.CANCELLED],
+    [USER_ROLES.ADMIN]: [BOOKING_STATUS.DRIVER_ASSIGNED, BOOKING_STATUS.CANCELLED],
+    [USER_ROLES.DRIVER]: [BOOKING_STATUS.PICKED_UP, BOOKING_STATUS.FAILED]
+  },
+  [BOOKING_STATUS.PICKED_UP]: {
+    [USER_ROLES.CUSTOMER]: [],
+    [USER_ROLES.ADMIN]: [BOOKING_STATUS.IN_TRANSIT, BOOKING_STATUS.FAILED],
+    [USER_ROLES.DRIVER]: [BOOKING_STATUS.IN_TRANSIT, BOOKING_STATUS.FAILED]
+  },
+  [BOOKING_STATUS.IN_TRANSIT]: {
+    [USER_ROLES.CUSTOMER]: [],
+    [USER_ROLES.ADMIN]: [BOOKING_STATUS.DELIVERED, BOOKING_STATUS.FAILED],
+    [USER_ROLES.DRIVER]: [BOOKING_STATUS.DELIVERED, BOOKING_STATUS.FAILED]
+  },
+  [BOOKING_STATUS.DELIVERED]: {
+    [USER_ROLES.CUSTOMER]: [],
+    [USER_ROLES.ADMIN]: [],
+    [USER_ROLES.DRIVER]: []
+  },
+  [BOOKING_STATUS.CANCELLED]: {
+    [USER_ROLES.CUSTOMER]: [],
+    [USER_ROLES.ADMIN]: [],
+    [USER_ROLES.DRIVER]: []
+  },
+  [BOOKING_STATUS.FAILED]: {
+    [USER_ROLES.CUSTOMER]: [],
+    [USER_ROLES.ADMIN]: [BOOKING_STATUS.DRIVER_ASSIGNED, BOOKING_STATUS.CANCELLED],
+    [USER_ROLES.DRIVER]: []
+  }
+});
+
+export const LUGGAGE_TYPES = Object.freeze({
+  SUITCASE: 'Suitcase',
+  BACKPACK: 'Backpack',
+  BOX: 'Cardboard Box',
+  TRAVEL_BAG: 'Travel Bag',
+  FRAGILE: 'Fragile Item',
+  OVERSIZED: 'Oversized Cargo',
+  DOCUMENTS: 'Document Pouch',
+  OTHER: 'Other'
+});
+
+export const LUGGAGE_SIZES = Object.freeze({
+  SMALL: 'Small (< 7kg / < 40L)',
+  MEDIUM: 'Medium (7-15kg / 40-70L)',
+  LARGE: 'Large (15-25kg / 70-100L)',
+  EXTRA_LARGE: 'Extra Large (> 25kg / > 100L)'
+});
+
+export const PREDICTION_STATUS = Object.freeze({
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  CACHED: 'CACHED'
+});
+
+export const TRANSPORT_TIERS = Object.freeze({
+  STANDARD: 'Standard (Ground Transport)',
+  EXPRESS: 'Express (Priority Dispatch)',
+  PREMIUM: 'Premium (White-Glove & Dedicated)'
+});
+
+export const ML_MODELS = Object.freeze({
+  RANDOM_FOREST: 'Random Forest Regressor (v1.2)',
+  XGBOOST: 'XGBoost Regressor (v2.0)',
+  HYBRID_ENSEMBLE: 'Hybrid Gradient Boosted Ensemble'
+});
+
+export const NOTIFICATION_TYPES = Object.freeze({
+  BOOKING_CONFIRMED: 'BOOKING_CONFIRMED',
+  DRIVER_ASSIGNED: 'DRIVER_ASSIGNED',
+  PICKED_UP: 'PICKED_UP',
+  IN_TRANSIT: 'IN_TRANSIT',
+  DELIVERED: 'DELIVERED',
+  CANCELLED: 'CANCELLED',
+  FEEDBACK_REMINDER: 'FEEDBACK_REMINDER',
+  SYSTEM_ALERT: 'SYSTEM_ALERT'
+});
+
+export const STORAGE_KEYS = Object.freeze({
+  DATABASE: 'smartluggage_db_v2',
+  ACTIVE_SESSION: 'smartluggage_active_session',
+  SYSTEM_CONFIG: 'smartluggage_sys_config'
+});
