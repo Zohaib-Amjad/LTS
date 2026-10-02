@@ -24,7 +24,7 @@
   <meta name="twitter:description" content="Supervised machine learning cost and delivery time prediction for intercity luggage transport." />
 
   <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233b82f6'><path d='M19 7h-3V6a4 4 0 0 0-8 0v1H5a2 2 0 0 0-2 2v10a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3V9a2 2 0 0 0-2-2zm-9-1a2 2 0 0 1 4 0v1h-4V6zm10 13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V9h14v10z'/></svg>" />
+  <link rel="icon" type="image/png" href="assets/images/loogo.png" />
 
   <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -44,9 +44,9 @@
       <span style="font-size: 0.8rem; color: #94a3b8; display: none; @media(min-width: 600px){display:inline;}">Role Switcher:</span>
     </div>
     <div class="demo-role-switchers">
-      <button class="demo-role-btn" data-switch-role="LANDING"><i class="fa-solid fa-globe"></i> Public Landing</button>
+      <button class="demo-role-btn active" data-switch-role="LANDING"><i class="fa-solid fa-globe"></i> Public Landing</button>
       <button class="demo-role-btn" data-switch-role="AUTH"><i class="fa-solid fa-right-to-bracket"></i> Login / Register</button>
-      <button class="demo-role-btn active" data-switch-role="CUSTOMER"><i class="fa-solid fa-user"></i> Customer</button>
+      <button class="demo-role-btn" data-switch-role="CUSTOMER"><i class="fa-solid fa-user"></i> Customer</button>
       <button class="demo-role-btn" data-switch-role="DRIVER"><i class="fa-solid fa-truck"></i> Driver</button>
       <button class="demo-role-btn" data-switch-role="ADMIN"><i class="fa-solid fa-shield-halved"></i> Admin</button>
     </div>
@@ -55,12 +55,19 @@
   <!-- =========================================================================
        AUTH SCREEN: LOGIN & REGISTRATION
        ========================================================================= -->
-  <div class="landing-viewport" id="authScreenView" style="display: none; padding: 60px 20px; min-height: 85vh; background: var(--bg-surface-secondary);">
+  <div class="landing-viewport" id="authScreenView" style="display: none; padding: 50px 20px; min-height: 85vh; background: var(--bg-surface-secondary);">
     <div class="card" style="max-width: 480px; margin: 0 auto; box-shadow: var(--shadow-xl); border-radius: var(--radius-xl);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <button type="button" class="btn btn-ghost btn-sm" id="authBackToHomeBtn" style="color: var(--text-muted); padding-left: 0;">
+          <i class="fa-solid fa-arrow-left"></i> Back to Home
+        </button>
+        <span class="badge badge-confirmed" style="font-size: 0.75rem;"><i class="fa-solid fa-shield-halved"></i> Secure Portal</span>
+      </div>
+
       <div style="text-align: center; margin-bottom: 24px;">
-        <div class="brand-logo-icon" style="margin: 0 auto 12px; width: 48px; height: 48px; font-size: 1.4rem;"><i class="fa-solid fa-suitcase-rolling"></i></div>
-        <h2 style="font-size: 1.5rem;">SmartLuggage AI</h2>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Domestic Luggage Transportation & AI Logistics</p>
+        <img src="assets/images/loogo.png" alt="SmartLuggage Logo" class="brand-logo-img" style="margin: 0 auto 12px; width: 52px; height: 52px; display: block;" />
+        <h2 style="font-size: 1.5rem;">SmartLuggage</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Domestic Luggage Transportation & Logistics</p>
       </div>
 
       <div style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
@@ -148,9 +155,40 @@
   <!-- =========================================================================
        PUBLIC LANDING PAGE (11 Complete Product Sections)
        ========================================================================= -->
-  <div class="landing-viewport" id="landingView" style="display: none;">
-    <!-- 1. Hero Section -->
-    <header class="landing-hero">
+  <div class="landing-viewport" id="landingView">
+    <!-- Sticky Landing Navigation Bar -->
+    <header class="landing-navbar" id="landingNavbar">
+      <div class="landing-nav-container">
+        <a href="#home" class="landing-brand">
+          <img src="assets/images/loogo.png" alt="Smart Luggage Logo" class="landing-brand-logo" />
+          <span class="landing-brand-title"><span class="brand-text-main">Smart</span> <span class="brand-text-accent">Luggage</span></span>
+        </a>
+
+        <ul class="landing-nav-links" id="landingNavLinks">
+          <li><a href="#home" class="active">Home</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#ai-model">AI Model</a></li>
+          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="#pricing-tiers">Tiers</a></li>
+          <li><a href="#faqs">FAQs</a></li>
+        </ul>
+
+        <div class="landing-nav-actions">
+          <button class="btn btn-ghost btn-sm" id="landingNavTrackBtn" title="Track luggage by booking reference">
+            <i class="fa-solid fa-location-crosshairs"></i> Track
+          </button>
+          <button class="btn btn-secondary btn-sm" id="landingNavLoginBtn">
+            <i class="fa-solid fa-right-to-bracket"></i> Sign In
+          </button>
+          <button class="btn btn-primary btn-sm" id="landingNavRegisterBtn">
+            <i class="fa-solid fa-user-plus"></i> Register
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- SECTION 1: HERO & HOME -->
+    <header class="landing-hero" id="home">
       <div class="hero-pill"><i class="fa-solid fa-brain"></i> Supervised AI Regression Core</div>
       <h1 class="hero-title">Smarter, Safer Domestic Luggage <span class="hero-title-highlight">Transportation</span></h1>
       <p class="hero-desc">Send your baggage between any domestic cities in Pakistan with instant AI cost prediction, guaranteed courier safety, and transparent real-time tracking.</p>
@@ -160,12 +198,12 @@
       </div>
     </header>
 
-    <!-- 2. Value Proposition -->
-    <section class="section-container">
+    <!-- SECTION 1B: WHY CHOOSE -->
+    <section class="section-container" id="why-choose">
       <div class="section-header-center">
-        <p class="section-eyebrow">Why SmartLuggage AI</p>
-        <h2 class="section-heading">Engineered for Hassle-Free Domestic Travel</h2>
-        <p class="section-subheading">Travel light without dragging heavy suitcases across terminals or bus stations. We pick up from your doorstep and deliver to your destination.</p>
+        <p class="section-eyebrow">Smart Logistics Advantage</p>
+        <h2 class="section-heading">Why Choose Smart Luggage?</h2>
+        <p class="section-subheading">A seamless, modern shipping experience built specifically for domestic intercity travel in Pakistan.</p>
       </div>
       <div class="feature-grid-3">
         <div class="feature-card">
@@ -174,7 +212,34 @@
           <p style="color: var(--text-muted); margin-top: 8px;">Trained supervised machine learning regression predicts precise shipping costs and delivery transit times in milliseconds.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon-wrap"><i class="fa-solid fa-shield-check"></i></div>
+          <div class="feature-icon-wrap"><i class="fa-solid fa-shield-halved"></i></div>
+          <h3>Tamper-Proof Protection</h3>
+          <p style="color: var(--text-muted); margin-top: 8px;">Every luggage item is tagged, barcoded, sealed, and handled exclusively by verified logistics drivers.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-wrap"><i class="fa-solid fa-route"></i></div>
+          <h3>Inter-City Network</h3>
+          <p style="color: var(--text-muted); margin-top: 8px;">Scheduled courier corridors between Islamabad, Lahore, Karachi, Peshawar, Multan, Faisalabad, and Quetta.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: FEATURES -->
+    <section class="section-container" id="features" style="border-top: 1px solid var(--border-color);">
+      <div class="section-header-center">
+        <div class="public-hero-badge"><i class="fa-solid fa-sliders"></i> Full Logistics Capabilities</div>
+        <h2 class="section-heading">Platform Features & Services</h2>
+        <p class="section-subheading">Engineered from the ground up for hassle-free domestic travel across Pakistan's major transit corridors.</p>
+      </div>
+
+      <div class="feature-grid-3">
+        <div class="feature-card">
+          <div class="feature-icon-wrap"><i class="fa-solid fa-bolt"></i></div>
+          <h3>Instant AI Quoting</h3>
+          <p style="color: var(--text-muted); margin-top: 8px;">Trained supervised machine learning regression predicts precise shipping costs and delivery transit times in milliseconds.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-wrap"><i class="fa-solid fa-shield-halved"></i></div>
           <h3>Tamper-Proof Protection</h3>
           <p style="color: var(--text-muted); margin-top: 8px;">Every luggage item is tagged, barcoded, sealed, and handled by verified logistics drivers.</p>
         </div>
@@ -183,143 +248,141 @@
           <h3>Inter-City Highway Network</h3>
           <p style="color: var(--text-muted); margin-top: 8px;">Scheduled courier corridors between Islamabad, Lahore, Karachi, Peshawar, Multan, Faisalabad, and Quetta.</p>
         </div>
-      </div>
-    </section>
-
-    <!-- 3. AI Prediction Explanation Section -->
-    <section style="background: var(--bg-surface-secondary); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);">
-      <div class="section-container">
-        <div class="section-header-center">
-          <p class="section-eyebrow">Core FYP Innovation</p>
-          <h2 class="section-heading">How Our Supervised AI Regression Works</h2>
-          <p class="section-subheading">Our dual-target regression models analyse multi-dimensional logistics features to generate reliable fair-fare pricing.</p>
+        <div class="feature-card">
+          <div class="feature-icon-wrap" style="background: #eff6ff; color: #3b82f6;"><i class="fa-solid fa-location-crosshairs"></i></div>
+          <h3>Real-Time Tracking</h3>
+          <p style="color: var(--text-muted); margin-top: 8px;">6-state live milestone tracking with driver contact details, photo checkpoints, and SMS/WhatsApp notifications.</p>
         </div>
-        <div class="ai-prediction-card" style="max-width: 900px; margin: 0 auto;">
-          <div class="ai-badge-chip"><i class="fa-solid fa-microchip"></i> Random Forest & XGBoost Regression Engine</div>
-          <h3 style="font-size: 1.4rem; margin-bottom: 8px;">Multi-Feature Predictive Intelligence</h3>
-          <p style="color: #cbd5e1; font-size: 0.9rem; margin-bottom: 20px;">The model processes distance (km), volumetric dimensions, gross weight, luggage fragility, and dispatch urgency.</p>
-          <div class="ai-estimate-grid">
-            <div class="ai-metric-box">
-              <div class="label">Primary Output 1</div>
-              <div class="value">Cost (PKR)</div>
-              <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">Supervised Fair Fare Regression</p>
-            </div>
-            <div class="ai-metric-box">
-              <div class="label">Primary Output 2</div>
-              <div class="value">Time (Hours)</div>
-              <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">Highway Transit Speed Model</p>
-            </div>
-            <div class="ai-metric-box">
-              <div class="label">Model Quality</div>
-              <div class="value">R² 0.946</div>
-              <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">High Predictive Confidence</p>
-            </div>
-          </div>
-          <div class="ai-disclaimer-bar">
-            <i class="fa-solid fa-circle-info"></i>
-            <span>Transparent FYP Design: AI estimates represent regression predictions based on historical domestic transit data.</span>
-          </div>
+        <div class="feature-card">
+          <div class="feature-icon-wrap" style="background: #ecfdf5; color: #10b981;"><i class="fa-solid fa-house"></i></div>
+          <h3>Doorstep Pickup & Delivery</h3>
+          <p style="color: var(--text-muted); margin-top: 8px;">Direct door-to-door courier service so you can travel light on buses, trains, or flights without heavy baggage.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-wrap" style="background: #f5f3ff; color: #8b5cf6;"><i class="fa-solid fa-star"></i></div>
+          <h3>Verified Driver Reviews</h3>
+          <p style="color: var(--text-muted); margin-top: 8px;">5-star feedback rating system to ensure consistent quality, professionalism, and prompt luggage handling.</p>
         </div>
       </div>
     </section>
 
-    <!-- 4. How It Works -->
-    <section class="section-container">
+    <!-- SECTION 3: AI MODEL -->
+    <section class="section-container" id="ai-model" style="border-top: 1px solid var(--border-color);">
       <div class="section-header-center">
-        <p class="section-eyebrow">Seamless 4-Step Process</p>
-        <h2 class="section-heading">How Booking Works</h2>
+        <div class="public-hero-badge"><i class="fa-solid fa-microchip"></i> Supervised Machine Learning Core</div>
+        <h2 class="section-heading">How Our AI Regression Engine Works</h2>
+        <p class="section-subheading">Our dual-target regression models analyse multi-dimensional logistics features to generate reliable fair-fare pricing and transit estimates.</p>
       </div>
-      <div class="feature-grid-3">
+
+      <div class="ai-prediction-card" style="max-width: 900px; margin: 0 auto 30px;">
+        <div class="ai-badge-chip"><i class="fa-solid fa-brain"></i> Random Forest & XGBoost Regression Engine</div>
+        <h3 style="font-size: 1.4rem; margin-bottom: 8px; color: #ffffff;">Multi-Feature Predictive Intelligence</h3>
+        <p style="color: #cbd5e1; font-size: 0.9rem; margin-bottom: 20px;">The model processes distance (km), volumetric dimensions, gross weight, luggage fragility, and dispatch urgency.</p>
+        <div class="ai-estimate-grid">
+          <div class="ai-metric-box">
+            <div class="label">Primary Output 1</div>
+            <div class="value">Cost (PKR)</div>
+            <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">Supervised Fair Fare Regression</p>
+          </div>
+          <div class="ai-metric-box">
+            <div class="label">Primary Output 2</div>
+            <div class="value">Time (Hours)</div>
+            <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">Highway Transit Speed Model</p>
+          </div>
+          <div class="ai-metric-box">
+            <div class="label">Model Quality</div>
+            <div class="value">R² 0.946</div>
+            <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">High Predictive Confidence</p>
+          </div>
+        </div>
+        <div class="ai-disclaimer-bar">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>Transparent FYP Design: AI estimates represent regression predictions based on historical domestic transit data.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: HOW IT WORKS -->
+    <section class="section-container" id="how-it-works" style="border-top: 1px solid var(--border-color);">
+      <div class="section-header-center">
+        <div class="public-hero-badge"><i class="fa-solid fa-list-check"></i> Step-By-Step Workflow</div>
+        <h2 class="section-heading">How Booking Works</h2>
+        <p class="section-subheading">From quote calculation to doorstep delivery in 4 straightforward steps.</p>
+      </div>
+
+      <div class="feature-grid-3" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
         <div class="feature-card">
           <span style="font-size: 2rem; font-weight: 800; color: var(--brand-primary); font-family: var(--font-heading);">01</span>
           <h4 style="margin-top: 10px; font-size: 1.15rem;">Enter Locations</h4>
-          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Select pickup city/address and destination city within Pakistan.</p>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Select your pickup city/address and domestic destination city within Pakistan.</p>
         </div>
         <div class="feature-card">
           <span style="font-size: 2rem; font-weight: 800; color: var(--brand-primary); font-family: var(--font-heading);">02</span>
           <h4 style="margin-top: 10px; font-size: 1.15rem;">Luggage Specs</h4>
-          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Specify luggage type (Suitcase, Box, Fragile), weight, and dimensions.</p>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Specify luggage type (Suitcase, Box, Fragile), total weight (kg), and bag count.</p>
         </div>
         <div class="feature-card">
           <span style="font-size: 2rem; font-weight: 800; color: var(--brand-primary); font-family: var(--font-heading);">03</span>
           <h4 style="margin-top: 10px; font-size: 1.15rem;">Instant AI Quote</h4>
-          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">View estimated cost, delivery time, and choose your preferred transport tier.</p>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">View estimated fair-fare cost, transit hours, and select your preferred transport tier.</p>
+        </div>
+        <div class="feature-card">
+          <span style="font-size: 2rem; font-weight: 800; color: var(--brand-primary); font-family: var(--font-heading);">04</span>
+          <h4 style="margin-top: 10px; font-size: 1.15rem;">Pickup & Tracking</h4>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Driver arrives at your doorstep, seals luggage with a digital barcode, and delivers on schedule.</p>
         </div>
       </div>
     </section>
 
-    <!-- 5. Service Tiers -->
-    <section style="background: var(--bg-surface-secondary); padding: 80px 24px;">
-      <div class="section-container" style="padding: 0;">
-        <div class="section-header-center">
-          <p class="section-eyebrow">Flexible Options</p>
-          <h2 class="section-heading">Tailored Transport Tiers</h2>
-        </div>
-        <div class="feature-grid-3">
-          <div class="card" style="border-top: 4px solid var(--text-muted);">
-            <h3>Standard Ground</h3>
-            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 8px 0 16px;">Economical inter-city transport for routine deliveries.</p>
-            <ul style="padding-left: 20px; font-size: 0.875rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px;">
-              <li>Doorstep pickup & delivery</li>
-              <li>Standard road transit speed</li>
-              <li>Live milestone tracking</li>
-            </ul>
-          </div>
-          <div class="card" style="border-top: 4px solid var(--brand-primary); box-shadow: var(--shadow-md);">
-            <span class="badge badge-confirmed" style="margin-bottom: 8px;">Most Popular</span>
-            <h3>Express Priority</h3>
-            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 8px 0 16px;">Fast highway dispatch with dedicated van allocation.</p>
-            <ul style="padding-left: 20px; font-size: 0.875rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px;">
-              <li>Priority pickup within 2 hours</li>
-              <li>Accelerated direct highway transit</li>
-              <li>SMS & WhatsApp milestone alerts</li>
-            </ul>
-          </div>
-          <div class="card" style="border-top: 4px solid var(--brand-indigo);">
-            <h3>Premium White-Glove</h3>
-            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 8px 0 16px;">Special handling for fragile, valuable, and oversized items.</p>
-            <ul style="padding-left: 20px; font-size: 0.875rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px;">
-              <li>Cushioned secure vehicle strapping</li>
-              <li>Dedicated handler assigned</li>
-              <li>Declared value protection warranty</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 6. Trust & Safety -->
-    <section class="section-container">
+    <!-- SECTION 5: TIERS -->
+    <section class="section-container" id="pricing-tiers" style="border-top: 1px solid var(--border-color);">
       <div class="section-header-center">
-        <p class="section-eyebrow">Peace of Mind</p>
-        <h2 class="section-heading">Safety & Luggage Integrity</h2>
+        <div class="public-hero-badge"><i class="fa-solid fa-truck-fast"></i> Service Options</div>
+        <h2 class="section-heading">Tailored Transport Tiers</h2>
+        <p class="section-subheading">Choose the speed, handling, and warranty protection that matches your trip requirements.</p>
       </div>
+
       <div class="feature-grid-3">
-        <div class="feature-card">
-          <div class="feature-icon-wrap" style="background: #ecfdf5; color: #10b981;"><i class="fa-solid fa-id-card-clip"></i></div>
-          <h3>Verified Drivers</h3>
-          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">All logistics partners are identity-verified with background security checks.</p>
+        <div class="card" style="border-top: 4px solid var(--text-muted);">
+          <h3>Standard Ground</h3>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin: 8px 0 16px;">Economical inter-city transport for routine luggage deliveries.</p>
+          <ul style="padding-left: 20px; font-size: 0.875rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px;">
+            <li>Doorstep pickup & delivery</li>
+            <li>Standard road transit speed</li>
+            <li>Live milestone tracking</li>
+          </ul>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon-wrap" style="background: #eff6ff; color: #3b82f6;"><i class="fa-solid fa-tag"></i></div>
-          <h3>Digital Barcode Seal</h3>
-          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Tamper-evident seals and photo checkpoints at every handover.</p>
+        <div class="card" style="border-top: 4px solid var(--brand-primary); box-shadow: var(--shadow-md);">
+          <span class="badge badge-confirmed" style="margin-bottom: 8px;">Most Popular</span>
+          <h3>Express Priority</h3>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin: 8px 0 16px;">Fast highway dispatch with dedicated courier van allocation.</p>
+          <ul style="padding-left: 20px; font-size: 0.875rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px;">
+            <li>Priority pickup within 2 hours</li>
+            <li>Accelerated direct highway transit</li>
+            <li>SMS & WhatsApp milestone alerts</li>
+          </ul>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon-wrap" style="background: #f5f3ff; color: #8b5cf6;"><i class="fa-solid fa-clipboard-check"></i></div>
-          <h3>Audit State Machine</h3>
-          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Every status transition is logged with timestamp, user ID, and geolocation.</p>
+        <div class="card" style="border-top: 4px solid var(--brand-indigo);">
+          <h3>Premium White-Glove</h3>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin: 8px 0 16px;">Special handling for fragile, valuable, and oversized items.</p>
+          <ul style="padding-left: 20px; font-size: 0.875rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px;">
+            <li>Cushioned secure vehicle strapping</li>
+            <li>Dedicated handler assigned</li>
+            <li>Declared value protection warranty</li>
+          </ul>
         </div>
       </div>
     </section>
 
-    <!-- 7. FAQ Accordion -->
-    <section class="section-container" style="max-width: 800px;">
+    <!-- SECTION 6: FAQS -->
+    <section class="section-container" id="faqs" style="border-top: 1px solid var(--border-color); max-width: 860px;">
       <div class="section-header-center">
-        <p class="section-eyebrow">Got Questions?</p>
+        <div class="public-hero-badge"><i class="fa-solid fa-circle-question"></i> Help & Guidance</div>
         <h2 class="section-heading">Frequently Asked Questions</h2>
+        <p class="section-subheading">Answers to common questions about luggage transport, pricing, and safety.</p>
       </div>
-      <div class="faq-accordion-item">
+
+      <div class="faq-accordion-item open">
         <div class="faq-header">How does the AI price prediction work? <i class="fa-solid fa-chevron-down"></i></div>
         <div class="faq-body">Our supervised machine learning model (Random Forest / XGBoost) is trained on domestic highway routes, taking into account road distance, total luggage weight, bag count, category fragility, and transport urgency to predict fair market prices.</div>
       </div>
@@ -331,9 +394,40 @@
         <div class="faq-header">Can I track my luggage in real time? <i class="fa-solid fa-chevron-down"></i></div>
         <div class="faq-body">Yes! The tracking portal shows step-by-step milestone progression from "Confirmed" to "Driver Assigned", "Picked Up", "In Transit", and "Delivered".</div>
       </div>
+      <div class="faq-accordion-item">
+        <div class="faq-header">How is my luggage protected during transit? <i class="fa-solid fa-chevron-down"></i></div>
+        <div class="faq-body">Every item is sealed with a tamper-evident digital barcode tag upon doorstep pickup, and milestone handovers are verified by verified logistics drivers.</div>
+      </div>
     </section>
 
-    <!-- 8. Final CTA -->
+    <!-- Trust & Safety Highlights -->
+    <section class="section-container" style="background: var(--bg-surface-secondary); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); max-width: 100%;">
+      <div style="max-width: 1200px; margin: 0 auto; padding: 0 24px;">
+        <div class="section-header-center">
+          <p class="section-eyebrow">Guaranteed Peace of Mind</p>
+          <h2 class="section-heading">Luggage Security & Milestone Tracking</h2>
+        </div>
+        <div class="feature-grid-3">
+          <div class="feature-card">
+            <div class="feature-icon-wrap" style="background: #ecfdf5; color: #10b981;"><i class="fa-solid fa-id-card-clip"></i></div>
+            <h3>Verified Drivers</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">All logistics partners are identity-verified with background security checks.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon-wrap" style="background: #eff6ff; color: #3b82f6;"><i class="fa-solid fa-tag"></i></div>
+            <h3>Digital Barcode Seal</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Tamper-evident seals and photo checkpoints at every handover.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon-wrap" style="background: #f5f3ff; color: #8b5cf6;"><i class="fa-solid fa-clipboard-check"></i></div>
+            <h3>Audit State Machine</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Every status transition is logged with timestamp, user ID, and geolocation.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom Call To Action -->
     <section style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); color: white; padding: 70px 24px; text-align: center;">
       <div style="max-width: 700px; margin: 0 auto;">
         <h2 style="font-size: 2.2rem; margin-bottom: 16px; color: white;">Ready to Move Your Luggage?</h2>
@@ -347,20 +441,20 @@
       <div class="footer-grid">
         <div>
           <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
-            <div class="brand-logo-icon" style="width: 32px; height: 32px; font-size: 1rem;"><i class="fa-solid fa-suitcase-rolling"></i></div>
-            <strong style="color: white; font-size: 1.1rem;">SmartLuggage AI</strong>
+            <img src="assets/images/loogo.png" alt="SmartLuggage Logo" class="brand-logo-img" style="width: 34px; height: 34px;" />
+            <strong style="color: white; font-size: 1.1rem;">SmartLuggage</strong>
           </div>
           <p style="font-size: 0.85rem; line-height: 1.6;">Domestic Online Luggage Transportation Platform powered by Supervised Machine Learning Regression.</p>
         </div>
         <div>
           <h4 style="color: white; font-size: 0.9rem; margin-bottom: 14px;">Platform</h4>
-          <p style="margin-bottom: 8px;"><a href="#" style="color: inherit;">AI Cost Prediction</a></p>
-          <p style="margin-bottom: 8px;"><a href="#" style="color: inherit;">Domestic Corridors</a></p>
-          <p style="margin-bottom: 8px;"><a href="#" style="color: inherit;">Tracking Portal</a></p>
+          <p style="margin-bottom: 8px;"><a href="#ai-model" style="color: inherit;">AI Cost Prediction</a></p>
+          <p style="margin-bottom: 8px;"><a href="#features" style="color: inherit;">Domestic Corridors</a></p>
+          <p style="margin-bottom: 8px;"><a href="#" style="color: inherit;" id="footerTrackLink">Tracking Portal</a></p>
         </div>
         <div>
           <h4 style="color: white; font-size: 0.9rem; margin-bottom: 14px;">Portals</h4>
-          <p style="margin-bottom: 8px;"><a href="#" style="color: inherit;" data-switch-role="CUSTOMER">Customer Login</a></p>
+          <p style="margin-bottom: 8px;"><a href="#" style="color: inherit;" id="footerSignInLink">Customer Sign In / Register</a></p>
           <p style="margin-bottom: 8px;"><a href="#" style="color: inherit;" data-switch-role="DRIVER">Driver Dispatch</a></p>
           <p style="margin-bottom: 8px;"><a href="#" style="color: inherit;" data-switch-role="ADMIN">Admin Console</a></p>
         </div>
@@ -383,10 +477,10 @@
     <!-- Sidebar -->
     <aside class="sidebar" id="appSidebar">
       <div class="sidebar-header">
-        <div class="brand-logo-icon"><i class="fa-solid fa-suitcase-rolling"></i></div>
+        <img src="assets/images/loogo.png" alt="SmartLuggage Logo" class="brand-logo-img" style="width: 38px; height: 38px;" />
         <div class="brand-logo-text">
           <h2>SmartLuggage</h2>
-          <span>AI Logistics Platform</span>
+          <span>Logistics Platform</span>
         </div>
       </div>
 

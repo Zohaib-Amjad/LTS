@@ -26,24 +26,340 @@ import {
 
 class AppController {
   constructor() {
+    this.currentRole = 'LANDING';
+    this.currentPublicPage = 'publicViewHome';
     this.currentView = 'view-customer-dashboard';
     this.activeBookingStep = 1;
     this.currentBookingDraft = null;
     this.activePrediction = null;
+    this.isHandlingPopstate = false;
 
     this.init();
   }
 
   init() {
-    // Check if authenticated user session exists, otherwise login default customer
-    if (!authService.isAuthenticated()) {
-      authService.login('customer@smartluggage.pk', 'customer123');
+    this.bindEvents();
+    this.bindHistoryEvents();
+    this.initLandingScrollSpy();
+    this.applyTheme();
+
+    // If URL has a pathname like /customer-dashboard, normalize to hash
+    const path = window.location.pathname;
+    if (path && path !== '/' && path !== '/index.html') {
+      const cleanHash = '#' + path.replace(/^\/+/, '');
+      try {
+        window.history.replaceState(null, '', cleanHash);
+      } catch (e) {}
     }
 
-    this.bindEvents();
-    this.applyTheme();
-    this.renderSidebarForRole();
-    this.renderActiveView();
+    const currentHash = window.location.hash;
+    if (currentHash && currentHash.length > 1) {
+      this.restoreFromHash(currentHash);
+    } else {
+      this.switchDemoRole('LANDING', null, false, false);
+      try {
+        window.history.replaceState({ role: 'LANDING', bookmarkId: 'home' }, '', '#home');
+      } catch (e) {}
+    }
+  }
+
+  initLandingScrollSpy() {
+    const sectionIds = ['home', 'why-choose', 'features', 'ai-model', 'how-it-works', 'pricing-tiers', 'faqs'];
+    const navLinkMap = {
+      'home': '#home',
+      'why-choose': '#home',
+      'features': '#features',
+      'ai-model': '#ai-model',
+      'how-it-works': '#how-it-works',
+      'pricing-tiers': '#pricing-tiers',
+      'faqs': '#faqs'
+    };
+
+    const updateActiveNav = () => {
+      const landing = document.getElementById('landingView');
+      if (!landing || landing.style.display === 'none') return;
+
+      const scrollPos = window.scrollY + 130;
+      let activeSection = 'home';
+
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (el) {
+          const top = el.offsetTop;
+          if (scrollPos >= top) {
+            activeSection = id;
+          }
+        }
+      }
+
+      const activeHref = navLinkMap[activeSection] || '#home';
+      document.querySelectorAll('.landing-nav-links a').forEach(link => {
+        const href = link.getAttribute('href');
+        link.classList.toggle('active', href === activeHref);
+      });
+    };
+
+    window.addEventListener('scroll', () => {
+      if (!this.isScrollingToBookmark) {
+        updateActiveNav();
+      }
+    }, { passive: true });
+
+    setTimeout(updateActiveNav, 100);
+  }
+
+  scrollToBookmark(targetId = 'home', pushHistory = true) {
+    if (this.currentRole !== 'LANDING') {
+      this.switchDemoRole('LANDING', null, false, false);
+    }
+
+    this.currentBookmark = targetId;
+    const target = document.getElementById(targetId) || (targetId === 'home' ? document.getElementById('hero') : null);
+    if (target) {
+      this.isScrollingToBookmark = true;
+      const topOffset = 80;
+      const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - topOffset;
+
+      window.scrollTo({
+        top: Math.max(0, targetPosition),
+        behavior: 'smooth'
+      });
+
+      const navLinkMap = {
+        'home': '#home',
+        'why-choose': '#home',
+        'features': '#features',
+        'ai-model': '#ai-model',
+        'how-it-works': '#how-it-works',
+        'pricing-tiers': '#pricing-tiers',
+        'faqs': '#faqs'
+      };
+      const activeHref = navLinkMap[targetId] || `#${targetId}`;
+      document.querySelectorAll('.landing-nav-links a').forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === activeHref);
+      });
+
+      if (pushHistory && !this.isHandlingPopstate) {
+        try {
+          window.history.pushState({ role: 'LANDING', bookmarkId: targetId }, '', `#${targetId}`);
+        } catch (e) {}
+      }
+
+      setTimeout(() => {
+        this.isScrollingToBookmark = false;
+      }, 700);
+    }
+  }
+
+  bindHistoryEvents() {
+    window.addEventListener('popstate', (e) => {
+      this.isHandlingPopstate = true;
+      const state = e.state;
+      if (state && state.role) {
+        this.restoreState(state);
+      } else {
+        this.restoreFromHash(window.location.hash);
+      }
+      this.isHandlingPopstate = false;
+    });
+
+    window.addEventListener('hashchange', () => {
+      if (!this.isHandlingPopstate && !this.isScrollingToBookmark) {
+        this.isHandlingPopstate = true;
+        this.restoreFromHash(window.location.hash);
+        this.isHandlingPopstate = false;
+      }
+    });
+  }
+
+  restoreState(state) {
+    const { role, viewId, authTab, bookmarkId, extra } = state;
+    if (role === 'LANDING') {
+      this.switchDemoRole('LANDING', null, false, false);
+      this.scrollToBookmark(bookmarkId || 'home', false);
+    } else if (role === 'AUTH') {
+      this.openAuth(authTab || 'login', false);
+    } else {
+      const currentUser = authService.getCurrentUser();
+      if (!currentUser) {
+        this.openAuth('login', false);
+        return;
+      }
+      this.switchDemoRole(role, viewId, false, false);
+      if (viewId === 'view-booking-tracking' && extra?.bookingId) {
+        this.showTrackingView(extra.bookingId, false);
+      }
+    }
+  }
+
+  restoreFromHash(rawHash) {
+    const hash = (rawHash || '').replace(/^#\/?/, '').toLowerCase();
+    
+    // Landing bookmarks
+    const landingBookmarks = {
+      '': 'home',
+      'home': 'home',
+      'hero': 'home',
+      'why-choose': 'home',
+      'features': 'features',
+      'ai-model': 'ai-model',
+      'ai-engine': 'ai-model',
+      'how-it-works': 'how-it-works',
+      'pricing-tiers': 'pricing-tiers',
+      'tiers': 'pricing-tiers',
+      'faqs': 'faqs'
+    };
+
+    if (hash in landingBookmarks) {
+      this.switchDemoRole('LANDING', null, false, false);
+      this.scrollToBookmark(landingBookmarks[hash], false);
+      return;
+    }
+
+    if (hash === 'login' || hash === 'auth-login') {
+      this.openAuth('login', false);
+      return;
+    }
+    if (hash === 'register' || hash === 'auth-register') {
+      this.openAuth('register', false);
+      return;
+    }
+
+    const hashToView = {
+      'customer-dashboard': { role: 'CUSTOMER', view: 'view-customer-dashboard' },
+      'create-booking': { role: 'CUSTOMER', view: 'view-create-booking' },
+      'my-bookings': { role: 'CUSTOMER', view: 'view-my-bookings' },
+      'track-shipment': { role: 'CUSTOMER', view: 'view-booking-tracking' },
+      'my-luggage': { role: 'CUSTOMER', view: 'view-my-luggage' },
+      'feedback': { role: 'CUSTOMER', view: 'view-feedback' },
+      'profile': { role: 'CUSTOMER', view: 'view-customer-profile' },
+      'customer-profile': { role: 'CUSTOMER', view: 'view-customer-profile' },
+      'driver-dashboard': { role: 'DRIVER', view: 'view-driver-dashboard' },
+      'driver-profile': { role: 'DRIVER', view: 'view-customer-profile' },
+      'admin-dashboard': { role: 'ADMIN', view: 'view-admin-dashboard' },
+      'admin-bookings': { role: 'ADMIN', view: 'view-admin-bookings' },
+      'admin-users': { role: 'ADMIN', view: 'view-admin-users' },
+      'admin-drivers': { role: 'ADMIN', view: 'view-admin-drivers' },
+      'admin-feedback': { role: 'ADMIN', view: 'view-admin-feedback' },
+      'admin-predictions': { role: 'ADMIN', view: 'view-admin-predictions' },
+      'admin-reports': { role: 'ADMIN', view: 'view-admin-reports' },
+      'admin-settings': { role: 'ADMIN', view: 'view-admin-settings' },
+      'admin-profile': { role: 'ADMIN', view: 'view-customer-profile' }
+    };
+
+    const match = hashToView[hash];
+    if (match) {
+      const currentUser = authService.getCurrentUser();
+      if (!currentUser) {
+        this.showToast(`Please sign in with your registered account to access this portal.`, 'info');
+        this.openAuth('login', false);
+        return;
+      }
+      this.switchDemoRole(match.role, match.view, false, false);
+    } else {
+      this.switchDemoRole('LANDING', null, false, false);
+      this.scrollToBookmark('home', false);
+    }
+  }
+
+  getViewHash(role, viewId, authTab = null) {
+    if (role === 'LANDING') {
+      return this.currentBookmark ? `#${this.currentBookmark}` : '#home';
+    }
+    if (role === 'AUTH') return authTab === 'register' ? '#register' : '#login';
+    if (role === 'CUSTOMER') {
+      const viewMap = {
+        'view-customer-dashboard': '#customer-dashboard',
+        'view-create-booking': '#create-booking',
+        'view-my-bookings': '#my-bookings',
+        'view-booking-tracking': '#track-shipment',
+        'view-my-luggage': '#my-luggage',
+        'view-feedback': '#feedback',
+        'view-customer-profile': '#profile'
+      };
+      return viewMap[viewId] || '#customer-dashboard';
+    }
+    if (role === 'DRIVER') {
+      return viewId === 'view-customer-profile' ? '#driver-profile' : '#driver-dashboard';
+    }
+    if (role === 'ADMIN') {
+      const adminMap = {
+        'view-admin-dashboard': '#admin-dashboard',
+        'view-admin-bookings': '#admin-bookings',
+        'view-admin-users': '#admin-users',
+        'view-admin-drivers': '#admin-drivers',
+        'view-admin-feedback': '#admin-feedback',
+        'view-admin-predictions': '#admin-predictions',
+        'view-admin-reports': '#admin-reports',
+        'view-admin-settings': '#admin-settings',
+        'view-customer-profile': '#admin-profile'
+      };
+      return adminMap[viewId] || '#admin-dashboard';
+    }
+    return '#home';
+  }
+
+  pushHistoryState(role, viewId, authTab = null, bookmarkId = null, extra = null) {
+    if (this.isHandlingPopstate) return;
+
+    if (role === 'LANDING' && bookmarkId) {
+      this.currentBookmark = bookmarkId;
+    }
+
+    const hash = this.getViewHash(role, viewId, authTab);
+    const state = { role, viewId, authTab, bookmarkId: bookmarkId || (role === 'LANDING' ? this.currentBookmark : null), extra };
+
+    // Don't push identical duplicate state
+    if (window.history.state && 
+        window.history.state.role === role && 
+        window.history.state.viewId === viewId && 
+        window.history.state.authTab === authTab &&
+        window.history.state.bookmarkId === state.bookmarkId &&
+        JSON.stringify(window.history.state.extra) === JSON.stringify(extra)) {
+      return;
+    }
+
+    try {
+      window.history.pushState(state, '', hash);
+    } catch (e) {}
+  }
+
+  openAuth(tab = 'login', pushHistory = true) {
+    this.currentRole = 'AUTH';
+    this.switchDemoRole('AUTH', null, false, false);
+    const tabLogin = document.getElementById('authTabLogin');
+    const tabRegister = document.getElementById('authTabRegister');
+    const loginForm = document.getElementById('appLoginForm');
+    const regForm = document.getElementById('appRegisterForm');
+
+    if (tab === 'register') {
+      if (tabRegister) {
+        tabRegister.classList.add('active');
+        tabRegister.style.borderBottom = '2px solid var(--brand-primary)';
+      }
+      if (tabLogin) {
+        tabLogin.classList.remove('active');
+        tabLogin.style.borderBottom = 'none';
+      }
+      if (loginForm) loginForm.style.display = 'none';
+      if (regForm) regForm.style.display = 'block';
+    } else {
+      if (tabLogin) {
+        tabLogin.classList.add('active');
+        tabLogin.style.borderBottom = '2px solid var(--brand-primary)';
+      }
+      if (tabRegister) {
+        tabRegister.classList.remove('active');
+        tabRegister.style.borderBottom = 'none';
+      }
+      if (loginForm) loginForm.style.display = 'block';
+      if (regForm) regForm.style.display = 'none';
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    if (pushHistory && !this.isHandlingPopstate) {
+      this.pushHistoryState('AUTH', null, tab);
+    }
   }
 
   bindEvents() {
@@ -51,7 +367,74 @@ class AppController {
     document.querySelectorAll('[data-switch-role]').forEach(btn => {
       btn.addEventListener('click', e => {
         const targetRole = e.currentTarget.getAttribute('data-switch-role');
-        this.switchDemoRole(targetRole);
+        if (targetRole === 'AUTH') {
+          this.openAuth('login', true);
+        } else if (targetRole === 'LANDING') {
+          this.switchDemoRole('LANDING', null, false, true);
+          this.scrollToBookmark('home', true);
+        } else {
+          this.switchDemoRole(targetRole, null, true);
+        }
+      });
+    });
+
+    // Landing Navigation & Auth Action Buttons
+    const landingNavLogin = document.getElementById('landingNavLoginBtn');
+    const landingNavRegister = document.getElementById('landingNavRegisterBtn');
+    const landingNavTrack = document.getElementById('landingNavTrackBtn');
+    const authBackBtn = document.getElementById('authBackToHomeBtn');
+
+    if (landingNavLogin) landingNavLogin.addEventListener('click', () => this.openAuth('login'));
+    if (landingNavRegister) landingNavRegister.addEventListener('click', () => this.openAuth('register'));
+    if (authBackBtn) authBackBtn.addEventListener('click', () => {
+      this.switchDemoRole('LANDING', null, false, true);
+      this.scrollToBookmark('home', true);
+    });
+    if (landingNavTrack) {
+      landingNavTrack.addEventListener('click', () => {
+        this.openAuth('login');
+      });
+    }
+
+    // Landing Navbar Bookmark Links & Brand Click
+    document.querySelectorAll('.landing-nav-links a[href^="#"], .landing-brand[href^="#"]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const href = link.getAttribute('href');
+        const targetId = href ? href.replace(/^#/, '') : 'home';
+        this.scrollToBookmark(targetId || 'home');
+      });
+    });
+
+    // Landing Footer Bookmark Links
+    document.querySelectorAll('.landing-footer a[href^="#"]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        const href = link.getAttribute('href');
+        if (href && href.length > 1) {
+          e.preventDefault();
+          this.scrollToBookmark(href.replace(/^#/, ''));
+        }
+      });
+    });
+
+    // Footer Quick Links
+    const footerSignIn = document.getElementById('footerSignInLink');
+    const footerTrack = document.getElementById('footerTrackLink');
+    if (footerSignIn) footerSignIn.addEventListener('click', e => {
+      e.preventDefault();
+      this.openAuth('login');
+    });
+    if (footerTrack) footerTrack.addEventListener('click', e => {
+      e.preventDefault();
+      this.openAuth('login');
+    });
+
+    // Landing Page Footer Role Links
+    document.querySelectorAll('.landing-footer a[data-switch-role]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.openAuth('login');
       });
     });
 
@@ -84,21 +467,11 @@ class AppController {
 
     if (tabLogin && tabRegister) {
       tabLogin.addEventListener('click', () => {
-        tabLogin.classList.add('active');
-        tabLogin.style.borderBottom = '2px solid var(--brand-primary)';
-        tabRegister.classList.remove('active');
-        tabRegister.style.borderBottom = 'none';
-        if (loginForm) loginForm.style.display = 'block';
-        if (regForm) regForm.style.display = 'none';
+        this.openAuth('login');
       });
 
       tabRegister.addEventListener('click', () => {
-        tabRegister.classList.add('active');
-        tabRegister.style.borderBottom = '2px solid var(--brand-primary)';
-        tabLogin.classList.remove('active');
-        tabLogin.style.borderBottom = 'none';
-        if (loginForm) loginForm.style.display = 'none';
-        if (regForm) regForm.style.display = 'block';
+        this.openAuth('register');
       });
     }
 
@@ -136,14 +509,26 @@ class AppController {
       });
     }
 
-    // Landing Page Navigation Buttons
+    // Landing Page Navigation & CTA Buttons
     const landingBookBtn = document.getElementById('landingBookNowBtn');
     const landingQuoteBtn = document.getElementById('landingGetQuoteBtn');
     const landingFinalCtaBtn = document.getElementById('landingFinalCtaBtn');
 
-    if (landingBookBtn) landingBookBtn.addEventListener('click', () => this.switchDemoRole('CUSTOMER', 'view-create-booking'));
-    if (landingQuoteBtn) landingQuoteBtn.addEventListener('click', () => this.switchDemoRole('CUSTOMER', 'view-create-booking'));
-    if (landingFinalCtaBtn) landingFinalCtaBtn.addEventListener('click', () => this.switchDemoRole('CUSTOMER', 'view-customer-dashboard'));
+    if (landingBookBtn) {
+      landingBookBtn.addEventListener('click', () => {
+        this.openAuth('register');
+      });
+    }
+    if (landingQuoteBtn) {
+      landingQuoteBtn.addEventListener('click', () => {
+        this.openAuth('login');
+      });
+    }
+    if (landingFinalCtaBtn) {
+      landingFinalCtaBtn.addEventListener('click', () => {
+        this.openAuth('register');
+      });
+    }
 
     // Dashboard Quick Navigation Buttons
     const dashCreateBtn = document.getElementById('dashCreateBookingBtn');
@@ -252,17 +637,28 @@ class AppController {
       passwordForm.addEventListener('submit', e => this.handleChangePassword(e));
     }
 
-    // FAQ Accordion on Landing Page
-    document.querySelectorAll('.faq-header').forEach(header => {
-      header.addEventListener('click', () => {
-        const body = header.nextElementSibling;
-        const icon = header.querySelector('i');
-        if (body.style.display === 'none' || !body.style.display) {
-          body.style.display = 'block';
-          if (icon) icon.className = 'fa-solid fa-chevron-up';
-        } else {
-          body.style.display = 'none';
-          if (icon) icon.className = 'fa-solid fa-chevron-down';
+    // FAQ Accordion on Landing Page (Single Active Item, Full Toggle Support)
+    const faqItems = document.querySelectorAll('.faq-accordion-item');
+    faqItems.forEach(item => {
+      const header = item.querySelector('.faq-header');
+
+      // Click handler: if currently open, close it; otherwise close all others and open this one
+      if (header) {
+        header.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const isCurrentlyOpen = item.classList.contains('open');
+          faqItems.forEach(other => other.classList.remove('open'));
+          if (!isCurrentlyOpen) {
+            item.classList.add('open');
+          }
+        });
+      }
+
+      // Hover effect: when hovering an unopened FAQ, switch to it
+      item.addEventListener('mouseenter', () => {
+        if (!item.classList.contains('open')) {
+          faqItems.forEach(other => other.classList.remove('open'));
+          item.classList.add('open');
         }
       });
     });
@@ -356,7 +752,7 @@ class AppController {
   handleLogout() {
     authService.logout();
     this.showToast('You have been logged out successfully.', 'info');
-    this.switchDemoRole('AUTH');
+    this.switchDemoRole('LANDING');
   }
 
   handleChangePassword(e) {
@@ -383,7 +779,7 @@ class AppController {
   navigateToRoleDefault() {
     const user = authService.getCurrentUser();
     if (!user) {
-      this.switchDemoRole('AUTH');
+      this.openAuth('login');
       return;
     }
 
@@ -400,7 +796,8 @@ class AppController {
      Role Switcher & Guarded Navigation
      ========================================================================= */
 
-  switchDemoRole(role, targetView = null) {
+  switchDemoRole(role, targetView = null, forceDemoLogin = false, pushHistory = true) {
+    this.currentRole = role;
     document.querySelectorAll('.demo-role-btn').forEach(btn => {
       btn.classList.toggle('active', btn.getAttribute('data-switch-role') === role);
     });
@@ -413,6 +810,9 @@ class AppController {
       if (landing) landing.style.display = 'block';
       if (authScreen) authScreen.style.display = 'none';
       if (appWrapper) appWrapper.style.display = 'none';
+      if (pushHistory && !this.isHandlingPopstate) {
+        this.pushHistoryState('LANDING', null);
+      }
       return;
     }
 
@@ -423,19 +823,53 @@ class AppController {
       return;
     }
 
+    if (forceDemoLogin) {
+      if (role === 'CUSTOMER') {
+        authService.login('customer@smartluggage.pk', 'customer123');
+      } else if (role === 'DRIVER') {
+        authService.login('driver@smartluggage.pk', 'driver123');
+      } else if (role === 'ADMIN') {
+        authService.login('admin@smartluggage.pk', 'admin123');
+      }
+    }
+
+    const currentUser = authService.getCurrentUser();
+
+    // Strict Role-Based Authentication Guard: Only users who have registered/logged in for this specific role can access
+    if (!currentUser) {
+      this.showToast(`Please sign in or create an account to access the ${role.toLowerCase()} portal.`, 'info');
+      this.openAuth('login', pushHistory);
+      return;
+    }
+
+    if (role === 'CUSTOMER' && currentUser.role !== USER_ROLES.CUSTOMER && currentUser.role !== USER_ROLES.ADMIN) {
+      this.showToast(`Access restricted: Your current account (${currentUser.role}) does not have Customer access.`, 'error');
+      this.openAuth('login', pushHistory);
+      return;
+    }
+
+    if (role === 'DRIVER' && currentUser.role !== USER_ROLES.DRIVER && currentUser.role !== USER_ROLES.ADMIN) {
+      this.showToast(`Access restricted: Driver credentials required for Driver Dispatch.`, 'error');
+      this.openAuth('login', pushHistory);
+      return;
+    }
+
+    if (role === 'ADMIN' && currentUser.role !== USER_ROLES.ADMIN) {
+      this.showToast(`Access restricted: Administrator credentials required.`, 'error');
+      this.openAuth('login', pushHistory);
+      return;
+    }
+
     if (landing) landing.style.display = 'none';
     if (authScreen) authScreen.style.display = 'none';
     if (appWrapper) appWrapper.style.display = 'flex';
 
     if (role === 'CUSTOMER') {
-      authService.login('customer@smartluggage.pk', 'customer123');
-      this.navigate(targetView || 'view-customer-dashboard');
+      this.navigate(targetView || 'view-customer-dashboard', pushHistory);
     } else if (role === 'DRIVER') {
-      authService.login('driver@smartluggage.pk', 'driver123');
-      this.navigate('view-driver-dashboard');
+      this.navigate(targetView || 'view-driver-dashboard', pushHistory);
     } else if (role === 'ADMIN') {
-      authService.login('admin@smartluggage.pk', 'admin123');
-      this.navigate('view-admin-dashboard');
+      this.navigate(targetView || 'view-admin-dashboard', pushHistory);
     }
 
     this.renderSidebarForRole();
@@ -495,7 +929,22 @@ class AppController {
       `;
     }
 
+    html += `
+      <div style="margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--border-color);">
+        <button class="nav-link" id="sidebarReturnLandingBtn" style="color: var(--text-muted);"><i class="fa-solid fa-arrow-left"></i><span>Public Website</span></button>
+      </div>
+    `;
+
     nav.innerHTML = html;
+
+    const returnLandingBtn = document.getElementById('sidebarReturnLandingBtn');
+    if (returnLandingBtn) {
+      returnLandingBtn.addEventListener('click', () => {
+        this.switchDemoRole('LANDING');
+        const sidebar = document.getElementById('appSidebar');
+        if (sidebar) sidebar.classList.remove('mobile-open');
+      });
+    }
 
     // Attach click listeners to nav links
     nav.querySelectorAll('[data-nav]').forEach(link => {
@@ -508,9 +957,15 @@ class AppController {
     });
   }
 
-  navigate(viewId) {
+  navigate(viewId, pushHistory = true) {
     // Route Guard Check
     if (!authService.canAccessView(viewId)) {
+      if (!authService.isAuthenticated()) {
+        this.showToast('Please sign in or create an account to access this portal.', 'info');
+        this.openAuth('login', pushHistory);
+        return;
+      }
+
       this.currentView = 'view-unauthorized';
       document.querySelectorAll('.view-pane').forEach(pane => pane.style.display = 'none');
       const unauthPane = document.getElementById('view-unauthorized');
@@ -558,6 +1013,10 @@ class AppController {
 
     this.renderSidebarForRole();
     this.renderActiveView();
+
+    if (pushHistory && !this.isHandlingPopstate && this.currentRole !== 'LANDING' && this.currentRole !== 'AUTH') {
+      this.pushHistoryState(this.currentRole, viewId);
+    }
   }
 
   renderActiveView() {
@@ -959,7 +1418,7 @@ class AppController {
     }).join('');
   }
 
-  showTrackingView(bookingIdOrNumber) {
+  showTrackingView(bookingIdOrNumber, pushHistory = true) {
     const user = authService.getCurrentUser();
     try {
       const timelineData = trackingService.getTrackingTimeline(bookingIdOrNumber, user);
@@ -1072,7 +1531,10 @@ class AppController {
         }
       }
 
-      this.navigate('view-booking-tracking');
+      this.navigate('view-booking-tracking', false);
+      if (pushHistory && !this.isHandlingPopstate) {
+        this.pushHistoryState(this.currentRole || 'CUSTOMER', 'view-booking-tracking', null, { bookingId: bookingIdOrNumber });
+      }
     } catch (err) {
       this.showToast(err.message, 'error');
     }

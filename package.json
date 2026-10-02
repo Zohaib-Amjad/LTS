@@ -18,7 +18,8 @@
     "test:security": "node test/security_performance.test.js",
     "test:demo": "node test/e2e_demo_scenarios.test.js",
     "build": "node -e \"console.log('Executing production build verification...');\" && npm test",
-    "start": "npx serve -l 3000 .",
+    "start": "npx serve -s -l 3000 .",
+    "dev": "npx serve -s -l 3000 .",
     "check": "npm test"
   },
   "keywords": [
