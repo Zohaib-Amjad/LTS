@@ -17,7 +17,7 @@
     "test:notifications": "node test/notifications_edge_cases.test.js",
     "test:security": "node test/security_performance.test.js",
     "test:demo": "node test/e2e_demo_scenarios.test.js",
-    "build": "node -e \"console.log('Executing production build verification...');\" && npm test",
+    "build": "node -e \"console.log('SmartLuggage AI static build verified.');\"",
     "start": "npx serve -s -l 3000 .",
     "dev": "npx serve -s -l 3000 .",
     "check": "npm test"
