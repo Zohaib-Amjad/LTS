@@ -46,8 +46,21 @@ async function runAuthTests() {
     city: 'Lahore'
   });
   assert(registered.id !== undefined, 'User registered with unique ID');
-  assert(registered.role === USER_ROLES.CUSTOMER, 'Self-registration automatically assigns CUSTOMER role');
+  assert(registered.role === USER_ROLES.CUSTOMER, 'Self-registration with default assigns CUSTOMER role');
   assert(registered.passwordHash === undefined, 'passwordHash is SANITIZED and not returned');
+
+  // Driver Registration with role
+  const driverEmail = `test.driver.${Date.now()}@example.pk`;
+  const driverReg = authService.register({
+    fullName: 'Kashif Driver',
+    email: driverEmail,
+    password: 'password123',
+    confirmPassword: 'password123',
+    phone: '+92 301 9998877',
+    city: 'Rawalpindi',
+    role: USER_ROLES.DRIVER
+  });
+  assert(driverReg.role === USER_ROLES.DRIVER, 'Driver registration assigns DRIVER role');
 
   // Test 2: Password Mismatch on Registration
   let mismatchCaught = false;

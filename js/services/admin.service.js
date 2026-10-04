@@ -25,11 +25,11 @@ class AdminService {
     const allPredictions = db.tables.predictions.getAll();
     const allFeedback = db.tables.feedback.getAll();
 
-    // Customers count
+    // Registered accounts metrics by role
+    const totalUsers = allUsers.length;
     const totalCustomers = allUsers.filter(u => u.role === USER_ROLES.CUSTOMER).length;
-
-    // Driver metrics
-    const totalDrivers = allDrivers.length;
+    const totalDrivers = allUsers.filter(u => u.role === USER_ROLES.DRIVER).length;
+    const totalAdmins = allUsers.filter(u => u.role === USER_ROLES.ADMIN).length;
     const activeDrivers = allDrivers.filter(d => {
       const u = db.tables.users.findById(d.userId);
       return u?.isActive !== false && d.availabilityStatus !== DRIVER_AVAILABILITY.OFFLINE;
@@ -96,8 +96,10 @@ class AdminService {
     const topCorridors = Object.values(corridorMap).sort((a, b) => b.count - a.count);
 
     return {
+      totalUsers,
       totalCustomers,
       totalDrivers,
+      totalAdmins,
       activeDrivers,
       availableDrivers,
       totalBookings,

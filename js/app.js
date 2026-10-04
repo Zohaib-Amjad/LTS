@@ -373,7 +373,7 @@ class AppController {
           this.switchDemoRole('LANDING', null, false, true);
           this.scrollToBookmark('home', true);
         } else {
-          this.switchDemoRole(targetRole, null, true);
+          this.switchDemoRole(targetRole, null, false, true);
         }
       });
     });
@@ -737,11 +737,12 @@ class AppController {
     const email = document.getElementById('regEmail').value;
     const phone = document.getElementById('regPhone').value;
     const city = document.getElementById('regCity').value;
+    const role = document.getElementById('regRole')?.value || USER_ROLES.CUSTOMER;
     const password = document.getElementById('regPassword').value;
     const confirmPassword = document.getElementById('regConfirmPassword').value;
 
     try {
-      const user = authService.register({ fullName, email, phone, city, password, confirmPassword });
+      const user = authService.register({ fullName, email, phone, city, role, password, confirmPassword });
       this.showToast(`Account created successfully! Welcome, ${user.fullName}`, 'success');
       this.navigateToRoleDefault();
     } catch (err) {
@@ -797,16 +798,15 @@ class AppController {
      ========================================================================= */
 
   switchDemoRole(role, targetView = null, forceDemoLogin = false, pushHistory = true) {
-    this.currentRole = role;
-    document.querySelectorAll('.demo-role-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.getAttribute('data-switch-role') === role);
-    });
-
     const landing = document.getElementById('landingView');
     const authScreen = document.getElementById('authScreenView');
     const appWrapper = document.getElementById('appWrapper');
 
     if (role === 'LANDING') {
+      this.currentRole = 'LANDING';
+      document.querySelectorAll('.demo-role-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-switch-role') === 'LANDING');
+      });
       if (landing) landing.style.display = 'block';
       if (authScreen) authScreen.style.display = 'none';
       if (appWrapper) appWrapper.style.display = 'none';
@@ -817,48 +817,45 @@ class AppController {
     }
 
     if (role === 'AUTH') {
+      this.currentRole = 'AUTH';
+      document.querySelectorAll('.demo-role-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-switch-role') === 'AUTH');
+      });
       if (landing) landing.style.display = 'none';
       if (authScreen) authScreen.style.display = 'block';
       if (appWrapper) appWrapper.style.display = 'none';
       return;
     }
 
-    if (forceDemoLogin) {
-      if (role === 'CUSTOMER') {
-        authService.login('customer@smartluggage.pk', 'customer123');
-      } else if (role === 'DRIVER') {
-        authService.login('driver@smartluggage.pk', 'driver123');
-      } else if (role === 'ADMIN') {
-        authService.login('admin@smartluggage.pk', 'admin123');
-      }
-    }
-
     const currentUser = authService.getCurrentUser();
 
     // Strict Role-Based Authentication Guard: Only users who have registered/logged in for this specific role can access
     if (!currentUser) {
-      this.showToast(`Please sign in or create an account to access the ${role.toLowerCase()} portal.`, 'info');
+      this.showToast(`Please sign in with your registered ${role.toLowerCase()} account to access this portal.`, 'info');
       this.openAuth('login', pushHistory);
       return;
     }
 
+    // Check role boundaries
     if (role === 'CUSTOMER' && currentUser.role !== USER_ROLES.CUSTOMER && currentUser.role !== USER_ROLES.ADMIN) {
-      this.showToast(`Access restricted: Your current account (${currentUser.role}) does not have Customer access.`, 'error');
-      this.openAuth('login', pushHistory);
+      this.showToast(`Access restricted: You are registered as ${currentUser.role}. Only Customer accounts can access this portal.`, 'error');
       return;
     }
 
     if (role === 'DRIVER' && currentUser.role !== USER_ROLES.DRIVER && currentUser.role !== USER_ROLES.ADMIN) {
-      this.showToast(`Access restricted: Driver credentials required for Driver Dispatch.`, 'error');
-      this.openAuth('login', pushHistory);
+      this.showToast(`Access restricted: You are registered as ${currentUser.role}. Only Driver accounts can access the Driver Dispatch portal.`, 'error');
       return;
     }
 
     if (role === 'ADMIN' && currentUser.role !== USER_ROLES.ADMIN) {
-      this.showToast(`Access restricted: Administrator credentials required.`, 'error');
-      this.openAuth('login', pushHistory);
+      this.showToast(`Access restricted: Administrator credentials required. You are registered as ${currentUser.role}.`, 'error');
       return;
     }
+
+    this.currentRole = role;
+    document.querySelectorAll('.demo-role-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-switch-role') === role);
+    });
 
     if (landing) landing.style.display = 'none';
     if (authScreen) authScreen.style.display = 'none';
@@ -1630,8 +1627,10 @@ class AppController {
     const bookings = bookingService.getAllBookings(user);
 
     // Overview KPI Metric Badges
+    const totalUsersElem = document.getElementById('admStatTotalUsers');
     const custElem = document.getElementById('admStatTotalCustomers');
     const drvElem = document.getElementById('admStatTotalDrivers');
+    const admElem = document.getElementById('admStatTotalAdmins');
     const actDrvElem = document.getElementById('admStatActiveDrivers');
     const totalElem = document.getElementById('admStatTotalBookings');
     const inTransitElem = document.getElementById('admStatInTransit');
@@ -1640,8 +1639,10 @@ class AppController {
     const avgCostElem = document.getElementById('admStatAvgCost');
     const avgTimeElem = document.getElementById('admStatAvgTime');
 
+    if (totalUsersElem) totalUsersElem.textContent = metrics.totalUsers || (metrics.totalCustomers + metrics.totalDrivers + (metrics.totalAdmins || 0));
     if (custElem) custElem.textContent = metrics.totalCustomers;
     if (drvElem) drvElem.textContent = metrics.totalDrivers;
+    if (admElem) admElem.textContent = metrics.totalAdmins || 1;
     if (actDrvElem) actDrvElem.textContent = metrics.activeDrivers;
     if (totalElem) totalElem.textContent = metrics.totalBookings;
     if (inTransitElem) inTransitElem.textContent = metrics.inTransitBookings;
@@ -1990,6 +1991,22 @@ class AppController {
     const user = authService.getCurrentUser();
     const allUsers = userService.getAllUsers(user);
     const filterRole = document.getElementById('adminUserRoleFilter')?.value || 'ALL';
+
+    // Update role statistics cards
+    const totalUsers = allUsers.length;
+    const totalCustomers = allUsers.filter(u => u.role === USER_ROLES.CUSTOMER).length;
+    const totalDrivers = allUsers.filter(u => u.role === USER_ROLES.DRIVER).length;
+    const totalAdmins = allUsers.filter(u => u.role === USER_ROLES.ADMIN).length;
+
+    const uTotalElem = document.getElementById('adminUsersStatTotal');
+    const uCustElem = document.getElementById('adminUsersStatCustomers');
+    const uDrvElem = document.getElementById('adminUsersStatDrivers');
+    const uAdmElem = document.getElementById('adminUsersStatAdmins');
+
+    if (uTotalElem) uTotalElem.textContent = totalUsers;
+    if (uCustElem) uCustElem.textContent = totalCustomers;
+    if (uDrvElem) uDrvElem.textContent = totalDrivers;
+    if (uAdmElem) uAdmElem.textContent = totalAdmins;
 
     const filtered = filterRole === 'ALL' ? allUsers : allUsers.filter(u => u.role === filterRole);
     const tbody = document.getElementById('adminUsersTbody');

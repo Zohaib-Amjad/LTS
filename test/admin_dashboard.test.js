@@ -55,11 +55,17 @@ console.log('1. Testing System Overview & KPI Metrics Computation:');
 it('Admin can retrieve complete platform system metrics', () => {
   const metrics = adminService.getSystemMetrics(adminUser);
 
+  assert.strictEqual(typeof metrics.totalUsers, 'number');
+  assert.ok(metrics.totalUsers >= 1, 'Should have at least 1 registered user');
+
   assert.strictEqual(typeof metrics.totalCustomers, 'number');
   assert.ok(metrics.totalCustomers >= 1, 'Should have at least 1 customer');
 
   assert.strictEqual(typeof metrics.totalDrivers, 'number');
   assert.ok(metrics.totalDrivers >= 1, 'Should have at least 1 driver');
+
+  assert.strictEqual(typeof metrics.totalAdmins, 'number');
+  assert.ok(metrics.totalAdmins >= 1, 'Should have at least 1 admin');
 
   assert.strictEqual(typeof metrics.activeDrivers, 'number');
   assert.strictEqual(typeof metrics.totalBookings, 'number');

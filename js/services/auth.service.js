@@ -3,7 +3,7 @@
  * Authentication & Role-Based Session Service (Phase 3 Enterprise Security)
  */
 
-import { STORAGE_KEYS, USER_ROLES } from '../constants/enums.js';
+import { STORAGE_KEYS, USER_ROLES, DRIVER_AVAILABILITY } from '../constants/enums.js';
 import { db } from '../core/database.js';
 import { AuthenticationError, AuthorizationError, ValidationError } from '../core/errorHandler.js';
 
@@ -197,7 +197,7 @@ class AuthService {
     return this.getCurrentUser();
   }
 
-  register({ fullName, email, password, confirmPassword, phone, city = 'Islamabad' }) {
+  register({ fullName, email, password, confirmPassword, phone, city = 'Islamabad', role = USER_ROLES.CUSTOMER }) {
     if (!fullName || !fullName.trim()) {
       throw new ValidationError('Full name is required.');
     }
@@ -233,18 +233,35 @@ class AuthService {
       .toUpperCase();
 
     const hashedPassword = this.hashPassword(password);
+    const assignedRole = (role === USER_ROLES.DRIVER || role === USER_ROLES.ADMIN) ? role : USER_ROLES.CUSTOMER;
 
     const newUser = db.tables.users.insert({
       email: trimmedEmail,
       fullName: fullName.trim(),
       phone: phone ? phone.trim() : '+92 300 0000000',
-      role: USER_ROLES.CUSTOMER, // Self-registration always assigns CUSTOMER role
+      role: assignedRole,
       passwordHash: hashedPassword,
       city: city || 'Islamabad',
       country: 'Pakistan',
       avatarInitials: initials || 'SL',
       isActive: true
     });
+
+    if (assignedRole === USER_ROLES.DRIVER) {
+      db.tables.drivers.insert({
+        userId: newUser.id,
+        licenseNumber: `PK-LIC-${Math.floor(100000 + Math.random() * 900000)}`,
+        vehicleType: 'Van',
+        vehiclePlate: `ICT-${Math.floor(100 + Math.random() * 900)}`,
+        vehicleCapacityKg: 800,
+        vehicleCapacityLiters: 2500,
+        currentCity: city || 'Islamabad',
+        isAvailable: true,
+        availabilityStatus: DRIVER_AVAILABILITY.AVAILABLE,
+        rating: 5.0,
+        totalTrips: 0
+      });
+    }
 
     db.persist();
     this.saveSession(newUser);

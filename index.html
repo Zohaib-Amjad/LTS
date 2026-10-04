@@ -147,7 +147,17 @@
             <input type="password" class="form-input" id="regConfirmPassword" placeholder="Repeat password" required />
           </div>
         </div>
-        <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 10px;"><i class="fa-solid fa-user-plus"></i> Create Customer Account</button>
+        <div class="form-group">
+          <label class="form-label">Register As <span class="required-star">*</span></label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-user-tag"></i>
+            <select class="form-select" id="regRole" style="padding-left: 38px;">
+              <option value="CUSTOMER">Customer (Book & Ship Luggage)</option>
+              <option value="DRIVER">Fleet Driver (Dispatch & Transport)</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 10px;"><i class="fa-solid fa-user-plus"></i> Create Account</button>
       </form>
     </div>
   </div>
@@ -1278,11 +1288,19 @@
           <div class="stat-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
             <div class="stat-card">
               <div class="stat-info">
+                <div class="stat-label">Total Accounts</div>
+                <div class="stat-value" id="admStatTotalUsers">0</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-users"></i> All Registered</div>
+              </div>
+              <div class="stat-icon blue"><i class="fa-solid fa-users-gear"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
                 <div class="stat-label">Total Customers</div>
                 <div class="stat-value" id="admStatTotalCustomers">0</div>
-                <div class="stat-trend positive"><i class="fa-solid fa-users"></i> Registered Accounts</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-user"></i> Registered Clients</div>
               </div>
-              <div class="stat-icon blue"><i class="fa-solid fa-user-group"></i></div>
+              <div class="stat-icon green"><i class="fa-solid fa-user-group"></i></div>
             </div>
             <div class="stat-card">
               <div class="stat-info">
@@ -1291,6 +1309,14 @@
                 <div class="stat-trend positive"><i class="fa-solid fa-truck"></i> <span id="admStatActiveDrivers">0</span> Active Online</div>
               </div>
               <div class="stat-icon purple"><i class="fa-solid fa-van-shuttle"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Administrators</div>
+                <div class="stat-value" id="admStatTotalAdmins">0</div>
+                <div class="stat-trend neutral"><i class="fa-solid fa-shield-halved"></i> System Admins</div>
+              </div>
+              <div class="stat-icon orange"><i class="fa-solid fa-user-shield"></i></div>
             </div>
             <div class="stat-card">
               <div class="stat-info">
@@ -1510,6 +1536,42 @@
              VIEW 10: ADMIN USER MANAGEMENT
              =================================================================== -->
         <section class="view-pane" id="view-admin-users" style="display: none;">
+          <!-- Registered Accounts by Role Summary Cards -->
+          <div class="stat-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 24px;">
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Total Accounts</div>
+                <div class="stat-value" id="adminUsersStatTotal">0</div>
+                <div class="stat-trend neutral"><i class="fa-solid fa-users"></i> All Platform Users</div>
+              </div>
+              <div class="stat-icon blue"><i class="fa-solid fa-users-gear"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Customers</div>
+                <div class="stat-value" id="adminUsersStatCustomers">0</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-user"></i> Role: CUSTOMER</div>
+              </div>
+              <div class="stat-icon green"><i class="fa-solid fa-user"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Drivers</div>
+                <div class="stat-value" id="adminUsersStatDrivers">0</div>
+                <div class="stat-trend positive"><i class="fa-solid fa-truck"></i> Role: DRIVER</div>
+              </div>
+              <div class="stat-icon purple"><i class="fa-solid fa-truck"></i></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Administrators</div>
+                <div class="stat-value" id="adminUsersStatAdmins">0</div>
+                <div class="stat-trend neutral"><i class="fa-solid fa-shield-halved"></i> Role: ADMIN</div>
+              </div>
+              <div class="stat-icon orange"><i class="fa-solid fa-user-shield"></i></div>
+            </div>
+          </div>
+
           <div class="card">
             <div class="card-header">
               <div>
