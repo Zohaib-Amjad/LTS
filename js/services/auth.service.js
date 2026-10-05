@@ -78,8 +78,8 @@ class AuthService {
 
   loadSession() {
     try {
-      if (typeof localStorage !== 'undefined') {
-        const raw = localStorage.getItem(STORAGE_KEYS.ACTIVE_SESSION);
+      if (typeof sessionStorage !== 'undefined') {
+        const raw = sessionStorage.getItem(STORAGE_KEYS.ACTIVE_SESSION);
         if (raw) {
           const session = JSON.parse(raw);
           const user = db.tables.users.findById(session.userId);
@@ -100,8 +100,9 @@ class AuthService {
     this.currentSessionUser = this.sanitizeUser(user);
     this.sessionToken = `jwt-sim-${user.id}-${Date.now()}`;
 
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem(
+    // Store in tab-specific sessionStorage so different browser tabs can operate concurrently with different roles/accounts
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem(
         STORAGE_KEYS.ACTIVE_SESSION,
         JSON.stringify({
           userId: user.id,
@@ -117,8 +118,8 @@ class AuthService {
   clearSession() {
     this.currentSessionUser = null;
     this.sessionToken = null;
-    if (typeof localStorage !== 'undefined') {
-      localStorage.removeItem(STORAGE_KEYS.ACTIVE_SESSION);
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.removeItem(STORAGE_KEYS.ACTIVE_SESSION);
     }
   }
 
