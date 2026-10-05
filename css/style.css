@@ -578,6 +578,65 @@ body.dark-mode .nav-link.active {
   padding-left: 42px;
 }
 
+/* Password Input with Show/Hide Toggle Button */
+.password-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-input-group i.left-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--text-subtle);
+  font-size: 1rem;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.password-input-group .form-input {
+  padding-left: 42px;
+  padding-right: 42px;
+  width: 100%;
+}
+
+.password-input-group.no-left-icon .form-input {
+  padding-left: 14px;
+  padding-right: 42px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 6px 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  z-index: 3;
+  line-height: 1;
+}
+
+.password-toggle-btn:hover {
+  color: var(--brand-primary);
+  background: var(--bg-surface-secondary);
+}
+
+.password-toggle-btn i {
+  position: static !important;
+  font-size: 0.95rem;
+  color: inherit !important;
+  pointer-events: auto !important;
+}
+
 .form-input:focus, .form-select:focus, .form-textarea:focus {
   border-color: var(--brand-primary);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);

@@ -485,6 +485,34 @@ class AppController {
       regForm.addEventListener('submit', e => this.handleRegister(e));
     }
 
+    // Password Show / Hide Visibility Toggles (Login, Register, Settings, Admin)
+    document.addEventListener('click', e => {
+      const toggleBtn = e.target.closest('[data-toggle-password]');
+      if (!toggleBtn) return;
+      e.preventDefault();
+      const targetId = toggleBtn.getAttribute('data-toggle-password');
+      const input = document.getElementById(targetId);
+      if (!input) return;
+
+      const isPassword = input.type === 'password';
+      input.type = isPassword ? 'text' : 'password';
+
+      const icon = toggleBtn.querySelector('i');
+      if (icon) {
+        if (isPassword) {
+          icon.classList.remove('fa-eye');
+          icon.classList.add('fa-eye-slash');
+          toggleBtn.setAttribute('title', 'Hide Password');
+          toggleBtn.setAttribute('aria-label', 'Hide Password');
+        } else {
+          icon.classList.remove('fa-eye-slash');
+          icon.classList.add('fa-eye');
+          toggleBtn.setAttribute('title', 'Show Password');
+          toggleBtn.setAttribute('aria-label', 'Show Password');
+        }
+      }
+    });
+
     // Quick Demo Credentials Chips
     const credCust = document.getElementById('quickCredCust');
     const credDrv = document.getElementById('quickCredDrv');
