@@ -62,6 +62,19 @@ async function runAuthTests() {
   });
   assert(driverReg.role === USER_ROLES.DRIVER, 'Driver registration assigns DRIVER role');
 
+  // Admin Registration with role
+  const adminEmail = `test.admin.${Date.now()}@example.pk`;
+  const adminReg = authService.register({
+    fullName: 'Sara Admin',
+    email: adminEmail,
+    password: 'password123',
+    confirmPassword: 'password123',
+    phone: '+92 301 1122334',
+    city: 'Islamabad',
+    role: USER_ROLES.ADMIN
+  });
+  assert(adminReg.role === USER_ROLES.ADMIN, 'Admin registration assigns ADMIN role');
+
   // Test 2: Password Mismatch on Registration
   let mismatchCaught = false;
   try {
