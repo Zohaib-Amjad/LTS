@@ -1230,6 +1230,13 @@ class AppController {
     } else if (this.currentView === 'view-booking-tracking') {
       if (this.currentTrackingBookingId) {
         this.showTrackingView(this.currentTrackingBookingId, false);
+      } else {
+        const user = authService.getCurrentUser();
+        const userBookings = user ? bookingService.getCustomerBookings(user.id, user) : [];
+        const latestBooking = userBookings.length > 0 ? userBookings[userBookings.length - 1] : db.tables.bookings.getAll()[0];
+        if (latestBooking) {
+          this.showTrackingView(latestBooking.id, false);
+        }
       }
     } else if (this.currentView === 'view-customer-profile') {
       this.renderProfile();

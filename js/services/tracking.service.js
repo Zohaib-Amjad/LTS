@@ -15,6 +15,7 @@ class TrackingService {
    * @param {Object} requestingUser 
    */
   getTrackingTimeline(bookingIdOrNumber, requestingUser = null) {
+    db.reload();
     const requester = requestingUser || authService.getCurrentUser();
     
     // Find by ID or Booking Reference Number
