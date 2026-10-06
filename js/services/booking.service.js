@@ -224,10 +224,9 @@ class BookingService {
       throw new ValidationError('Cannot assign an inactive driver account. Activate driver first.');
     }
 
-    // 2. Check if driver is available
-    const isAvail = driver.isAvailable && driver.availabilityStatus !== 'OFFLINE' && driver.availabilityStatus !== 'BUSY';
-    if (!isAvail) {
-      throw new ValidationError(`Driver ${driver.vehiclePlate} is currently ${driver.availabilityStatus || 'unavailable'} and cannot accept new assignments.`);
+    // 2. Check if driver is active and not offline
+    if (driver.availabilityStatus === 'OFFLINE' || driverUser.isActive === false) {
+      throw new ValidationError(`Driver ${driver.vehiclePlate} is currently OFFLINE or deactivated and cannot accept assignments.`);
     }
 
     // 3. Prevent duplicate assignment

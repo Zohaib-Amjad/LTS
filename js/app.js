@@ -2649,14 +2649,14 @@ class AppController {
     const submitBtn = document.getElementById('submitAssignDriverBtn');
 
     if (idInput) idInput.value = bookingId;
-    if (infoText) infoText.textContent = `Assign fleet driver for dispatch of ${bookingNumber}`;
+    if (infoText) infoText.textContent = `Assign / Re-assign fleet driver for dispatch of ${bookingNumber}`;
 
-    // Show only available & active drivers
+    // Show all active fleet drivers
     const availableDrivers = driverService.getAvailableDrivers();
 
     if (driverSelect) {
       if (availableDrivers.length === 0) {
-        driverSelect.innerHTML = `<option value="">-- No available drivers online (All Busy/Offline) --</option>`;
+        driverSelect.innerHTML = `<option value="">-- No fleet drivers registered --</option>`;
         if (submitBtn) submitBtn.disabled = true;
       } else {
         if (submitBtn) submitBtn.disabled = false;
@@ -2666,7 +2666,8 @@ class AppController {
           const plate = d.vehiclePlate || 'ICT-000';
           const city = d.currentCity || d.user?.city || 'Islamabad';
           const rating = d.rating !== undefined ? d.rating : '5.0';
-          return `<option value="${d.id}">${name} — ${vehicle} (${plate}) [${city}] ★ ${rating}</option>`;
+          const statusTag = d.availabilityStatus === 'AVAILABLE' ? '🟢 Available' : d.availabilityStatus === 'BUSY' ? '🟡 Busy' : '⚪ Active';
+          return `<option value="${d.id}">${name} — ${vehicle} (${plate}) [${city}] ★ ${rating} [${statusTag}]</option>`;
         }).join('');
       }
     }

@@ -71,7 +71,7 @@ class DriverService {
   }
 
   /**
-   * Get only eligible, active and available drivers ready for dispatch
+   * Get only eligible, active drivers ready for dispatch or reassignment
    */
   getAvailableDrivers() {
     this._ensureDriverRecords();
@@ -84,7 +84,7 @@ class DriverService {
           user: user ? authService.sanitizeUser(user) : { fullName: 'Fleet Driver', email: 'driver@smartluggage.pk', phone: '--', city: driver.currentCity || 'Islamabad', isActive: true }
         };
       })
-      .filter(d => d.user && d.user.isActive !== false && d.isAvailable !== false && d.availabilityStatus !== DRIVER_AVAILABILITY.BUSY && d.availabilityStatus !== DRIVER_AVAILABILITY.OFFLINE);
+      .filter(d => d.user && d.user.isActive !== false && d.availabilityStatus !== DRIVER_AVAILABILITY.OFFLINE);
   }
 
   getDriverById(id) {
