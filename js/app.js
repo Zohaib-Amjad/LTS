@@ -2237,17 +2237,39 @@ class AppController {
         <td><span class="badge ${u.role === 'ADMIN' ? 'badge-confirmed' : u.role === 'DRIVER' ? 'badge-driver-assigned' : 'badge-pending'}">${u.role}</span></td>
         <td>${u.isActive ? '<span class="badge badge-delivered">Active</span>' : '<span class="badge badge-cancelled">Deactivated</span>'}</td>
         <td>
-          <div style="display: flex; gap: 4px;">
+          <div style="display: flex; gap: 4px; flex-wrap: wrap;">
             <button class="btn btn-secondary btn-sm" title="View Full Profile & Bookings" onclick="window.app.openAdminUserDetailsModal('${u.id}')">
               <i class="fa-solid fa-user"></i>
             </button>
-            <button class="btn btn-secondary btn-sm" onclick="window.app.toggleUserActiveStatus('${u.id}')">
-              ${u.isActive ? '<i class="fa-solid fa-user-slash"></i> Deactivate' : '<i class="fa-solid fa-user-check"></i> Activate'}
+            <button class="btn btn-secondary btn-sm" title="${u.isActive ? 'Deactivate User' : 'Activate User'}" onclick="window.app.toggleUserActiveStatus('${u.id}')">
+              ${u.isActive ? '<i class="fa-solid fa-user-slash"></i>' : '<i class="fa-solid fa-user-check"></i>'}
             </button>
+            ${u.id !== user.id ? `
+              <button class="btn btn-danger btn-sm" title="Delete User Account" onclick="window.app.deleteUserAccount('${u.id}', '${(u.fullName || 'User').replace(/'/g, "\\'")}')">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            ` : ''}
           </div>
         </td>
       </tr>
     `).join('');
+  }
+
+  deleteUserAccount(userId, fullName) {
+    const user = authService.getCurrentUser();
+    if (!confirm(`Are you sure you want to permanently delete user account "${fullName}" (${userId})? This cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      userService.deleteUser(userId, user);
+      this.showToast(`User account "${fullName}" deleted successfully.`, 'success');
+      this.renderAdminUsers();
+      this.renderAdminDashboard();
+      this.renderAdminDrivers();
+    } catch (err) {
+      this.showToast(err.message, 'error');
+    }
   }
 
   toggleUserActiveStatus(userId) {
@@ -2369,11 +2391,31 @@ class AppController {
               <button class="btn btn-ghost btn-sm" title="${isAct ? 'Deactivate Account' : 'Activate Account'}" onclick="window.app.toggleDriverAccount('${d.id}')">
                 <i class="fa-solid ${isAct ? 'fa-user-slash' : 'fa-user-check'}"></i>
               </button>
+              <button class="btn btn-danger btn-sm" title="Delete Fleet Driver" onclick="window.app.deleteDriverAccount('${d.id}', '${(d.user?.fullName || 'Driver').replace(/'/g, "\\'")}')">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
             </div>
           </td>
         </tr>
       `;
     }).join('');
+  }
+
+  deleteDriverAccount(driverId, fullName) {
+    const user = authService.getCurrentUser();
+    if (!confirm(`Are you sure you want to permanently delete fleet driver "${fullName}" (${driverId})?`)) {
+      return;
+    }
+
+    try {
+      driverService.deleteDriver(driverId, user);
+      this.showToast(`Fleet driver "${fullName}" deleted successfully.`, 'success');
+      this.renderAdminDrivers();
+      this.renderAdminDashboard();
+      this.renderAdminUsers();
+    } catch (err) {
+      this.showToast(err.message, 'error');
+    }
   }
 
   openAddDriverModal() {

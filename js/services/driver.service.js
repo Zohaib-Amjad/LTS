@@ -330,6 +330,49 @@ class DriverService {
       return true;
     });
   }
+
+  deleteDriver(driverId, requestingUser = null) {
+    const requester = requestingUser || authService.getCurrentUser();
+    if (!requester || requester.role !== USER_ROLES.ADMIN) {
+      throw new AuthorizationError('Only system administrators can delete drivers.');
+    }
+
+    const driver = db.tables.drivers.findById(driverId);
+    if (!driver) throw new NotFoundError(`Driver with ID ${driverId}`);
+
+    // Check if driver has active trips in transit
+    const activeTrips = db.tables.bookings.filter(b => 
+      b.assignedDriverId === driverId && 
+      (b.status === 'PICKED_UP' || b.status === 'IN_TRANSIT')
+    );
+
+    if (activeTrips.length > 0) {
+      throw new ValidationError(`Cannot delete driver while they have ${activeTrips.length} active shipment(s) in transit.`);
+    }
+
+    // Unassign driver from assigned bookings that are not yet picked up
+    const assignedBookings = db.tables.bookings.filter(b => b.assignedDriverId === driverId && b.status === 'DRIVER_ASSIGNED');
+    assignedBookings.forEach(b => {
+      db.tables.bookings.update(b.id, {
+        assignedDriverId: null,
+        status: 'CONFIRMED'
+      });
+    });
+
+    // Delete driver record
+    db.tables.drivers.delete(driverId);
+
+    // If linked user account is solely a DRIVER role, delete user account as well
+    if (driver.userId && driver.userId !== requester.id) {
+      const user = db.tables.users.findById(driver.userId);
+      if (user && user.role === USER_ROLES.DRIVER) {
+        db.tables.users.delete(driver.userId);
+      }
+    }
+
+    db.persist();
+    return { success: true, deletedDriverId: driverId };
+  }
 }
 
 export const driverService = new DriverService();

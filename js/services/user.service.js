@@ -96,6 +96,30 @@ class UserService {
     db.persist();
     return authService.sanitizeUser(updated);
   }
+
+  deleteUser(userId, requestingUser = null) {
+    const requester = requestingUser || authService.getCurrentUser();
+    if (!requester || requester.role !== USER_ROLES.ADMIN) {
+      throw new AuthorizationError('Only system administrators can delete users.');
+    }
+
+    if (requester.id === userId) {
+      throw new ValidationError('Administrators cannot delete their own active session account.');
+    }
+
+    const targetUser = db.tables.users.findById(userId);
+    if (!targetUser) throw new NotFoundError(`User with ID ${userId}`);
+
+    // If target user is linked to driver record, clean up drivers table
+    const linkedDrivers = db.tables.drivers.filter(d => d.userId === userId);
+    linkedDrivers.forEach(d => {
+      db.tables.drivers.delete(d.id);
+    });
+
+    db.tables.users.delete(userId);
+    db.persist();
+    return { success: true, deletedUserId: userId, fullName: targetUser.fullName, role: targetUser.role };
+  }
 }
 
 export const userService = new UserService();
