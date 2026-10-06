@@ -935,7 +935,12 @@ class AppController {
 
     this.currentRole = role;
     document.querySelectorAll('.demo-role-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.getAttribute('data-switch-role') === role);
+      const btnRole = btn.getAttribute('data-switch-role');
+      if (currentUser) {
+        btn.classList.toggle('active', btnRole === 'AUTH');
+      } else {
+        btn.classList.toggle('active', btnRole === role);
+      }
     });
 
     if (landing) landing.style.display = 'none';
@@ -977,7 +982,13 @@ class AppController {
     if (!container) return;
 
     if (user) {
+      // Hide unrelated role tabs so only Public Landing + User's Role Tab are shown (as requested)
+      document.querySelectorAll('.demo-role-btn[data-switch-role="CUSTOMER"], .demo-role-btn[data-switch-role="DRIVER"], .demo-role-btn[data-switch-role="ADMIN"]').forEach(btn => {
+        btn.style.display = 'none';
+      });
+
       if (authRoleBtn) {
+        authRoleBtn.style.display = '';
         authRoleBtn.innerHTML = `<i class="fa-solid fa-circle-user" style="color: #60a5fa;"></i> ${user.fullName.split(' ')[0]} (${user.role})`;
       }
 
@@ -1006,6 +1017,11 @@ class AppController {
         });
       }
     } else {
+      // Restore all 5 tabs for guest evaluation view
+      document.querySelectorAll('.demo-role-btn').forEach(btn => {
+        btn.style.display = '';
+      });
+
       if (authRoleBtn) {
         authRoleBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Login / Register`;
       }
