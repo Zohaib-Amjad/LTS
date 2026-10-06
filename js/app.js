@@ -44,6 +44,12 @@ class AppController {
     this.applyTheme();
     this.updateTopBarStatus();
 
+    // Live auto-refresh when another tab updates database (e.g. new driver registers or booking changes)
+    window.addEventListener('lts:db-synced', () => {
+      this.renderCurrentView();
+      this.updateTopBarStatus();
+    });
+
     // If URL has a pathname like /customer-dashboard, normalize to hash
     const path = window.location.pathname;
     if (path && path !== '/' && path !== '/index.html') {
@@ -2339,6 +2345,7 @@ class AppController {
   }
 
   renderAdminDrivers() {
+    db.reload();
     const user = authService.getCurrentUser();
     const query = document.getElementById('adminDriverSearchInput')?.value || '';
     const availability = document.getElementById('adminDriverAvailFilter')?.value || 'ALL';

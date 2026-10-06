@@ -993,6 +993,7 @@ class DatabaseEngine {
         window.addEventListener('storage', (e) => {
           if (e.key === STORAGE_KEYS.DATABASE) {
             this.reload();
+            window.dispatchEvent(new CustomEvent('lts:db-synced'));
           }
         });
       }
