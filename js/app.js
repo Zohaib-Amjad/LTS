@@ -1783,12 +1783,19 @@ class AppController {
      ========================================================================= */
 
   renderDriverDashboard() {
+    db.reload();
     const user = authService.getCurrentUser();
     const driver = driverService.getDriverByUserId(user.id);
     const trips = driver ? bookingService.getDriverBookings(driver.id, user) : [];
 
     const tripsCount = document.getElementById('driverTripsCount');
     if (tripsCount) tripsCount.textContent = trips.length;
+
+    const ratingEl = document.getElementById('driverLifetimeRating');
+    if (ratingEl && driver) ratingEl.textContent = `${driver.rating || '5.0'} ★`;
+
+    const completedEl = document.getElementById('driverCompletedTripsCount');
+    if (completedEl && driver) completedEl.textContent = `${driver.totalTrips || 0} Completed Trips`;
 
     const tbody = document.getElementById('driverAssignedTripsTbody');
     if (!tbody) return;
@@ -1814,8 +1821,8 @@ class AppController {
         <tr>
           <td><strong>${t.bookingNumber}</strong></td>
           <td>${t.customer?.fullName || 'Customer'}</td>
-          <td>${t.pickupLocation?.city} → ${t.destinationLocation?.city} (${t.distanceKm} km)</td>
-          <td>${t.luggageItems?.[0]?.type || 'Luggage'} (${t.luggageItems?.[0]?.weightKg} kg)</td>
+          <td>${t.pickupLocation?.city || 'Origin'} → ${t.destinationLocation?.city || 'Dest'} (${t.distanceKm} km)</td>
+          <td>${t.luggageItems?.[0]?.type || 'Luggage'} (${t.luggageItems?.[0]?.weightKg || 10} kg)</td>
           <td>${this.renderStatusBadge(t.status)}</td>
           <td>${actionBtn}</td>
         </tr>
