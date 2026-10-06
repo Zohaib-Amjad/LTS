@@ -383,7 +383,12 @@ class AppController {
       btn.addEventListener('click', e => {
         const targetRole = e.currentTarget.getAttribute('data-switch-role');
         if (targetRole === 'AUTH') {
-          this.openAuth('login', true);
+          const user = authService.getCurrentUser();
+          if (user) {
+            this.navigateToRoleDefault();
+          } else {
+            this.openAuth('login', true);
+          }
         } else if (targetRole === 'LANDING') {
           this.goToHomePage(true);
         } else {
@@ -391,6 +396,10 @@ class AppController {
         }
       });
     });
+
+    // Initialize custom city toggles
+    this.setupCustomCityToggle('regCity', 'regCustomCityContainer', 'regCustomCity');
+    this.setupCustomCityToggle('newDrvCity', 'newDrvCustomCityContainer', 'newDrvCustomCity');
 
     // Landing Navigation & Auth Action Buttons
     const landingNavLogin = document.getElementById('landingNavLoginBtn');
@@ -785,7 +794,14 @@ class AppController {
     const fullName = document.getElementById('regFullName').value;
     const email = document.getElementById('regEmail').value;
     const phone = document.getElementById('regPhone').value;
-    const city = document.getElementById('regCity').value;
+    let city = document.getElementById('regCity')?.value || 'Islamabad';
+    if (city === '__CUSTOM__') {
+      city = document.getElementById('regCustomCity')?.value?.trim();
+      if (!city) {
+        this.showToast('Please enter your custom city name.', 'error');
+        return;
+      }
+    }
     const role = document.getElementById('regRole')?.value || USER_ROLES.CUSTOMER;
     const password = document.getElementById('regPassword').value;
     const confirmPassword = document.getElementById('regConfirmPassword').value;
@@ -805,8 +821,10 @@ class AppController {
       // Navigate to Login tab
       this.openAuth('login', true);
 
-      // Reset registration form
+      // Reset registration form & custom city input
       document.getElementById('appRegisterForm')?.reset();
+      const customCityContainer = document.getElementById('regCustomCityContainer');
+      if (customCityContainer) customCityContainer.style.display = 'none';
     } catch (err) {
       this.showToast(err.message, 'error');
     }
@@ -964,7 +982,7 @@ class AppController {
       }
 
       container.innerHTML = `
-        <div class="topbar-auth-pill logged-in">
+        <div class="topbar-auth-pill logged-in" id="topBarUserStatusPill" title="Click to open your ${user.role} Dashboard">
           <span class="status-pulse-dot" title="Active Logged-in Session"></span>
           <span class="topbar-auth-label">Logged In:</span>
           <strong class="topbar-user-name" title="${user.fullName}">${user.fullName}</strong>
@@ -972,6 +990,13 @@ class AppController {
           <button class="topbar-logout-btn" id="topBarLogoutBtn" title="Log Out of this Account"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
         </div>
       `;
+
+      const userPill = document.getElementById('topBarUserStatusPill');
+      if (userPill) {
+        userPill.addEventListener('click', () => {
+          this.navigateToRoleDefault();
+        });
+      }
 
       const topLogout = document.getElementById('topBarLogoutBtn');
       if (topLogout) {
@@ -1001,6 +1026,44 @@ class AppController {
           this.openAuth('login', true);
         });
       }
+    }
+  }
+
+  getEffectiveCity(selectId, customInputId, defaultVal = 'Islamabad') {
+    const select = document.getElementById(selectId);
+    if (!select) return defaultVal;
+    if (select.value === '__CUSTOM__') {
+      const customInput = document.getElementById(customInputId);
+      const customVal = (customInput?.value || '').trim();
+      return customVal || defaultVal;
+    }
+    return select.value || defaultVal;
+  }
+
+  setupCustomCityToggle(selectId, containerId, customInputId, onChangeCallback) {
+    const select = document.getElementById(selectId);
+    const container = document.getElementById(containerId);
+    const customInput = document.getElementById(customInputId);
+    if (!select || !container) return;
+
+    select.addEventListener('change', () => {
+      if (select.value === '__CUSTOM__') {
+        container.style.display = 'block';
+        if (customInput) {
+          customInput.focus();
+        }
+      } else {
+        container.style.display = 'none';
+      }
+      if (typeof onChangeCallback === 'function') {
+        onChangeCallback();
+      }
+    });
+
+    if (customInput && typeof onChangeCallback === 'function') {
+      customInput.addEventListener('input', () => {
+        onChangeCallback();
+      });
     }
   }
 
@@ -1192,6 +1255,10 @@ class AppController {
      ========================================================================= */
 
   bindBookingStepper() {
+    // Setup Custom City Toggles
+    this.setupCustomCityToggle('bookPickupCity', 'bookPickupCustomCityContainer', 'bookPickupCustomCity', () => this.updateStep1DistancePreview());
+    this.setupCustomCityToggle('bookDestCity', 'bookDestCustomCityContainer', 'bookDestCustomCity', () => this.updateStep1DistancePreview());
+
     // Step 1 Live Distance Preview Listeners
     const pickupSelect = document.getElementById('bookPickupCity');
     const destSelect = document.getElementById('bookDestCity');
@@ -1207,8 +1274,23 @@ class AppController {
     const step1Next = document.getElementById('step1NextBtn');
     if (step1Next) {
       step1Next.addEventListener('click', () => {
-        const pickupCity = document.getElementById('bookPickupCity').value;
-        const destCity = document.getElementById('bookDestCity').value;
+        const pickupSelectEl = document.getElementById('bookPickupCity');
+        const destSelectEl = document.getElementById('bookDestCity');
+        const pickupCustomEl = document.getElementById('bookPickupCustomCity');
+        const destCustomEl = document.getElementById('bookDestCustomCity');
+
+        if (pickupSelectEl?.value === '__CUSTOM__' && !pickupCustomEl?.value?.trim()) {
+          this.showToast('Please type your custom pickup city name.', 'error');
+          return;
+        }
+
+        if (destSelectEl?.value === '__CUSTOM__' && !destCustomEl?.value?.trim()) {
+          this.showToast('Please type your custom destination city name.', 'error');
+          return;
+        }
+
+        const pickupCity = this.getEffectiveCity('bookPickupCity', 'bookPickupCustomCity', 'Islamabad');
+        const destCity = this.getEffectiveCity('bookDestCity', 'bookDestCustomCity', 'Lahore');
         const pickupAddr = document.getElementById('bookPickupAddress').value.trim();
         const destAddr = document.getElementById('bookDestAddress').value.trim();
 
@@ -1259,8 +1341,8 @@ class AppController {
   }
 
   async updateStep1DistancePreview() {
-    const pickupCity = document.getElementById('bookPickupCity')?.value || 'Islamabad';
-    const destCity = document.getElementById('bookDestCity')?.value || 'Lahore';
+    const pickupCity = this.getEffectiveCity('bookPickupCity', 'bookPickupCustomCity', 'Islamabad');
+    const destCity = this.getEffectiveCity('bookDestCity', 'bookDestCustomCity', 'Lahore');
 
     const routeTitle = document.getElementById('step1RouteTitle');
     const corridorBadge = document.getElementById('step1CorridorBadge');
@@ -1295,8 +1377,8 @@ class AppController {
   }
 
   async generateAIEstimate() {
-    const pickupCity = document.getElementById('bookPickupCity').value;
-    const destCity = document.getElementById('bookDestCity').value;
+    const pickupCity = this.getEffectiveCity('bookPickupCity', 'bookPickupCustomCity', 'Islamabad');
+    const destCity = this.getEffectiveCity('bookDestCity', 'bookDestCustomCity', 'Lahore');
     const luggageType = document.getElementById('bookLuggageType').value;
     const weightKg = Number(document.getElementById('bookLuggageWeight').value) || 10;
     const bagCount = Number(document.getElementById('bookBagCount').value) || 1;
@@ -1334,8 +1416,8 @@ class AppController {
   }
 
   populateConfirmationSummary() {
-    const pickupCity = document.getElementById('bookPickupCity')?.value || 'Islamabad';
-    const destCity = document.getElementById('bookDestCity')?.value || 'Lahore';
+    const pickupCity = this.getEffectiveCity('bookPickupCity', 'bookPickupCustomCity', 'Islamabad');
+    const destCity = this.getEffectiveCity('bookDestCity', 'bookDestCustomCity', 'Lahore');
     const pickupAddress = document.getElementById('bookPickupAddress')?.value || 'Pickup Address';
     const destAddress = document.getElementById('bookDestAddress')?.value || 'Destination Address';
     const luggageType = document.getElementById('bookLuggageType')?.value || 'Suitcase';
@@ -1371,8 +1453,8 @@ class AppController {
 
     try {
       const user = authService.getCurrentUser();
-      const pickupCity = document.getElementById('bookPickupCity').value;
-      const destCity = document.getElementById('bookDestCity').value;
+      const pickupCity = this.getEffectiveCity('bookPickupCity', 'bookPickupCustomCity', 'Islamabad');
+      const destCity = this.getEffectiveCity('bookDestCity', 'bookDestCustomCity', 'Lahore');
       const pickupAddress = document.getElementById('bookPickupAddress').value;
       const destAddress = document.getElementById('bookDestAddress').value;
       const luggageType = document.getElementById('bookLuggageType').value;
@@ -2558,7 +2640,7 @@ class AppController {
         const fullName = document.getElementById('newDrvFullName').value;
         const email = document.getElementById('newDrvEmail').value;
         const phone = document.getElementById('newDrvPhone').value;
-        const city = document.getElementById('newDrvCity').value;
+        const city = this.getEffectiveCity('newDrvCity', 'newDrvCustomCity', 'Islamabad');
         const vehicleType = document.getElementById('newDrvVehicle').value;
         const vehiclePlate = document.getElementById('newDrvPlate').value;
         const licenseNumber = document.getElementById('newDrvLicense').value;
@@ -2578,6 +2660,9 @@ class AppController {
 
           this.showToast(`Fleet driver "${fullName}" registered successfully!`, 'success');
           closeAddDrvFn();
+          document.getElementById('addDriverForm')?.reset();
+          const customDrvCityContainer = document.getElementById('newDrvCustomCityContainer');
+          if (customDrvCityContainer) customDrvCityContainer.style.display = 'none';
           this.renderAdminDrivers();
         } catch (err) {
           this.showToast(err.message, 'error');
