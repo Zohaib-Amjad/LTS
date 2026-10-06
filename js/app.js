@@ -1178,7 +1178,7 @@ class AppController {
     });
 
     const target = document.getElementById(viewId);
-    if (target) target.style.display = 'block';
+    if (target) target.style.display = 'flex';
 
     const breadcrumb = document.getElementById('breadcrumbCurrentView');
     if (breadcrumb) {

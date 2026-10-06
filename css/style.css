@@ -603,6 +603,21 @@ body.dark-mode .nav-link.active {
   margin: 0 auto;
 }
 
+/* --- View Panes & Section Spacing --- */
+.view-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.view-pane > * + * {
+  margin-top: 0;
+}
+
+.view-pane .card {
+  margin-bottom: 0;
+}
+
 /* ==============================================================================
    Design System Components: Buttons, Inputs, Cards, Tables, Badges
    ============================================================================== */
