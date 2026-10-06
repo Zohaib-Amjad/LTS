@@ -238,6 +238,17 @@ class BookingService {
     // 4. Validate State Transition
     this.validateStateTransition(booking.status, BOOKING_STATUS.DRIVER_ASSIGNED, actor.role);
 
+    // Release previously assigned driver if re-assigning
+    if (booking.assignedDriverId && booking.assignedDriverId !== driverId) {
+      const prevDriver = db.tables.drivers.findById(booking.assignedDriverId);
+      if (prevDriver) {
+        db.tables.drivers.update(prevDriver.id, {
+          isAvailable: true,
+          availabilityStatus: 'AVAILABLE'
+        });
+      }
+    }
+
     // Update booking
     const updated = db.tables.bookings.update(bookingId, {
       assignedDriverId: driverId,

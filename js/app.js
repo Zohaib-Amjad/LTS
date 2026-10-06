@@ -1936,6 +1936,8 @@ class AppController {
       let dispatchAction = '';
       if (!b.assignedDriverId || b.status === BOOKING_STATUS.PENDING || b.status === BOOKING_STATUS.CONFIRMED) {
         dispatchAction = `<button class="btn btn-primary btn-sm" onclick="window.app.openAssignDriverModal('${b.id}', '${b.bookingNumber}')"><i class="fa-solid fa-user-plus"></i> Assign</button>`;
+      } else if (b.status === BOOKING_STATUS.DRIVER_ASSIGNED) {
+        dispatchAction = `<button class="btn btn-secondary btn-sm" title="Re-assign Driver" onclick="window.app.openAssignDriverModal('${b.id}', '${b.bookingNumber}')"><i class="fa-solid fa-arrows-rotate"></i> Change</button>`;
       } else {
         dispatchAction = `<span style="font-size: 0.8rem; color: var(--text-muted);">${b.driver?.user?.fullName || 'Assigned'}</span>`;
       }
@@ -1960,6 +1962,7 @@ class AppController {
   }
 
   renderAdminBookings() {
+    db.reload();
     const user = authService.getCurrentUser();
     const query = document.getElementById('adminBookingsSearchInput')?.value || '';
     const status = document.getElementById('adminBookingsStatusFilter')?.value || 'ALL';
@@ -1978,7 +1981,8 @@ class AppController {
     tbody.innerHTML = bookings.map(b => {
       const lug = b.luggageItems?.[0];
       const lugDesc = `${lug?.type || 'Luggage'} (${lug?.weightKg || 10} kg)`;
-      const canAssign = !b.assignedDriverId || b.status === BOOKING_STATUS.PENDING || b.status === BOOKING_STATUS.CONFIRMED;
+      const canAssign = !b.assignedDriverId || b.status === BOOKING_STATUS.PENDING || b.status === BOOKING_STATUS.CONFIRMED || b.status === BOOKING_STATUS.DRIVER_ASSIGNED;
+      const isReassign = b.status === BOOKING_STATUS.DRIVER_ASSIGNED;
 
       return `
         <tr>
@@ -2007,8 +2011,8 @@ class AppController {
                 <i class="fa-solid fa-file-lines"></i> Details
               </button>
               ${canAssign ? `
-                <button class="btn btn-primary btn-sm" title="Assign Driver" onclick="window.app.openAssignDriverModal('${b.id}', '${b.bookingNumber}')">
-                  <i class="fa-solid fa-user-plus"></i> Dispatch
+                <button class="btn ${isReassign ? 'btn-secondary' : 'btn-primary'} btn-sm" title="${isReassign ? 'Re-assign / Change Driver' : 'Assign Driver'}" onclick="window.app.openAssignDriverModal('${b.id}', '${b.bookingNumber}')">
+                  <i class="fa-solid ${isReassign ? 'fa-arrows-rotate' : 'fa-user-plus'}"></i> ${isReassign ? 'Re-assign' : 'Dispatch'}
                 </button>
               ` : ''}
             </div>
@@ -2702,6 +2706,7 @@ class AppController {
           closeAssignFn();
           this.renderAdminDashboard();
           this.renderAdminDrivers();
+          this.renderAdminBookings();
         } catch (e) {
           this.showToast(e.message, 'error');
         }
