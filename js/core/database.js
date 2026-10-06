@@ -988,8 +988,20 @@ class DatabaseEngine {
       this.isInitialized = true;
       this.persist();
 
-      // Live multi-tab storage listener so new drivers, customers, bookings sync across open browser tabs
+      // Live multi-tab storage & broadcast bus so all open tabs sync immediately without page refresh
       if (typeof window !== 'undefined') {
+        try {
+          if ('BroadcastChannel' in window) {
+            this.syncChannel = new BroadcastChannel('lts_sync_bus');
+            this.syncChannel.onmessage = (msg) => {
+              if (msg.data === 'sync') {
+                this.reload();
+                window.dispatchEvent(new CustomEvent('lts:db-synced'));
+              }
+            };
+          }
+        } catch (e) {}
+
         window.addEventListener('storage', (e) => {
           if (e.key === STORAGE_KEYS.DATABASE) {
             this.reload();
@@ -1029,6 +1041,16 @@ class DatabaseEngine {
         dump[key] = this.tables[key].getAll();
       });
       localStorage.setItem(STORAGE_KEYS.DATABASE, JSON.stringify(dump));
+
+      // Broadcast to other open tabs and trigger live re-render locally
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('lts:db-synced'));
+        if (this.syncChannel) {
+          try {
+            this.syncChannel.postMessage('sync');
+          } catch (e) {}
+        }
+      }
     } catch (e) {
       console.error('Failed to persist database to localStorage:', e);
     }

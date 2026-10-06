@@ -42,11 +42,9 @@ class AppController {
     this.bindHistoryEvents();
     this.initLandingScrollSpy();
     this.applyTheme();
-    this.updateTopBarStatus();
-
-    // Live auto-refresh when another tab updates database (e.g. new driver registers or booking changes)
+    // Live auto-refresh across all open tabs when database updates (e.g. driver assigned, trip status advanced, new user registered)
     window.addEventListener('lts:db-synced', () => {
-      this.renderCurrentView();
+      this.renderActiveView();
       this.updateTopBarStatus();
     });
 
@@ -1229,6 +1227,10 @@ class AppController {
       this.renderMyBookings();
     } else if (this.currentView === 'view-my-luggage') {
       this.renderMyLuggage();
+    } else if (this.currentView === 'view-booking-tracking') {
+      if (this.currentTrackingBookingId) {
+        this.showTrackingView(this.currentTrackingBookingId, false);
+      }
     } else if (this.currentView === 'view-customer-profile') {
       this.renderProfile();
     } else if (this.currentView === 'view-feedback') {
@@ -1251,6 +1253,12 @@ class AppController {
       this.renderAdminReports();
     } else if (this.currentView === 'view-admin-settings') {
       this.renderAdminSettings();
+    }
+
+    // If an Admin Deep Inspector modal is currently open, live refresh its audit & route details
+    const adminInspectorModal = document.getElementById('adminBookingDetailsModal');
+    if (adminInspectorModal && adminInspectorModal.classList.contains('active') && this.currentInspectedBookingId) {
+      this.openAdminBookingDetailsModal(this.currentInspectedBookingId);
     }
   }
 
@@ -1642,6 +1650,7 @@ class AppController {
     try {
       const timelineData = trackingService.getTrackingTimeline(bookingIdOrNumber, user);
       const booking = timelineData.booking;
+      this.currentTrackingBookingId = booking.id;
 
       const numHeader = document.getElementById('trackHeaderNumber');
       const routeHeader = document.getElementById('trackHeaderRoute');
@@ -2024,6 +2033,7 @@ class AppController {
 
   openAdminBookingDetailsModal(bookingId) {
     try {
+      this.currentInspectedBookingId = bookingId;
       db.reload();
       const details = adminService.getBookingDeepDetails(bookingId);
       const modal = document.getElementById('adminBookingDetailsModal');
