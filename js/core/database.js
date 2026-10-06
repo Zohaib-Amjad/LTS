@@ -1042,14 +1042,18 @@ class DatabaseEngine {
       });
       localStorage.setItem(STORAGE_KEYS.DATABASE, JSON.stringify(dump));
 
-      // Broadcast to other open tabs and trigger live re-render locally
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('lts:db-synced'));
-        if (this.syncChannel) {
-          try {
-            this.syncChannel.postMessage('sync');
-          } catch (e) {}
-        }
+      // Asynchronously broadcast to other open tabs and trigger live re-render locally without recursion
+      if (typeof window !== 'undefined' && !this._isBroadcasting) {
+        this._isBroadcasting = true;
+        setTimeout(() => {
+          this._isBroadcasting = false;
+          window.dispatchEvent(new CustomEvent('lts:db-synced'));
+          if (this.syncChannel) {
+            try {
+              this.syncChannel.postMessage('sync');
+            } catch (e) {}
+          }
+        }, 50);
       }
     } catch (e) {
       console.error('Failed to persist database to localStorage:', e);

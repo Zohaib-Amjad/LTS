@@ -1228,15 +1228,18 @@ class AppController {
     } else if (this.currentView === 'view-my-luggage') {
       this.renderMyLuggage();
     } else if (this.currentView === 'view-booking-tracking') {
-      if (this.currentTrackingBookingId) {
-        this.showTrackingView(this.currentTrackingBookingId, false);
-      } else {
+      let targetId = this.currentTrackingBookingId;
+      if (!targetId) {
         const user = authService.getCurrentUser();
         const userBookings = user ? bookingService.getCustomerBookings(user.id, user) : [];
         const latestBooking = userBookings.length > 0 ? userBookings[userBookings.length - 1] : db.tables.bookings.getAll()[0];
         if (latestBooking) {
-          this.showTrackingView(latestBooking.id, false);
+          targetId = latestBooking.id;
+          this.currentTrackingBookingId = targetId;
         }
+      }
+      if (targetId) {
+        this.renderTrackingView(targetId);
       }
     } else if (this.currentView === 'view-customer-profile') {
       this.renderProfile();
@@ -1265,7 +1268,7 @@ class AppController {
     // If an Admin Deep Inspector modal is currently open, live refresh its audit & route details
     const adminInspectorModal = document.getElementById('adminBookingDetailsModal');
     if (adminInspectorModal && adminInspectorModal.classList.contains('active') && this.currentInspectedBookingId) {
-      this.openAdminBookingDetailsModal(this.currentInspectedBookingId);
+      this.populateAdminBookingDetails(this.currentInspectedBookingId);
     }
   }
 
@@ -1652,7 +1655,7 @@ class AppController {
     }).join('');
   }
 
-  showTrackingView(bookingIdOrNumber, pushHistory = true) {
+  renderTrackingView(bookingIdOrNumber) {
     const user = authService.getCurrentUser();
     try {
       const timelineData = trackingService.getTrackingTimeline(bookingIdOrNumber, user);
@@ -1765,13 +1768,23 @@ class AppController {
           }).join('');
         }
       }
-
-      this.navigate('view-booking-tracking', false);
-      if (pushHistory && !this.isHandlingPopstate) {
-        this.pushHistoryState(this.currentRole || 'CUSTOMER', 'view-booking-tracking', null, { bookingId: bookingIdOrNumber });
-      }
     } catch (err) {
-      this.showToast(err.message, 'error');
+      console.warn('renderTrackingView warning:', err);
+    }
+  }
+
+  showTrackingView(bookingIdOrNumber, pushHistory = true) {
+    if (!bookingIdOrNumber) return;
+    this.currentTrackingBookingId = bookingIdOrNumber;
+
+    if (this.currentView !== 'view-booking-tracking') {
+      this.navigate('view-booking-tracking', false);
+    }
+
+    this.renderTrackingView(bookingIdOrNumber);
+
+    if (pushHistory && !this.isHandlingPopstate) {
+      this.pushHistoryState(this.currentRole || 'CUSTOMER', 'view-booking-tracking', null, { bookingId: bookingIdOrNumber });
     }
   }
 
@@ -2038,12 +2051,11 @@ class AppController {
     }).join('');
   }
 
-  openAdminBookingDetailsModal(bookingId) {
+  populateAdminBookingDetails(bookingId) {
     try {
       this.currentInspectedBookingId = bookingId;
       db.reload();
       const details = adminService.getBookingDeepDetails(bookingId);
-      const modal = document.getElementById('adminBookingDetailsModal');
       const title = document.getElementById('adminBookingModalTitle');
       const content = document.getElementById('adminBookingModalContent');
 
@@ -2168,11 +2180,16 @@ class AppController {
           </div>
         `;
       }
-
-      if (modal) modal.classList.add('active');
     } catch (err) {
-      this.showToast(err.message, 'error');
+      console.warn('populateAdminBookingDetails warning:', err);
     }
+  }
+
+  openAdminBookingDetailsModal(bookingId) {
+    this.currentInspectedBookingId = bookingId;
+    this.populateAdminBookingDetails(bookingId);
+    const modal = document.getElementById('adminBookingDetailsModal');
+    if (modal) modal.classList.add('active');
   }
 
   openAdminUserDetailsModal(userId) {
