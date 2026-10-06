@@ -2013,6 +2013,7 @@ class AppController {
 
   openAdminBookingDetailsModal(bookingId) {
     try {
+      db.reload();
       const details = adminService.getBookingDeepDetails(bookingId);
       const modal = document.getElementById('adminBookingDetailsModal');
       const title = document.getElementById('adminBookingModalTitle');
@@ -2024,6 +2025,10 @@ class AppController {
         const lug = details.luggageItems?.[0];
         const pred = details.prediction;
         const driver = details.driver;
+        const pLoc = details.pickupLocation;
+        const dLoc = details.destinationLocation;
+        const pAddr = pLoc?.addressLine || pLoc?.address || pLoc?.landmark || 'Hub Address';
+        const dAddr = dLoc?.addressLine || dLoc?.address || dLoc?.landmark || 'Hub Address';
 
         content.innerHTML = `
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
@@ -2043,9 +2048,9 @@ class AppController {
               <h4 style="font-size: 0.95rem; margin-bottom: 8px;"><i class="fa-solid fa-truck"></i> Assigned Courier</h4>
               <div style="font-size: 0.85rem; display: flex; flex-direction: column; gap: 4px;">
                 <div><strong>Name:</strong> ${driver?.user?.fullName || 'Pending Assignment'}</div>
-                <div><strong>Vehicle:</strong> ${driver ? `${driver.vehicleType} (${driver.vehiclePlate})` : '--'}</div>
+                <div><strong>Vehicle:</strong> ${driver ? `${driver.vehicleType || 'Van'} (${driver.vehiclePlate || 'ICT-000'})` : '--'}</div>
                 <div><strong>Phone:</strong> ${driver?.user?.phone || '--'}</div>
-                <div><strong>Rating:</strong> ${driver ? `★ ${driver.rating} / 5.0` : '--'}</div>
+                <div><strong>Rating:</strong> ${driver ? `★ ${driver.rating || 5.0} / 5.0` : '--'}</div>
               </div>
             </div>
           </div>
@@ -2056,11 +2061,11 @@ class AppController {
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; font-size: 0.85rem;">
               <div>
                 <span style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase;">ORIGIN PICKUP</span>
-                <p style="font-weight: 700; margin-top: 2px;">${details.pickupLocation?.city} (${details.pickupLocation?.address})</p>
+                <p style="font-weight: 700; margin-top: 2px;">${pLoc?.city || 'Origin'} (${pAddr})</p>
               </div>
               <div>
                 <span style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase;">DESTINATION</span>
-                <p style="font-weight: 700; margin-top: 2px;">${details.destinationLocation?.city} (${details.destinationLocation?.address})</p>
+                <p style="font-weight: 700; margin-top: 2px;">${dLoc?.city || 'Dest'} (${dAddr})</p>
               </div>
               <div>
                 <span style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase;">HIGHWAY DISTANCE</span>
