@@ -1213,6 +1213,7 @@ class AppController {
   }
 
   renderActiveView() {
+    db.reload();
     this.updateUserBadge();
     this.renderNotifications();
 

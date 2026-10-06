@@ -175,6 +175,7 @@ class AuthService {
   }
 
   login(email, password, expectedRole = null) {
+    db.reload();
     if (!email || !password) {
       throw new ValidationError('Email and password are required.');
     }
@@ -199,11 +200,35 @@ class AuthService {
       throw new AuthorizationError(`Account mismatch: This email is registered as "${user.role}", not "${expectedRole}". Please select the correct role.`);
     }
 
+    // If driver account, ensure driver profile exists in drivers table
+    if (user.role === USER_ROLES.DRIVER) {
+      const existingDriver = db.tables.drivers.find(d => d.userId === user.id);
+      if (!existingDriver) {
+        const nextId = `DRV-${100 + db.tables.drivers.getAll().length + 1}`;
+        db.tables.drivers.insert({
+          id: nextId,
+          userId: user.id,
+          licenseNumber: `PK-LIC-${Math.floor(100000 + Math.random() * 900000)}`,
+          vehicleType: 'Standard Courier Van',
+          vehiclePlate: `ICT-${Math.floor(100 + Math.random() * 900)}`,
+          vehicleCapacityKg: 800,
+          vehicleCapacityLiters: 2500,
+          currentCity: user.city || 'Islamabad',
+          isAvailable: true,
+          availabilityStatus: DRIVER_AVAILABILITY.AVAILABLE,
+          rating: 5.0,
+          totalTrips: 0
+        });
+        db.persist();
+      }
+    }
+
     this.saveSession(user);
     return this.getCurrentUser();
   }
 
   register({ fullName, email, password, confirmPassword, phone, city = 'Islamabad', role = USER_ROLES.CUSTOMER }) {
+    db.reload();
     if (!fullName || !fullName.trim()) {
       throw new ValidationError('Full name is required.');
     }
@@ -254,10 +279,12 @@ class AuthService {
     });
 
     if (assignedRole === USER_ROLES.DRIVER) {
+      const nextId = `DRV-${100 + db.tables.drivers.getAll().length + 1}`;
       db.tables.drivers.insert({
+        id: nextId,
         userId: newUser.id,
         licenseNumber: `PK-LIC-${Math.floor(100000 + Math.random() * 900000)}`,
-        vehicleType: 'Van',
+        vehicleType: 'Standard Courier Van',
         vehiclePlate: `ICT-${Math.floor(100 + Math.random() * 900)}`,
         vehicleCapacityKg: 800,
         vehicleCapacityLiters: 2500,
