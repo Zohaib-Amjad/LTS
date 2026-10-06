@@ -362,7 +362,21 @@ class AppController {
     }
   }
 
+  goToHomePage(pushHistory = true) {
+    this.switchDemoRole('LANDING', null, false, false);
+    this.scrollToBookmark('home', pushHistory);
+  }
+
   bindEvents() {
+    // Universal Logo / Brand Click -> Go to Home Page from any view/portal/screen
+    document.addEventListener('click', (e) => {
+      const brandTarget = e.target.closest('[data-go-home], .landing-brand, .sidebar-header');
+      if (brandTarget) {
+        e.preventDefault();
+        this.goToHomePage(true);
+      }
+    });
+
     // Demo Role Switcher Bar
     document.querySelectorAll('[data-switch-role]').forEach(btn => {
       btn.addEventListener('click', e => {
@@ -370,8 +384,7 @@ class AppController {
         if (targetRole === 'AUTH') {
           this.openAuth('login', true);
         } else if (targetRole === 'LANDING') {
-          this.switchDemoRole('LANDING', null, false, true);
-          this.scrollToBookmark('home', true);
+          this.goToHomePage(true);
         } else {
           this.switchDemoRole(targetRole, null, false, true);
         }
@@ -387,8 +400,7 @@ class AppController {
     if (landingNavLogin) landingNavLogin.addEventListener('click', () => this.openAuth('login'));
     if (landingNavRegister) landingNavRegister.addEventListener('click', () => this.openAuth('register'));
     if (authBackBtn) authBackBtn.addEventListener('click', () => {
-      this.switchDemoRole('LANDING', null, false, true);
-      this.scrollToBookmark('home', true);
+      this.goToHomePage(true);
     });
     if (landingNavTrack) {
       landingNavTrack.addEventListener('click', () => {
@@ -396,8 +408,8 @@ class AppController {
       });
     }
 
-    // Landing Navbar Bookmark Links & Brand Click
-    document.querySelectorAll('.landing-nav-links a[href^="#"], .landing-brand[href^="#"]').forEach(link => {
+    // Landing Navbar Bookmark Links
+    document.querySelectorAll('.landing-nav-links a[href^="#"]').forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
         const href = link.getAttribute('href');

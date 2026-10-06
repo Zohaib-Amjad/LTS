@@ -234,6 +234,23 @@ img {
   align-items: center;
   gap: 12px;
   border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--transition-fast), opacity var(--transition-fast);
+}
+
+.sidebar-header:hover {
+  background-color: var(--bg-surface-secondary);
+}
+
+[data-go-home] {
+  cursor: pointer;
+  user-select: none;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+[data-go-home]:hover {
+  opacity: 0.88;
 }
 
 .brand-logo-icon {
