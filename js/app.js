@@ -42,6 +42,7 @@ class AppController {
     this.bindHistoryEvents();
     this.initLandingScrollSpy();
     this.applyTheme();
+    this.updateTopBarStatus();
 
     // If URL has a pathname like /customer-dashboard, normalize to hash
     const path = window.location.pathname;
@@ -772,6 +773,7 @@ class AppController {
     try {
       const user = authService.login(email, password, role);
       this.showToast(`Welcome back, ${user.fullName}!`, 'success');
+      this.updateTopBarStatus();
       this.navigateToRoleDefault();
     } catch (err) {
       this.showToast(err.message, 'error');
@@ -813,6 +815,7 @@ class AppController {
   handleLogout() {
     authService.logout();
     this.showToast('You have been logged out successfully.', 'info');
+    this.updateTopBarStatus();
     this.switchDemoRole('LANDING');
   }
 
@@ -935,6 +938,7 @@ class AppController {
   }
 
   updateUserBadge() {
+    this.updateTopBarStatus();
     const user = authService.getCurrentUser();
     if (!user) return;
 
@@ -945,6 +949,59 @@ class AppController {
     if (avatar) avatar.textContent = user.avatarInitials || 'SL';
     if (name) name.textContent = user.fullName;
     if (role) role.textContent = user.role;
+  }
+
+  updateTopBarStatus() {
+    const user = authService.getCurrentUser();
+    const container = document.getElementById('topBarUserStatus');
+    const authRoleBtn = document.querySelector('.demo-role-btn[data-switch-role="AUTH"]');
+
+    if (!container) return;
+
+    if (user) {
+      if (authRoleBtn) {
+        authRoleBtn.innerHTML = `<i class="fa-solid fa-circle-user" style="color: #60a5fa;"></i> ${user.fullName.split(' ')[0]} (${user.role})`;
+      }
+
+      container.innerHTML = `
+        <div class="topbar-auth-pill logged-in">
+          <span class="status-pulse-dot" title="Active Logged-in Session"></span>
+          <span class="topbar-auth-label">Logged In:</span>
+          <strong class="topbar-user-name" title="${user.fullName}">${user.fullName}</strong>
+          <span class="topbar-role-badge ${user.role === 'ADMIN' ? 'badge-admin' : user.role === 'DRIVER' ? 'badge-driver' : 'badge-customer'}">${user.role}</span>
+          <button class="topbar-logout-btn" id="topBarLogoutBtn" title="Log Out of this Account"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+        </div>
+      `;
+
+      const topLogout = document.getElementById('topBarLogoutBtn');
+      if (topLogout) {
+        topLogout.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.handleLogout();
+        });
+      }
+    } else {
+      if (authRoleBtn) {
+        authRoleBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Login / Register`;
+      }
+
+      container.innerHTML = `
+        <div class="topbar-auth-pill guest">
+          <span class="status-offline-dot"></span>
+          <span class="topbar-auth-label" style="color: #94a3b8;">Status:</span>
+          <span style="color: #cbd5e1; font-weight: 500;">Guest</span>
+          <button class="topbar-login-link-btn" id="topBarQuickSignInBtn"><i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In</button>
+        </div>
+      `;
+
+      const quickSignIn = document.getElementById('topBarQuickSignInBtn');
+      if (quickSignIn) {
+        quickSignIn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.openAuth('login', true);
+        });
+      }
+    }
   }
 
   renderSidebarForRole() {
