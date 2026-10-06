@@ -987,12 +987,36 @@ class DatabaseEngine {
 
       this.isInitialized = true;
       this.persist();
+
+      // Live multi-tab storage listener so new drivers, customers, bookings sync across open browser tabs
+      if (typeof window !== 'undefined') {
+        window.addEventListener('storage', (e) => {
+          if (e.key === STORAGE_KEYS.DATABASE) {
+            this.reload();
+          }
+        });
+      }
     } catch (e) {
       console.warn('Database initialization warning, loading fresh seed:', e);
       Object.keys(this.tables).forEach(key => {
         this.tables[key].load(null);
       });
       this.isInitialized = true;
+    }
+  }
+
+  reload() {
+    if (typeof localStorage === 'undefined') return;
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.DATABASE);
+      if (stored) {
+        const raw = JSON.parse(stored);
+        Object.keys(this.tables).forEach(key => {
+          this.tables[key].load(raw);
+        });
+      }
+    } catch (e) {
+      console.warn('Database reload warning:', e);
     }
   }
 

@@ -19,6 +19,8 @@ class AdminService {
       throw new AuthorizationError('Admin privileges required to access system metrics.');
     }
 
+    db.reload();
+
     const allBookings = db.tables.bookings.getAll();
     const allUsers = db.tables.users.getAll();
     const allDrivers = db.tables.drivers.getAll();

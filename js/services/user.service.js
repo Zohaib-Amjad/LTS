@@ -25,6 +25,7 @@ class UserService {
     if (!requester || requester.role !== USER_ROLES.ADMIN) {
       throw new AuthorizationError('Admin privileges required to view user directory.');
     }
+    db.reload();
     return db.tables.users.getAll().map(u => authService.sanitizeUser(u));
   }
 

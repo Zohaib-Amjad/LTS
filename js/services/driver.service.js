@@ -18,6 +18,35 @@ class DriverService {
       throw new AuthorizationError('Admin privileges required to view full driver fleet.');
     }
 
+    db.reload();
+
+    // Guarantee that any user registered with role === DRIVER has a corresponding drivers table record
+    const allDriverUsers = db.tables.users.filter(u => u.role === USER_ROLES.DRIVER);
+    let hasCreatedDriver = false;
+    allDriverUsers.forEach(u => {
+      const existingDriver = db.tables.drivers.find(d => d.userId === u.id);
+      if (!existingDriver) {
+        db.tables.drivers.insert({
+          userId: u.id,
+          licenseNumber: `PK-LIC-${Math.floor(100000 + Math.random() * 900000)}`,
+          vehicleType: 'Standard Courier Van',
+          vehiclePlate: `ICT-${Math.floor(100 + Math.random() * 900)}`,
+          vehicleCapacityKg: 800,
+          vehicleCapacityLiters: 2500,
+          currentCity: u.city || 'Islamabad',
+          isAvailable: true,
+          availabilityStatus: DRIVER_AVAILABILITY.AVAILABLE,
+          rating: 5.0,
+          totalTrips: 0
+        });
+        hasCreatedDriver = true;
+      }
+    });
+
+    if (hasCreatedDriver) {
+      db.persist();
+    }
+
     return db.tables.drivers.getAll().map(driver => {
       const user = db.tables.users.findById(driver.userId);
       const assignedBookings = db.tables.bookings.filter(b => b.assignedDriverId === driver.id);
@@ -26,7 +55,7 @@ class DriverService {
       return {
         ...driver,
         availabilityStatus: driver.availabilityStatus || (driver.isAvailable ? DRIVER_AVAILABILITY.AVAILABLE : DRIVER_AVAILABILITY.BUSY),
-        user: authService.sanitizeUser(user),
+        user: user ? authService.sanitizeUser(user) : { fullName: 'Fleet Driver', email: 'driver@smartluggage.pk', phone: '--', city: driver.currentCity || 'Islamabad', isActive: true },
         totalTrips: driver.totalTrips || assignedBookings.filter(b => b.status === 'DELIVERED').length,
         activeTripsCount: activeBookings.length
       };
