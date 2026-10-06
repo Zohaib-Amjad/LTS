@@ -95,11 +95,20 @@ async function runAuthTests() {
   assert(custLogin.role === USER_ROLES.CUSTOMER, 'Customer login validated (Ali Khan)');
   assert(custLogin.passwordHash === undefined, 'Customer passwordHash sanitized');
 
-  const drvLogin = authService.login('driver@smartluggage.pk', 'driver123');
-  assert(drvLogin.role === USER_ROLES.DRIVER, 'Driver login validated (Bilal Tariq)');
+  const drvLogin = authService.login('driver@smartluggage.pk', 'driver123', USER_ROLES.DRIVER);
+  assert(drvLogin.role === USER_ROLES.DRIVER, 'Driver login with DRIVER role validated (Bilal Tariq)');
 
-  const admLogin = authService.login('admin@smartluggage.pk', 'admin123');
-  assert(admLogin.role === USER_ROLES.ADMIN, 'Admin login validated (System Administrator)');
+  const admLogin = authService.login('admin@smartluggage.pk', 'admin123', USER_ROLES.ADMIN);
+  assert(admLogin.role === USER_ROLES.ADMIN, 'Admin login with ADMIN role validated (System Administrator)');
+
+  // Test Role Mismatch on Login
+  let mismatchRoleCaught = false;
+  try {
+    authService.login('customer@smartluggage.pk', 'customer123', USER_ROLES.DRIVER);
+  } catch (e) {
+    if (e instanceof AuthorizationError) mismatchRoleCaught = true;
+  }
+  assert(mismatchRoleCaught, 'Logging in with mismatched role throws AuthorizationError');
 
   // Test 4: Route Guard Permissions
   console.log('\n3. Testing Route Guard Permission Matrix:');

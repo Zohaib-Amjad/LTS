@@ -534,18 +534,24 @@ class AppController {
       credCust.addEventListener('click', () => {
         document.getElementById('loginEmailInput').value = 'customer@smartluggage.pk';
         document.getElementById('loginPasswordInput').value = 'customer123';
+        const roleSel = document.getElementById('loginRole');
+        if (roleSel) roleSel.value = 'CUSTOMER';
       });
     }
     if (credDrv) {
       credDrv.addEventListener('click', () => {
         document.getElementById('loginEmailInput').value = 'driver@smartluggage.pk';
         document.getElementById('loginPasswordInput').value = 'driver123';
+        const roleSel = document.getElementById('loginRole');
+        if (roleSel) roleSel.value = 'DRIVER';
       });
     }
     if (credAdm) {
       credAdm.addEventListener('click', () => {
         document.getElementById('loginEmailInput').value = 'admin@smartluggage.pk';
         document.getElementById('loginPasswordInput').value = 'admin123';
+        const roleSel = document.getElementById('loginRole');
+        if (roleSel) roleSel.value = 'ADMIN';
       });
     }
 
@@ -761,9 +767,10 @@ class AppController {
     e.preventDefault();
     const email = document.getElementById('loginEmailInput').value;
     const password = document.getElementById('loginPasswordInput').value;
+    const role = document.getElementById('loginRole')?.value || null;
 
     try {
-      const user = authService.login(email, password);
+      const user = authService.login(email, password, role);
       this.showToast(`Welcome back, ${user.fullName}!`, 'success');
       this.navigateToRoleDefault();
     } catch (err) {
@@ -785,11 +792,13 @@ class AppController {
       const user = authService.register({ fullName, email, phone, city, role, password, confirmPassword });
       this.showToast(`Account registered successfully for ${user.fullName}! Please sign in to continue.`, 'success');
 
-      // Pre-fill email in Login form and focus password input
+      // Pre-fill email and role in Login form and clear password
       const loginEmail = document.getElementById('loginEmailInput');
       const loginPwd = document.getElementById('loginPasswordInput');
+      const loginRole = document.getElementById('loginRole');
       if (loginEmail) loginEmail.value = user.email;
       if (loginPwd) loginPwd.value = '';
+      if (loginRole && user.role) loginRole.value = user.role;
 
       // Navigate to Login tab
       this.openAuth('login', true);

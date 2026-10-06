@@ -174,7 +174,7 @@ class AuthService {
     return true;
   }
 
-  login(email, password) {
+  login(email, password, expectedRole = null) {
     if (!email || !password) {
       throw new ValidationError('Email and password are required.');
     }
@@ -192,6 +192,11 @@ class AuthService {
 
     if (!user.isActive) {
       throw new AuthenticationError('This account is deactivated. Please contact the administrator.');
+    }
+
+    // Role mismatch check if a specific role was selected on login
+    if (expectedRole && user.role !== expectedRole && user.role !== USER_ROLES.ADMIN) {
+      throw new AuthorizationError(`Account mismatch: This email is registered as "${user.role}", not "${expectedRole}". Please select the correct role.`);
     }
 
     this.saveSession(user);
