@@ -2618,6 +2618,7 @@ class AppController {
   }
 
   openAssignDriverModal(bookingId, bookingNumber) {
+    db.reload();
     const modal = document.getElementById('assignDriverModal');
     const idInput = document.getElementById('assignModalBookingId');
     const infoText = document.getElementById('assignModalBookingInfo');
@@ -2636,9 +2637,14 @@ class AppController {
         if (submitBtn) submitBtn.disabled = true;
       } else {
         if (submitBtn) submitBtn.disabled = false;
-        driverSelect.innerHTML = availableDrivers.map(d => `
-          <option value="${d.id}">${d.user?.fullName || 'Driver'} — ${d.vehicleType} (${d.vehiclePlate}) [${d.currentCity}] ★ ${d.rating}</option>
-        `).join('');
+        driverSelect.innerHTML = availableDrivers.map(d => {
+          const name = d.user?.fullName || 'Driver';
+          const vehicle = d.vehicleType || 'Courier Van';
+          const plate = d.vehiclePlate || 'ICT-000';
+          const city = d.currentCity || d.user?.city || 'Islamabad';
+          const rating = d.rating !== undefined ? d.rating : '5.0';
+          return `<option value="${d.id}">${name} — ${vehicle} (${plate}) [${city}] ★ ${rating}</option>`;
+        }).join('');
       }
     }
 

@@ -10,23 +10,19 @@ import { authService } from './auth.service.js';
 
 class DriverService {
   /**
-   * Get all registered drivers with hydrated sanitized user accounts
+   * Guarantee that any user registered with role === DRIVER has a corresponding drivers table record
+   * and that latest database changes from other tabs are loaded.
    */
-  getAllDrivers(requestingUser = null) {
-    const requester = requestingUser || authService.getCurrentUser();
-    if (requester && requester.role !== USER_ROLES.ADMIN) {
-      throw new AuthorizationError('Admin privileges required to view full driver fleet.');
-    }
-
+  _ensureDriverRecords() {
     db.reload();
-
-    // Guarantee that any user registered with role === DRIVER has a corresponding drivers table record
     const allDriverUsers = db.tables.users.filter(u => u.role === USER_ROLES.DRIVER);
     let hasCreatedDriver = false;
     allDriverUsers.forEach(u => {
       const existingDriver = db.tables.drivers.find(d => d.userId === u.id);
       if (!existingDriver) {
+        const nextId = `DRV-${100 + db.tables.drivers.getAll().length + 1}`;
         db.tables.drivers.insert({
+          id: nextId,
           userId: u.id,
           licenseNumber: `PK-LIC-${Math.floor(100000 + Math.random() * 900000)}`,
           vehicleType: 'Standard Courier Van',
@@ -46,6 +42,18 @@ class DriverService {
     if (hasCreatedDriver) {
       db.persist();
     }
+  }
+
+  /**
+   * Get all registered drivers with hydrated sanitized user accounts
+   */
+  getAllDrivers(requestingUser = null) {
+    const requester = requestingUser || authService.getCurrentUser();
+    if (requester && requester.role !== USER_ROLES.ADMIN) {
+      throw new AuthorizationError('Admin privileges required to view full driver fleet.');
+    }
+
+    this._ensureDriverRecords();
 
     return db.tables.drivers.getAll().map(driver => {
       const user = db.tables.users.findById(driver.userId);
@@ -66,16 +74,17 @@ class DriverService {
    * Get only eligible, active and available drivers ready for dispatch
    */
   getAvailableDrivers() {
+    this._ensureDriverRecords();
     return db.tables.drivers.getAll()
       .map(driver => {
         const user = db.tables.users.findById(driver.userId);
         return {
           ...driver,
           availabilityStatus: driver.availabilityStatus || (driver.isAvailable ? DRIVER_AVAILABILITY.AVAILABLE : DRIVER_AVAILABILITY.BUSY),
-          user: authService.sanitizeUser(user)
+          user: user ? authService.sanitizeUser(user) : { fullName: 'Fleet Driver', email: 'driver@smartluggage.pk', phone: '--', city: driver.currentCity || 'Islamabad', isActive: true }
         };
       })
-      .filter(d => d.user && d.user.isActive && d.isAvailable && d.availabilityStatus === DRIVER_AVAILABILITY.AVAILABLE);
+      .filter(d => d.user && d.user.isActive !== false && d.isAvailable !== false && d.availabilityStatus !== DRIVER_AVAILABILITY.BUSY && d.availabilityStatus !== DRIVER_AVAILABILITY.OFFLINE);
   }
 
   getDriverById(id) {
