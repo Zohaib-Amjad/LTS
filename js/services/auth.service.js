@@ -265,8 +265,7 @@ class AuthService {
     }
 
     db.persist();
-    this.saveSession(newUser);
-    return this.getCurrentUser();
+    return this.sanitizeUser(newUser);
   }
 
   changePassword(userId, oldPassword, newPassword) {

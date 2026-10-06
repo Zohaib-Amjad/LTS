@@ -783,8 +783,19 @@ class AppController {
 
     try {
       const user = authService.register({ fullName, email, phone, city, role, password, confirmPassword });
-      this.showToast(`Account created successfully! Welcome, ${user.fullName}`, 'success');
-      this.navigateToRoleDefault();
+      this.showToast(`Account registered successfully for ${user.fullName}! Please sign in to continue.`, 'success');
+
+      // Pre-fill email in Login form and focus password input
+      const loginEmail = document.getElementById('loginEmailInput');
+      const loginPwd = document.getElementById('loginPasswordInput');
+      if (loginEmail) loginEmail.value = user.email;
+      if (loginPwd) loginPwd.value = '';
+
+      // Navigate to Login tab
+      this.openAuth('login', true);
+
+      // Reset registration form
+      document.getElementById('appRegisterForm')?.reset();
     } catch (err) {
       this.showToast(err.message, 'error');
     }
