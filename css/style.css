@@ -891,6 +891,56 @@ body.dark-mode .nav-link.active {
   align-items: flex-start;
   justify-content: space-between;
   box-shadow: var(--shadow-sm);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.22s ease,
+              border-color 0.22s ease;
+}
+
+.stat-card.clickable,
+.stat-card[data-nav],
+.stat-card[data-filter-role],
+.stat-card[data-filter-status] {
+  cursor: pointer;
+  user-select: none;
+}
+
+.stat-card.clickable:hover,
+.stat-card[data-nav]:hover,
+.stat-card[data-filter-role]:hover,
+.stat-card[data-filter-status]:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.1), 0 4px 8px -2px rgba(0, 0, 0, 0.05);
+  border-color: var(--brand-primary);
+}
+
+.stat-card.clickable:hover .stat-icon,
+.stat-card[data-nav]:hover .stat-icon,
+.stat-card[data-filter-role]:hover .stat-icon,
+.stat-card[data-filter-status]:hover .stat-icon {
+  transform: scale(1.08);
+}
+
+.stat-card .stat-icon {
+  transition: transform 0.2s ease;
+}
+
+.stat-card.clickable:active,
+.stat-card[data-nav]:active,
+.stat-card[data-filter-role]:active,
+.stat-card[data-filter-status]:active {
+  transform: translateY(-1px);
+}
+
+.status-dist-bar-item {
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.status-dist-bar-item:hover {
+  background: var(--bg-surface-secondary);
+  transform: translateX(3px);
 }
 
 .stat-info .stat-label {

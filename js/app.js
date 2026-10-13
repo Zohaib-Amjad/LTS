@@ -603,6 +603,78 @@ class AppController {
     if (trackActiveBtn) trackActiveBtn.addEventListener('click', () => this.showTrackingView('BK-2026-001'));
     if (returnDashBtn) returnDashBtn.addEventListener('click', () => this.navigateToRoleDefault());
 
+    // Stat Cards & KPI Metric Tabs Navigation (Admin, Customer, Driver)
+    document.addEventListener('click', (e) => {
+      const card = e.target.closest('.stat-card[data-nav], .stat-card[data-filter-role], .stat-card[data-filter-status], .stat-card.clickable');
+      if (!card) return;
+
+      const targetNav = card.getAttribute('data-nav');
+      const filterRole = card.getAttribute('data-filter-role');
+      const filterStatus = card.getAttribute('data-filter-status');
+      const cardId = card.id;
+
+      // Handle Driver Trips Card Click (Scroll to assigned trips table)
+      if (cardId === 'driverCardTrips') {
+        const table = document.getElementById('driverAssignedTripsTbody');
+        if (table) {
+          table.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return;
+      }
+
+      // Handle Role Filtering (e.g. Total Accounts, Customers, Admins)
+      if (filterRole) {
+        const roleSelect = document.getElementById('adminUserRoleFilter');
+        if (roleSelect) {
+          roleSelect.value = filterRole;
+        }
+        if (targetNav) {
+          this.navigate(targetNav);
+        } else if (this.currentView === 'view-admin-users') {
+          this.renderAdminUsers();
+        } else {
+          this.navigate('view-admin-users');
+        }
+        return;
+      }
+
+      // Handle Booking Status Filtering (e.g. Total Bookings, In-Transit, Delivered)
+      if (filterStatus) {
+        const statusSelect = document.getElementById('adminBookingsStatusFilter');
+        if (statusSelect) {
+          statusSelect.value = filterStatus;
+        }
+        if (targetNav) {
+          this.navigate(targetNav);
+        } else if (this.currentView === 'view-admin-bookings') {
+          this.renderAdminBookings();
+        } else {
+          this.navigate('view-admin-bookings');
+        }
+        return;
+      }
+
+      // General View Navigation (e.g. Fleet Drivers, Revenue, AI Costs, AI Time)
+      if (targetNav) {
+        this.navigate(targetNav);
+      }
+    });
+
+    // Lifecycle Status Distribution Bars Click Handling (Admin Command Center)
+    document.addEventListener('click', (e) => {
+      const barItem = e.target.closest('.status-dist-bar-item');
+      if (!barItem) return;
+      const status = barItem.getAttribute('data-status');
+      if (status) {
+        const statusSelect = document.getElementById('adminBookingsStatusFilter');
+        if (statusSelect) {
+          statusSelect.value = status;
+        }
+        this.navigate('view-admin-bookings');
+        this.renderAdminBookings();
+      }
+    });
+
     // Admin User Role Filter
     const userRoleFilter = document.getElementById('adminUserRoleFilter');
     if (userRoleFilter) {
@@ -1928,7 +2000,7 @@ class AppController {
         const pct = Math.round((count / total) * 100);
 
         return `
-          <div>
+          <div class="status-dist-bar-item" data-status="${s.key}" title="Filter bookings by status: ${s.label.replace('_', ' ')}">
             <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
               <strong><i class="fa-solid fa-circle" style="color: ${s.color}; font-size: 0.65rem; margin-right: 6px;"></i> ${s.label.replace('_', ' ')}</strong>
               <span style="color: var(--text-muted); font-weight: 700;">${count} (${pct}%)</span>
@@ -1948,7 +2020,7 @@ class AppController {
         corridorsTbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 16px;">No corridor volume recorded yet.</td></tr>`;
       } else {
         corridorsTbody.innerHTML = metrics.topCorridors.slice(0, 5).map(c => `
-          <tr>
+          <tr style="cursor: pointer;" onclick="window.app.navigate('view-admin-reports')" title="View detailed corridor analytics in Platform Reports">
             <td><strong>${c.corridor}</strong> <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">${c.distanceKm} km</span></td>
             <td><span class="badge badge-confirmed">${c.count} Trips</span></td>
             <td><strong style="color: var(--brand-primary);">PKR ${c.revenue.toLocaleString()}</strong></td>

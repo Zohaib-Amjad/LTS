@@ -601,7 +601,7 @@
              =================================================================== -->
         <section class="view-pane" id="view-customer-dashboard">
           <div class="stat-grid">
-            <div class="stat-card">
+            <div class="stat-card clickable" id="custCardActive" data-nav="view-my-bookings" title="View Active Bookings">
               <div class="stat-info">
                 <div class="stat-label">Active Bookings</div>
                 <div class="stat-value" id="custStatActive">1</div>
@@ -609,7 +609,7 @@
               </div>
               <div class="stat-icon blue"><i class="fa-solid fa-box-open"></i></div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" id="custCardCompleted" data-nav="view-my-bookings" title="View Booking History">
               <div class="stat-info">
                 <div class="stat-label">Total Completed</div>
                 <div class="stat-value" id="custStatCompleted">1</div>
@@ -617,7 +617,7 @@
               </div>
               <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" id="custCardLuggage" data-nav="view-my-luggage" title="View Saved Luggage Catalog">
               <div class="stat-info">
                 <div class="stat-label">Saved Luggage</div>
                 <div class="stat-value" id="custStatLuggage">4</div>
@@ -1303,7 +1303,7 @@
               </div>
               <div class="stat-icon green"><i class="fa-solid fa-truck"></i></div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" id="driverCardTrips" title="View Assigned Trips">
               <div class="stat-info">
                 <div class="stat-label">Assigned Trips</div>
                 <div class="stat-value" id="driverTripsCount">2</div>
@@ -1354,7 +1354,7 @@
         <section class="view-pane" id="view-admin-dashboard" style="display: none;">
           <!-- Comprehensive KPI Overview Grid -->
           <div class="stat-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-            <div class="stat-card">
+            <div class="stat-card clickable" id="admCardTotalUsers" data-nav="view-admin-users" data-filter-role="ALL" title="View All Registered Accounts">
               <div class="stat-info">
                 <div class="stat-label">Total Accounts</div>
                 <div class="stat-value" id="admStatTotalUsers">0</div>
@@ -1362,7 +1362,7 @@
               </div>
               <div class="stat-icon blue"><i class="fa-solid fa-users-gear"></i></div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" id="admCardTotalCustomers" data-nav="view-admin-users" data-filter-role="CUSTOMER" title="View Registered Clients">
               <div class="stat-info">
                 <div class="stat-label">Total Customers</div>
                 <div class="stat-value" id="admStatTotalCustomers">0</div>
@@ -1370,7 +1370,7 @@
               </div>
               <div class="stat-icon green"><i class="fa-solid fa-user-group"></i></div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" id="admCardTotalDrivers" data-nav="view-admin-drivers" title="View Active Fleet Drivers">
               <div class="stat-info">
                 <div class="stat-label">Fleet Drivers</div>
                 <div class="stat-value" id="admStatTotalDrivers">0</div>
@@ -1378,7 +1378,7 @@
               </div>
               <div class="stat-icon purple"><i class="fa-solid fa-van-shuttle"></i></div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" id="admCardTotalAdmins" data-nav="view-admin-users" data-filter-role="ADMIN" title="View System Administrators">
               <div class="stat-info">
                 <div class="stat-label">Administrators</div>
                 <div class="stat-value" id="admStatTotalAdmins">0</div>
@@ -1386,7 +1386,7 @@
               </div>
               <div class="stat-icon orange"><i class="fa-solid fa-user-shield"></i></div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" id="admCardTotalBookings" data-nav="view-admin-bookings" data-filter-status="ALL" title="View Platform Bookings Directory">
               <div class="stat-info">
                 <div class="stat-label">Total Bookings</div>
                 <div class="stat-value" id="admStatTotalBookings">0</div>
@@ -1394,7 +1394,7 @@
               </div>
               <div class="stat-icon orange"><i class="fa-solid fa-box-archive"></i></div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" id="admCardInTransit" data-nav="view-admin-bookings" data-filter-status="IN_TRANSIT" title="View In-Transit Highway Shipments">
               <div class="stat-info">
                 <div class="stat-label">In-Transit Shipments</div>
                 <div class="stat-value" id="admStatInTransit">0</div>
@@ -1402,7 +1402,7 @@
               </div>
               <div class="stat-icon blue"><i class="fa-solid fa-road"></i></div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" id="admCardDelivered" data-nav="view-admin-bookings" data-filter-status="DELIVERED" title="View Safely Delivered Shipments">
               <div class="stat-info">
                 <div class="stat-label">Delivered Shipments</div>
                 <div class="stat-value" id="admStatDelivered">0</div>
@@ -1410,7 +1410,7 @@
               </div>
               <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" id="admCardRevenue" data-nav="view-admin-reports" title="View Freight Volume & Revenue Reports">
               <div class="stat-info">
                 <div class="stat-label">Total Volume Revenue</div>
                 <div class="stat-value" id="admStatRevenue">PKR 0</div>
@@ -1418,7 +1418,7 @@
               </div>
               <div class="stat-icon green"><i class="fa-solid fa-receipt"></i></div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" id="admCardAvgCost" data-nav="view-admin-predictions" title="View AI Fare Predictions & Analytics">
               <div class="stat-info">
                 <div class="stat-label">Avg. Transportation Cost</div>
                 <div class="stat-value" id="admStatAvgCost">PKR 0</div>
@@ -1426,7 +1426,7 @@
               </div>
               <div class="stat-icon orange"><i class="fa-solid fa-calculator"></i></div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" id="admCardAvgTime" data-nav="view-admin-predictions" title="View AI Delivery Time Inferences">
               <div class="stat-info">
                 <div class="stat-label">Avg. Delivery Time</div>
                 <div class="stat-value" id="admStatAvgTime">0.0 hrs</div>
@@ -1574,7 +1574,7 @@
         <section class="view-pane" id="view-admin-users" style="display: none;">
           <!-- Registered Accounts by Role Summary Cards -->
           <div class="stat-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 24px;">
-            <div class="stat-card">
+            <div class="stat-card clickable" id="admUserCardTotal" data-filter-role="ALL" title="Show All Platform Users">
               <div class="stat-info">
                 <div class="stat-label">Total Accounts</div>
                 <div class="stat-value" id="adminUsersStatTotal">0</div>
@@ -1582,7 +1582,7 @@
               </div>
               <div class="stat-icon blue"><i class="fa-solid fa-users-gear"></i></div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" id="admUserCardCustomers" data-filter-role="CUSTOMER" title="Filter by Customers">
               <div class="stat-info">
                 <div class="stat-label">Customers</div>
                 <div class="stat-value" id="adminUsersStatCustomers">0</div>
@@ -1590,7 +1590,7 @@
               </div>
               <div class="stat-icon green"><i class="fa-solid fa-user"></i></div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" id="admUserCardDrivers" data-filter-role="DRIVER" title="Filter by Drivers">
               <div class="stat-info">
                 <div class="stat-label">Drivers</div>
                 <div class="stat-value" id="adminUsersStatDrivers">0</div>
@@ -1598,7 +1598,7 @@
               </div>
               <div class="stat-icon purple"><i class="fa-solid fa-truck"></i></div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" id="admUserCardAdmins" data-filter-role="ADMIN" title="Filter by Admins">
               <div class="stat-info">
                 <div class="stat-label">Administrators</div>
                 <div class="stat-value" id="adminUsersStatAdmins">0</div>
