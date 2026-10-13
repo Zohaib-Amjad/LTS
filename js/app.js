@@ -470,14 +470,80 @@ class AppController {
       themeBtn.addEventListener('click', () => this.toggleTheme());
     }
 
-    // Mobile Sidebar Toggle
-    const mobileBtn = document.getElementById('mobileSidebarToggle');
+    // Universal Sidebar Open & Close / Collapse Toggle
     const sidebar = document.getElementById('appSidebar');
-    if (mobileBtn && sidebar) {
-      mobileBtn.addEventListener('click', () => {
+    const sidebarToggleBtn = document.getElementById('sidebarToggleBtn') || document.getElementById('mobileSidebarToggle');
+    const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+    const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+    const updateSidebarToggleState = () => {
+      if (!sidebar || !sidebarToggleBtn) return;
+      const isMobile = window.innerWidth <= 768;
+      if (isMobile) {
+        const isOpen = sidebar.classList.contains('mobile-open');
+        sidebarToggleBtn.innerHTML = isOpen ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-bars"></i>';
+        sidebarToggleBtn.title = isOpen ? 'Close Sidebar' : 'Open Sidebar';
+        if (sidebarBackdrop) sidebarBackdrop.classList.toggle('active', isOpen);
+      } else {
+        const isCollapsed = sidebar.classList.contains('collapsed');
+        sidebarToggleBtn.innerHTML = isCollapsed ? '<i class="fa-solid fa-bars"></i>' : '<i class="fa-solid fa-bars-staggered"></i>';
+        sidebarToggleBtn.title = isCollapsed ? 'Open Sidebar (Expand)' : 'Close Sidebar (Collapse)';
+        if (sidebarBackdrop) sidebarBackdrop.classList.remove('active');
+      }
+    };
+
+    const toggleSidebar = () => {
+      if (!sidebar) return;
+      const isMobile = window.innerWidth <= 768;
+      if (isMobile) {
         sidebar.classList.toggle('mobile-open');
-      });
-    }
+      } else {
+        const willCollapse = !sidebar.classList.contains('collapsed');
+        sidebar.classList.toggle('collapsed', willCollapse);
+        try {
+          localStorage.setItem('lts_sidebar_collapsed', willCollapse ? 'true' : 'false');
+        } catch (e) {}
+      }
+      updateSidebarToggleState();
+    };
+
+    const closeSidebar = () => {
+      if (!sidebar) return;
+      const isMobile = window.innerWidth <= 768;
+      if (isMobile) {
+        sidebar.classList.remove('mobile-open');
+      } else {
+        sidebar.classList.add('collapsed');
+        try {
+          localStorage.setItem('lts_sidebar_collapsed', 'true');
+        } catch (e) {}
+      }
+      updateSidebarToggleState();
+    };
+
+    if (sidebarToggleBtn) sidebarToggleBtn.addEventListener('click', toggleSidebar);
+    if (sidebarCloseBtn) sidebarCloseBtn.addEventListener('click', closeSidebar);
+    if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeSidebar);
+
+    // Keyboard shortcut (Alt + S to toggle sidebar)
+    document.addEventListener('keydown', (e) => {
+      if ((e.altKey && (e.key === 's' || e.key === 'S')) && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
+        e.preventDefault();
+        toggleSidebar();
+      }
+    });
+
+    // Restore saved desktop collapsed preference on start
+    try {
+      if (window.innerWidth > 768 && localStorage.getItem('lts_sidebar_collapsed') === 'true') {
+        sidebar?.classList.add('collapsed');
+      }
+    } catch (e) {}
+    updateSidebarToggleState();
+
+    window.addEventListener('resize', () => {
+      updateSidebarToggleState();
+    });
 
     // Logout Button
     const logoutBtn = document.getElementById('logoutBtn');
@@ -1211,7 +1277,9 @@ class AppController {
       returnLandingBtn.addEventListener('click', () => {
         this.switchDemoRole('LANDING');
         const sidebar = document.getElementById('appSidebar');
+        const backdrop = document.getElementById('sidebarBackdrop');
         if (sidebar) sidebar.classList.remove('mobile-open');
+        if (backdrop) backdrop.classList.remove('active');
       });
     }
 
@@ -1221,7 +1289,9 @@ class AppController {
         const viewId = e.currentTarget.getAttribute('data-nav');
         this.navigate(viewId);
         const sidebar = document.getElementById('appSidebar');
+        const backdrop = document.getElementById('sidebarBackdrop');
         if (sidebar) sidebar.classList.remove('mobile-open');
+        if (backdrop) backdrop.classList.remove('active');
       });
     });
   }
