@@ -473,7 +473,6 @@ class AppController {
     // Universal Sidebar Open & Close / Collapse Toggle
     const sidebar = document.getElementById('appSidebar');
     const sidebarToggleBtn = document.getElementById('sidebarToggleBtn') || document.getElementById('mobileSidebarToggle');
-    const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
     const sidebarBackdrop = document.getElementById('sidebarBackdrop');
 
     const updateSidebarToggleState = () => {
@@ -522,7 +521,6 @@ class AppController {
     };
 
     if (sidebarToggleBtn) sidebarToggleBtn.addEventListener('click', toggleSidebar);
-    if (sidebarCloseBtn) sidebarCloseBtn.addEventListener('click', closeSidebar);
     if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeSidebar);
 
     // Keyboard shortcut (Alt + S to toggle sidebar)
