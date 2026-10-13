@@ -1233,38 +1233,38 @@ class AppController {
     if (user.role === USER_ROLES.CUSTOMER) {
       html = `
         <span class="nav-section-title">Customer Portal</span>
-        <button class="nav-link ${this.currentView === 'view-customer-dashboard' ? 'active' : ''}" data-nav="view-customer-dashboard"><i class="fa-solid fa-house"></i><span>Dashboard</span></button>
-        <button class="nav-link ${this.currentView === 'view-create-booking' ? 'active' : ''}" data-nav="view-create-booking"><i class="fa-solid fa-plus-circle"></i><span>Book Luggage</span></button>
-        <button class="nav-link ${this.currentView === 'view-my-bookings' ? 'active' : ''}" data-nav="view-my-bookings"><i class="fa-solid fa-table-list"></i><span>My Bookings</span></button>
-        <button class="nav-link ${this.currentView === 'view-booking-tracking' ? 'active' : ''}" data-nav="view-booking-tracking"><i class="fa-solid fa-location-crosshairs"></i><span>Track Shipment</span></button>
-        <button class="nav-link ${this.currentView === 'view-my-luggage' ? 'active' : ''}" data-nav="view-my-luggage"><i class="fa-solid fa-suitcase"></i><span>My Luggage</span></button>
-        <button class="nav-link ${this.currentView === 'view-feedback' ? 'active' : ''}" data-nav="view-feedback"><i class="fa-solid fa-star"></i><span>Rate & Feedback</span></button>
-        <button class="nav-link ${this.currentView === 'view-customer-profile' ? 'active' : ''}" data-nav="view-customer-profile"><i class="fa-solid fa-user"></i><span>Profile</span></button>
+        <button class="nav-link ${this.currentView === 'view-customer-dashboard' ? 'active' : ''}" data-nav="view-customer-dashboard" title="Dashboard" data-tooltip="Dashboard"><i class="fa-solid fa-house"></i><span>Dashboard</span></button>
+        <button class="nav-link ${this.currentView === 'view-create-booking' ? 'active' : ''}" data-nav="view-create-booking" title="Book Luggage" data-tooltip="Book Luggage"><i class="fa-solid fa-plus-circle"></i><span>Book Luggage</span></button>
+        <button class="nav-link ${this.currentView === 'view-my-bookings' ? 'active' : ''}" data-nav="view-my-bookings" title="My Bookings" data-tooltip="My Bookings"><i class="fa-solid fa-table-list"></i><span>My Bookings</span></button>
+        <button class="nav-link ${this.currentView === 'view-booking-tracking' ? 'active' : ''}" data-nav="view-booking-tracking" title="Track Shipment" data-tooltip="Track Shipment"><i class="fa-solid fa-location-crosshairs"></i><span>Track Shipment</span></button>
+        <button class="nav-link ${this.currentView === 'view-my-luggage' ? 'active' : ''}" data-nav="view-my-luggage" title="My Luggage" data-tooltip="My Luggage"><i class="fa-solid fa-suitcase"></i><span>My Luggage</span></button>
+        <button class="nav-link ${this.currentView === 'view-feedback' ? 'active' : ''}" data-nav="view-feedback" title="Rate & Feedback" data-tooltip="Rate & Feedback"><i class="fa-solid fa-star"></i><span>Rate & Feedback</span></button>
+        <button class="nav-link ${this.currentView === 'view-customer-profile' ? 'active' : ''}" data-nav="view-customer-profile" title="Profile Settings" data-tooltip="Profile Settings"><i class="fa-solid fa-user"></i><span>Profile</span></button>
       `;
     } else if (user.role === USER_ROLES.DRIVER) {
       html = `
         <span class="nav-section-title">Driver Dispatch</span>
-        <button class="nav-link active" data-nav="view-driver-dashboard"><i class="fa-solid fa-truck"></i><span>Assigned Trips</span></button>
-        <button class="nav-link" data-nav="view-customer-profile"><i class="fa-solid fa-user"></i><span>Driver Profile</span></button>
+        <button class="nav-link active" data-nav="view-driver-dashboard" title="Assigned Trips" data-tooltip="Assigned Trips"><i class="fa-solid fa-truck"></i><span>Assigned Trips</span></button>
+        <button class="nav-link" data-nav="view-customer-profile" title="Driver Profile" data-tooltip="Driver Profile"><i class="fa-solid fa-user"></i><span>Driver Profile</span></button>
       `;
     } else if (user.role === USER_ROLES.ADMIN) {
       html = `
         <span class="nav-section-title">Admin Command</span>
-        <button class="nav-link ${this.currentView === 'view-admin-dashboard' ? 'active' : ''}" data-nav="view-admin-dashboard"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></button>
-        <button class="nav-link ${this.currentView === 'view-admin-bookings' ? 'active' : ''}" data-nav="view-admin-bookings"><i class="fa-solid fa-boxes-stacked"></i><span>Bookings</span></button>
-        <button class="nav-link ${this.currentView === 'view-admin-users' ? 'active' : ''}" data-nav="view-admin-users"><i class="fa-solid fa-users"></i><span>Users</span></button>
-        <button class="nav-link ${this.currentView === 'view-admin-drivers' ? 'active' : ''}" data-nav="view-admin-drivers"><i class="fa-solid fa-truck-ramp-box"></i><span>Drivers</span></button>
-        <button class="nav-link ${this.currentView === 'view-admin-feedback' ? 'active' : ''}" data-nav="view-admin-feedback"><i class="fa-solid fa-star"></i><span>Feedback</span></button>
-        <button class="nav-link ${this.currentView === 'view-admin-predictions' ? 'active' : ''}" data-nav="view-admin-predictions"><i class="fa-solid fa-brain"></i><span>AI Predictions</span></button>
-        <button class="nav-link ${this.currentView === 'view-admin-reports' ? 'active' : ''}" data-nav="view-admin-reports"><i class="fa-solid fa-chart-line"></i><span>Analytics</span></button>
-        <button class="nav-link ${this.currentView === 'view-admin-settings' ? 'active' : ''}" data-nav="view-admin-settings"><i class="fa-solid fa-sliders"></i><span>Settings</span></button>
-        <button class="nav-link ${this.currentView === 'view-customer-profile' ? 'active' : ''}" data-nav="view-customer-profile"><i class="fa-solid fa-user"></i><span>Profile</span></button>
+        <button class="nav-link ${this.currentView === 'view-admin-dashboard' ? 'active' : ''}" data-nav="view-admin-dashboard" title="Admin Dashboard" data-tooltip="Dashboard"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></button>
+        <button class="nav-link ${this.currentView === 'view-admin-bookings' ? 'active' : ''}" data-nav="view-admin-bookings" title="All Bookings" data-tooltip="Bookings"><i class="fa-solid fa-boxes-stacked"></i><span>Bookings</span></button>
+        <button class="nav-link ${this.currentView === 'view-admin-users' ? 'active' : ''}" data-nav="view-admin-users" title="User Directory" data-tooltip="Users"><i class="fa-solid fa-users"></i><span>Users</span></button>
+        <button class="nav-link ${this.currentView === 'view-admin-drivers' ? 'active' : ''}" data-nav="view-admin-drivers" title="Fleet Drivers" data-tooltip="Drivers"><i class="fa-solid fa-truck-ramp-box"></i><span>Drivers</span></button>
+        <button class="nav-link ${this.currentView === 'view-admin-feedback' ? 'active' : ''}" data-nav="view-admin-feedback" title="Customer Reviews" data-tooltip="Feedback"><i class="fa-solid fa-star"></i><span>Feedback</span></button>
+        <button class="nav-link ${this.currentView === 'view-admin-predictions' ? 'active' : ''}" data-nav="view-admin-predictions" title="AI Predictions & Diagnostics" data-tooltip="AI Predictions"><i class="fa-solid fa-brain"></i><span>AI Predictions</span></button>
+        <button class="nav-link ${this.currentView === 'view-admin-reports' ? 'active' : ''}" data-nav="view-admin-reports" title="Corridor Analytics" data-tooltip="Analytics"><i class="fa-solid fa-chart-line"></i><span>Analytics</span></button>
+        <button class="nav-link ${this.currentView === 'view-admin-settings' ? 'active' : ''}" data-nav="view-admin-settings" title="Tariff & Settings" data-tooltip="Settings"><i class="fa-solid fa-sliders"></i><span>Settings</span></button>
+        <button class="nav-link ${this.currentView === 'view-customer-profile' ? 'active' : ''}" data-nav="view-customer-profile" title="Admin Profile" data-tooltip="Profile"><i class="fa-solid fa-user"></i><span>Profile</span></button>
       `;
     }
 
     html += `
       <div style="margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--border-color);">
-        <button class="nav-link" id="sidebarReturnLandingBtn" style="color: var(--text-muted);"><i class="fa-solid fa-arrow-left"></i><span>Public Website</span></button>
+        <button class="nav-link" id="sidebarReturnLandingBtn" style="color: var(--text-muted);" title="Public Website" data-tooltip="Public Website"><i class="fa-solid fa-arrow-left"></i><span>Public Website</span></button>
       </div>
     `;
 
