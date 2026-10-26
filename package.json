@@ -17,9 +17,9 @@
     "test:notifications": "node test/notifications_edge_cases.test.js",
     "test:security": "node test/security_performance.test.js",
     "test:demo": "node test/e2e_demo_scenarios.test.js",
-    "build": "node api.js && node -e \"console.log('SmartLuggage AI static build verified.');\"",
-    "start": "node api.js && npx serve -s -l 3000 .",
-    "dev": "node api.js && npx serve -s -l 3000 .",
+    "build": "node --check js/app.js && node --check js/services/mapRouting.service.js && node -e \"console.log('SmartLuggage AI static build verified.');\"",
+    "start": "serve -s -l 3000 .",
+    "dev": "serve -s -l 3000 .",
     "check": "npm test"
   },
   "keywords": [
@@ -31,5 +31,8 @@
     "fyp"
   ],
   "author": "FYP Lead Full-Stack Engineer",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "serve": "^14.2.6"
+  }
 }

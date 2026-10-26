@@ -23,6 +23,7 @@ import {
   notificationService,
   db
 } from './services/index.js';
+import { getRoadRoute } from './services/mapRouting.service.js';
 
 class AppController {
   constructor() {
@@ -32,6 +33,10 @@ class AppController {
     this.activeBookingStep = 1;
     this.currentBookingDraft = null;
     this.activePrediction = null;
+    this.bookingRoute = null;
+    this.bookingMap = null;
+    this.bookingRouteLayer = null;
+    this.bookingRouteRequestId = 0;
     this.isHandlingPopstate = false;
 
     this.init();
@@ -1447,6 +1452,10 @@ class AppController {
       const updateFn = () => this.updateStep1DistancePreview();
       pickupSelect.addEventListener('change', updateFn);
       destSelect.addEventListener('change', updateFn);
+      document.getElementById('bookPickupCustomCity')?.addEventListener('change', updateFn);
+      document.getElementById('bookDestCustomCity')?.addEventListener('change', updateFn);
+      document.getElementById('bookPickupAddress')?.addEventListener('change', updateFn);
+      document.getElementById('bookDestAddress')?.addEventListener('change', updateFn);
       // Initial calculation
       this.updateStep1DistancePreview();
     }
@@ -1530,17 +1539,59 @@ class AppController {
     const distValue = document.getElementById('step1DistanceValue');
     const drivingTime = document.getElementById('step1DrivingTime');
     const providerInfo = document.getElementById('step1ProviderInfo');
+    const mapStatus = document.getElementById('bookingMapStatus');
+    const requestId = ++this.bookingRouteRequestId;
+    const pickup = { city: pickupCity, addressLine: document.getElementById('bookPickupAddress')?.value || '' };
+    const destination = { city: destCity, addressLine: document.getElementById('bookDestAddress')?.value || '' };
 
     try {
-      const distData = await distanceService.calculateRouteDistance({ city: pickupCity }, { city: destCity });
+      if (mapStatus) mapStatus.textContent = 'Finding addresses and road route…';
+      const route = await getRoadRoute(pickup, destination);
+      if (requestId !== this.bookingRouteRequestId) return;
+      this.bookingRoute = { ...route, pickupCity, destCity };
       if (routeTitle) routeTitle.textContent = `${pickupCity} → ${destCity}`;
-      if (corridorBadge) corridorBadge.innerHTML = `<i class="fa-solid fa-route"></i> ${distData.corridorName}`;
-      if (distValue) distValue.textContent = `${distData.distanceKm} km`;
-      if (drivingTime) drivingTime.textContent = `Est. Highway Driving: ${distData.drivingTimeHours} Hours`;
-      if (providerInfo) providerInfo.textContent = `Provider: ${distData.providerUsed}`;
+      if (corridorBadge) corridorBadge.innerHTML = '<i class="fa-solid fa-route"></i> OpenStreetMap road route';
+      if (distValue) distValue.textContent = `${route.distanceKm} km`;
+      if (drivingTime) drivingTime.textContent = `Est. driving time: ${route.durationHours} hours (no live traffic)`;
+      if (providerInfo) providerInfo.textContent = 'Provider: OpenStreetMap + OSRM';
+      if (mapStatus) mapStatus.textContent = 'Route ready';
+      this.renderBookingRouteMap(route);
     } catch (e) {
-      if (distValue) distValue.textContent = '-- km';
+      if (requestId !== this.bookingRouteRequestId) return;
+      this.bookingRoute = null;
+      // Keep the prototype usable when a public map service is temporarily unavailable.
+      const estimate = await distanceService.calculateRouteDistance({ city: pickupCity }, { city: destCity });
+      if (routeTitle) routeTitle.textContent = `${pickupCity} → ${destCity}`;
+      if (corridorBadge) corridorBadge.textContent = estimate.corridorName;
+      if (distValue) distValue.textContent = `${estimate.distanceKm} km`;
+      if (drivingTime) drivingTime.textContent = `Est. highway driving: ${estimate.drivingTimeHours} hours`;
+      if (providerInfo) providerInfo.textContent = `Estimate only: ${estimate.providerUsed}`;
+      if (mapStatus) mapStatus.textContent = `${e.message} Showing the project estimate instead.`;
+      if (this.bookingRouteLayer && this.bookingMap) {
+        this.bookingMap.removeLayer(this.bookingRouteLayer);
+        this.bookingRouteLayer = null;
+      }
     }
+  }
+
+  renderBookingRouteMap(route) {
+    const mapElement = document.getElementById('bookingRouteMap');
+    if (!mapElement || !window.L) return;
+    if (!this.bookingMap) {
+      this.bookingMap = window.L.map(mapElement, { scrollWheelZoom: false });
+      window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(this.bookingMap);
+    }
+
+    if (this.bookingRouteLayer) this.bookingMap.removeLayer(this.bookingRouteLayer);
+    const line = window.L.polyline(route.coordinates, { color: '#2563eb', weight: 5, opacity: 0.85 });
+    const start = window.L.marker(route.pickup).bindPopup('Pickup');
+    const end = window.L.marker(route.destination).bindPopup('Destination');
+    this.bookingRouteLayer = window.L.featureGroup([line, start, end]).addTo(this.bookingMap);
+    this.bookingMap.fitBounds(line.getBounds(), { padding: [24, 24] });
+    window.setTimeout(() => this.bookingMap?.invalidateSize(), 100);
   }
 
   setBookingStep(stepNumber) {
@@ -1555,6 +1606,7 @@ class AppController {
     document.querySelectorAll('.step-pane').forEach((pane, idx) => {
       pane.classList.toggle('active', idx + 1 === stepNumber);
     });
+    if (stepNumber === 1 && this.bookingMap) window.setTimeout(() => this.bookingMap?.invalidateSize(), 100);
   }
 
   async generateAIEstimate() {
@@ -1565,7 +1617,15 @@ class AppController {
     const bagCount = Number(document.getElementById('bookBagCount').value) || 1;
     const isFragile = document.getElementById('bookIsFragile').checked;
 
-    const distResult = await distanceService.calculateRouteDistance({ city: pickupCity }, { city: destCity });
+    const pickupAddress = document.getElementById('bookPickupAddress')?.value || '';
+    const destinationAddress = document.getElementById('bookDestAddress')?.value || '';
+    let distResult;
+    try {
+      const route = await getRoadRoute({ city: pickupCity, addressLine: pickupAddress }, { city: destCity, addressLine: destinationAddress });
+      distResult = { distanceKm: route.distanceKm, corridorName: 'OpenStreetMap road route', drivingTimeHours: route.durationHours };
+    } catch {
+      distResult = await distanceService.calculateRouteDistance({ city: pickupCity }, { city: destCity });
+    }
     const distanceKm = distResult.distanceKm;
 
     const tierRadios = document.getElementsByName('transportTier');

@@ -5,6 +5,14 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 
+.booking-map-card { margin-top: 14px; overflow: hidden; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-surface); }
+.booking-map-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; color: var(--text-main); }
+.booking-map-heading strong { font-size: .9rem; }
+.booking-map-heading strong i { color: var(--brand-primary); margin-right: 5px; }
+.booking-map-heading span { color: var(--text-muted); font-size: .78rem; text-align: right; }
+#bookingRouteMap { width: 100%; height: 320px; z-index: 0; background: var(--bg-surface-secondary); }
+.booking-map-card > small { display: block; padding: 8px 12px; color: var(--text-muted); font-size: .7rem; }
+
 :root {
   /* Color Palette - Modern Logistics Navy, Slate & Indigo */
   --brand-primary: #3b82f6;

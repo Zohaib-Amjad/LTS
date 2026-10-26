@@ -31,6 +31,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="css/style.css?v=1.1.0" />
 </head>
 <body>
@@ -771,6 +772,15 @@
                     <span style="font-size: 0.75rem; color: var(--text-muted);" id="step1DrivingTime">Est. Highway Driving: 4.0 Hours</span>
                   </div>
                 </div>
+              </div>
+
+              <div class="booking-map-card">
+                <div class="booking-map-heading">
+                  <strong><i class="fa-solid fa-map-location-dot"></i> Road route preview</strong>
+                  <span id="bookingMapStatus" role="status">Loading road route…</span>
+                </div>
+                <div id="bookingRouteMap" aria-label="Map showing the pickup to destination road route"></div>
+                <small>Map data © OpenStreetMap contributors · Routing by OSRM. Route distance and ETA are estimates; live traffic is not included.</small>
               </div>
 
               <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
@@ -2572,6 +2582,7 @@
   </div>
 
   <!-- App Entry Script -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script type="module" src="js/app.js?v=1.1.0"></script>
 </body>
 </html>
