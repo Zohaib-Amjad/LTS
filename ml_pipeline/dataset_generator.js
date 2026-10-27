@@ -79,12 +79,7 @@ function generateDataset(sampleCount = 1200) {
     else if (weightKg >= 15 || volumeLiters >= 70) sizeCategory = 'Large';
     else if (weightKg >= 7 || volumeLiters >= 40) sizeCategory = 'Medium';
 
-    // True Supervised Target 1: Transportation Cost (PKR)
-    // Formula based on real logistics cost function + Gaussian noise
-    const baseFare = 450;
-    const kmRate = 2.45;
-    const kgRate = 38.0;
-    const bagFee = 150 * (bagCount - 1);
+    // Synthetic example target matching app calibration (not carrier tariff data).
 
     const typeFactor = {
       'Document Pouch': 0.85,
@@ -104,22 +99,11 @@ function generateDataset(sampleCount = 1200) {
     }[tier] || 1.0;
 
     const fragileMultiplier = isFragile ? 1.20 : 1.00;
-    const randomNoiseCost = (Math.random() - 0.5) * 120; // Natural market variance
-
-    const actualCost = Math.max(
-      600,
-      Math.round(((baseFare + (distanceKm * kmRate) + (weightKg * kgRate) + bagFee) * typeFactor * tierFactor * fragileMultiplier + randomNoiseCost) / 10) * 10
-    );
+    const farePer30Km = (500 * (weightKg / 18) + 100 * (bagCount - 1)) * typeFactor * tierFactor * fragileMultiplier;
+    const actualCost = Math.max(10, Math.round((farePer30Km * (distanceKm / 30)) / 10) * 10);
 
     // True Supervised Target 2: Delivery Transit Time (Hours)
-    let avgSpeed = 52;
-    if (tier.includes('Express')) avgSpeed = 65;
-    if (tier.includes('Premium')) avgSpeed = 72;
-
-    const transitHours = distanceKm / avgSpeed;
-    const handlingHours = 1.5 + (weightKg * 0.05) + (bagCount * 0.4) + (isFragile ? 0.8 : 0);
-    const randomNoiseTime = (Math.random() - 0.5) * 0.8;
-    const actualDeliveryTimeHours = Math.max(2.0, Math.round((transitHours + handlingHours + randomNoiseTime) * 10) / 10);
+    const actualDeliveryTimeHours = Math.max(0.1, Math.round((distanceKm / 30) * 10) / 10);
 
     dataset.push({
       sampleId: `DS-${1000 + i}`,

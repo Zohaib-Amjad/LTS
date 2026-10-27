@@ -10,7 +10,10 @@
 .booking-map-heading strong { font-size: .9rem; }
 .booking-map-heading strong i { color: var(--brand-primary); margin-right: 5px; }
 .booking-map-heading span { color: var(--text-muted); font-size: .78rem; text-align: right; }
-#bookingRouteMap { width: 100%; height: 320px; z-index: 0; background: var(--bg-surface-secondary); }
+#bookingRouteMap,
+#aiEstimateRouteMap,
+#driverRouteMap { width: 100%; height: 320px; z-index: 0; background: var(--bg-surface-secondary); }
+.ai-estimate-map-card { margin: 0 0 16px; }
 .booking-map-card > small { display: block; padding: 8px 12px; color: var(--text-muted); font-size: .7rem; }
 
 :root {
@@ -936,6 +939,65 @@ body.dark-mode .nav-link.active {
   outline: none;
 }
 
+.location-autocomplete {
+  position: relative;
+}
+
+.location-suggestions {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 5px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.location-suggestion {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-main);
+  text-align: left;
+  cursor: pointer;
+}
+
+.location-suggestion-title,
+.location-suggestion-context {
+  display: block;
+}
+
+.location-suggestion-title {
+  font-weight: 600;
+}
+
+.location-suggestion-context {
+  margin-top: 2px;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.location-suggestion:hover,
+.location-suggestion:focus-visible {
+  outline: none;
+  background: var(--bg-surface-secondary);
+}
+
+.location-suggestion-hint {
+  padding: 10px 12px;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+
 .input-with-icon .form-input, .input-with-icon .form-select {
   padding-left: 42px;
 }
@@ -1380,12 +1442,15 @@ body.dark-mode .nav-link.active {
 
 .ai-estimate-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
   gap: 20px;
   margin: 20px 0;
+  min-width: 0;
 }
 
 .ai-metric-box {
+  min-width: 0;
+  overflow: hidden;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-lg);
@@ -1401,11 +1466,22 @@ body.dark-mode .nav-link.active {
 }
 
 .ai-metric-box .value {
-  font-size: 1.85rem;
+  min-width: 0;
+  font-size: clamp(1.35rem, 2.4vw, 1.85rem);
   font-weight: 800;
   font-family: var(--font-heading);
   margin-top: 4px;
   color: #ffffff;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.ai-metric-note {
+  margin-top: 4px;
+  color: #93c5fd;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
 }
 
 .ai-disclaimer-bar {
@@ -1418,6 +1494,12 @@ body.dark-mode .nav-link.active {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
+}
+
+.ai-disclaimer-bar span {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 /* ==============================================================================

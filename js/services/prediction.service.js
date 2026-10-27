@@ -93,27 +93,15 @@ class PredictionService {
     const fragileMultiplier = isFragile ? 1.20 : 1.00;
 
     // Supervised Cost Regression Equation (PKR baseline)
-    const baseFare = 450;
-    const ratePerKm = 2.45;
-    const ratePerKg = 38.0;
-    const extraBagFee = 150 * Math.max(0, bagCount - 1);
+    // Calibration: a standard 18 kg suitcase, one bag, and Standard tier costs PKR 500 per 30 km.
+    // Weight, extra bags, luggage type, service tier, and fragility adjust that distance-based fare.
+    const farePer30Km = (500 * (totalWeightKg / 18) + 100 * Math.max(0, bagCount - 1))
+      * typeWeight * tierWeight * fragileMultiplier;
+    const rawCost = farePer30Km * (distanceKm / 30);
+    const predictedCost = Math.max(10, Math.round(rawCost / 10) * 10);
 
-    const rawCost = (baseFare + (distanceKm * ratePerKm) + (totalWeightKg * ratePerKg) + extraBagFee) * typeWeight * tierWeight * fragileMultiplier;
-    // Round to nearest 10 PKR
-    const predictedCost = Math.max(600, Math.round(rawCost / 10) * 10);
-
-    // Supervised Delivery Time Regression Equation (Hours)
-    let avgSpeedKmh = 52;
-    if (transportTier === TRANSPORT_TIERS.EXPRESS || (typeof transportTier === 'string' && transportTier.includes('Express'))) {
-      avgSpeedKmh = 65;
-    } else if (transportTier === TRANSPORT_TIERS.PREMIUM || (typeof transportTier === 'string' && transportTier.includes('Premium'))) {
-      avgSpeedKmh = 72;
-    }
-
-    const transitHours = distanceKm / avgSpeedKmh;
-    const handlingHours = 1.5 + (totalWeightKg * 0.05) + (bagCount * 0.4) + (isFragile ? 0.8 : 0);
-    const rawTime = transitHours + handlingHours;
-    const predictedTimeHours = Math.max(2.0, Math.round(rawTime * 10) / 10);
+    // Calibrated ETA: 30 km corresponds to one hour, scaled proportionally by route distance.
+    const predictedTimeHours = Math.max(0.1, Math.round((distanceKm / 30) * 10) / 10);
 
     // Supervised Model Confidence Metric (0.92 - 0.98 depending on distance clarity)
     const confidenceScore = Number((0.94 - Math.min(0.06, (distanceKm / 50000))).toFixed(3));

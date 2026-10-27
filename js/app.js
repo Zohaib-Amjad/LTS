@@ -38,6 +38,11 @@ class AppController {
     this.bookingRouteLayer = null;
     this.bookingMarkers = [];
     this.bookingRouteRequestId = 0;
+    this.auxiliaryRouteMaps = {
+      estimate: { map: null, markers: [], route: null },
+      driver: { map: null, markers: [], route: null }
+    };
+    this.driverRouteRequestId = 0;
     this.isHandlingPopstate = false;
 
     this.init();
@@ -1322,6 +1327,10 @@ class AppController {
       return;
     }
 
+    if (viewId === 'view-create-booking' && this.currentView !== viewId) {
+      this.setBookingStep(1);
+    }
+
     this.currentView = viewId;
     document.querySelectorAll('.view-pane').forEach(pane => {
       pane.style.display = 'none';
@@ -1455,8 +1464,6 @@ class AppController {
       destSelect.addEventListener('change', updateFn);
       document.getElementById('bookPickupCustomCity')?.addEventListener('change', updateFn);
       document.getElementById('bookDestCustomCity')?.addEventListener('change', updateFn);
-      document.getElementById('bookPickupAddress')?.addEventListener('change', updateFn);
-      document.getElementById('bookDestAddress')?.addEventListener('change', updateFn);
       // Initial calculation
       this.updateStep1DistancePreview();
     }
@@ -1464,7 +1471,7 @@ class AppController {
     // Step 1 -> Step 2
     const step1Next = document.getElementById('step1NextBtn');
     if (step1Next) {
-      step1Next.addEventListener('click', () => {
+      step1Next.addEventListener('click', async () => {
         const pickupSelectEl = document.getElementById('bookPickupCity');
         const destSelectEl = document.getElementById('bookDestCity');
         const pickupCustomEl = document.getElementById('bookPickupCustomCity');
@@ -1480,18 +1487,10 @@ class AppController {
           return;
         }
 
-        const pickupCity = this.getEffectiveCity('bookPickupCity', 'bookPickupCustomCity', 'Islamabad');
-        const destCity = this.getEffectiveCity('bookDestCity', 'bookDestCustomCity', 'Lahore');
-        const pickupAddr = document.getElementById('bookPickupAddress').value.trim();
-        const destAddr = document.getElementById('bookDestAddress').value.trim();
-
-        if (pickupCity.toLowerCase() === destCity.toLowerCase() && pickupAddr.toLowerCase() === destAddr.toLowerCase()) {
-          this.showToast('Pickup and destination address cannot be identical.', 'error');
-          return;
-        }
-
-        if (!pickupAddr || !destAddr) {
-          this.showToast('Please provide both pickup and destination address lines.', 'error');
+        const pickupCity = this.getEffectiveCity('bookPickupCity', 'bookPickupCustomCity', 'Lahore');
+        const destCity = this.getEffectiveCity('bookDestCity', 'bookDestCustomCity', 'Muridke');
+        if (pickupCity.trim().toLocaleLowerCase() === destCity.trim().toLocaleLowerCase()) {
+          this.showToast('Choose different pickup and destination cities.', 'error');
           return;
         }
 
@@ -1532,8 +1531,8 @@ class AppController {
   }
 
   async updateStep1DistancePreview() {
-    const pickupCity = this.getEffectiveCity('bookPickupCity', 'bookPickupCustomCity', 'Islamabad');
-    const destCity = this.getEffectiveCity('bookDestCity', 'bookDestCustomCity', 'Lahore');
+    const pickupCity = this.getEffectiveCity('bookPickupCity', 'bookPickupCustomCity', 'Lahore');
+    const destCity = this.getEffectiveCity('bookDestCity', 'bookDestCustomCity', 'Muridke');
 
     const routeTitle = document.getElementById('step1RouteTitle');
     const corridorBadge = document.getElementById('step1CorridorBadge');
@@ -1542,8 +1541,12 @@ class AppController {
     const providerInfo = document.getElementById('step1ProviderInfo');
     const mapStatus = document.getElementById('bookingMapStatus');
     const requestId = ++this.bookingRouteRequestId;
-    const pickup = { city: pickupCity, addressLine: document.getElementById('bookPickupAddress')?.value || '' };
-    const destination = { city: destCity, addressLine: document.getElementById('bookDestAddress')?.value || '' };
+    const pickup = {
+      city: pickupCity
+    };
+    const destination = {
+      city: destCity
+    };
 
     try {
       if (mapStatus) mapStatus.textContent = 'Finding addresses and road route…';
@@ -1560,6 +1563,20 @@ class AppController {
     } catch (e) {
       if (requestId !== this.bookingRouteRequestId) return;
       this.bookingRoute = null;
+      if (e.code === 'ADDRESS_OUTSIDE_CITY') {
+        if (this.bookingMap) {
+          this.bookingMarkers.forEach(marker => marker.remove());
+          this.bookingMarkers = [];
+          if (this.bookingMap.getLayer('booking-road-direction')) this.bookingMap.removeLayer('booking-road-direction');
+          if (this.bookingMap.getLayer('booking-road-route')) this.bookingMap.removeLayer('booking-road-route');
+          if (this.bookingMap.getSource('booking-road-route')) this.bookingMap.removeSource('booking-road-route');
+        }
+        if (distValue) distValue.textContent = '—';
+        if (drivingTime) drivingTime.textContent = 'Enter an address inside the selected city';
+        if (providerInfo) providerInfo.textContent = 'Address must match the selected city';
+        if (mapStatus) mapStatus.textContent = e.message;
+        return;
+      }
       // Keep the prototype usable when a public map service is temporarily unavailable.
       const estimate = await distanceService.calculateRouteDistance({ city: pickupCity }, { city: destCity });
       if (routeTitle) routeTitle.textContent = `${pickupCity} → ${destCity}`;
@@ -1571,6 +1588,7 @@ class AppController {
       if (this.bookingMap) {
         this.bookingMarkers.forEach(marker => marker.remove());
         this.bookingMarkers = [];
+        if (this.bookingMap.getLayer('booking-road-direction')) this.bookingMap.removeLayer('booking-road-direction');
         if (this.bookingMap.getLayer('booking-road-route')) this.bookingMap.removeLayer('booking-road-route');
         if (this.bookingMap.getSource('booking-road-route')) this.bookingMap.removeSource('booking-road-route');
         this.bookingRouteLayer = null;
@@ -1611,6 +1629,7 @@ class AppController {
     if (!route || !this.bookingMap?.isStyleLoaded()) return;
     this.bookingMarkers.forEach(marker => marker.remove());
     this.bookingMarkers = [];
+    if (this.bookingMap.getLayer('booking-road-direction')) this.bookingMap.removeLayer('booking-road-direction');
     if (this.bookingMap.getLayer('booking-road-route')) this.bookingMap.removeLayer('booking-road-route');
     if (this.bookingMap.getSource('booking-road-route')) this.bookingMap.removeSource('booking-road-route');
 
@@ -1631,6 +1650,40 @@ class AppController {
       paint: { 'line-color': '#2563eb', 'line-width': 5, 'line-opacity': 0.88 }
     });
 
+    if (!this.bookingMap.hasImage('booking-direction-arrow')) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 32;
+      canvas.height = 32;
+      const context = canvas.getContext('2d');
+      context.beginPath();
+      context.moveTo(4, 5);
+      context.lineTo(28, 16);
+      context.lineTo(4, 27);
+      context.lineTo(10, 16);
+      context.closePath();
+      context.fillStyle = '#ffffff';
+      context.fill();
+      context.lineWidth = 2;
+      context.strokeStyle = '#1d4ed8';
+      context.stroke();
+      this.bookingMap.addImage('booking-direction-arrow', context.getImageData(0, 0, 32, 32));
+    }
+    this.bookingMap.addLayer({
+      id: 'booking-road-direction',
+      type: 'symbol',
+      source: 'booking-road-route',
+      layout: {
+        'symbol-placement': 'line',
+        'symbol-spacing': 100,
+        'icon-image': 'booking-direction-arrow',
+        'icon-size': 0.65,
+        'icon-rotation-alignment': 'map',
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
+        'icon-keep-upright': false
+      }
+    });
+
     this.bookingMarkers.push(
       new window.maplibregl.Marker({ color: '#16a34a' }).setLngLat([route.pickup[1], route.pickup[0]]).setPopup(new window.maplibregl.Popup().setText('Pickup')).addTo(this.bookingMap),
       new window.maplibregl.Marker({ color: '#dc2626' }).setLngLat([route.destination[1], route.destination[0]]).setPopup(new window.maplibregl.Popup().setText('Destination')).addTo(this.bookingMap)
@@ -1639,6 +1692,108 @@ class AppController {
     const bounds = new window.maplibregl.LngLatBounds();
     lineCoordinates.forEach(coordinate => bounds.extend(coordinate));
     this.bookingMap.fitBounds(bounds, { padding: 36, maxZoom: 12 });
+  }
+
+  async renderAuxiliaryRouteMap(mapKey, containerId, route) {
+    const state = this.auxiliaryRouteMaps[mapKey];
+    const mapElement = document.getElementById(containerId);
+    if (!state || !mapElement || !route || !window.maplibregl) return;
+    state.route = route;
+
+    if (!state.map) {
+      const styleResponse = await fetch('https://tiles.stadiamaps.com/styles/alidade_smooth.json');
+      if (!styleResponse.ok) throw new Error('Map style could not be loaded.');
+      const style = await styleResponse.json();
+      const englishName = ['coalesce', ['get', 'name:en'], ['get', 'name:latin']];
+      style.layers.forEach(layer => {
+        const textField = layer.layout?.['text-field'];
+        if (textField && JSON.stringify(textField).includes('name')) layer.layout['text-field'] = englishName;
+      });
+
+      state.map = new window.maplibregl.Map({
+        container: mapElement,
+        style,
+        center: [route.pickup[1], route.pickup[0]],
+        zoom: 5,
+        attributionControl: true
+      });
+      state.map.once('load', () => this.drawAuxiliaryRouteMap(mapKey));
+      return;
+    }
+
+    if (state.map.isStyleLoaded()) this.drawAuxiliaryRouteMap(mapKey);
+  }
+
+  drawAuxiliaryRouteMap(mapKey) {
+    const state = this.auxiliaryRouteMaps[mapKey];
+    const map = state?.map;
+    const route = state?.route;
+    if (!map || !route || !map.isStyleLoaded()) return;
+
+    const sourceId = `${mapKey}-road-route`;
+    const routeLayerId = `${mapKey}-road-route-line`;
+    const directionLayerId = `${mapKey}-road-direction`;
+    const arrowImageId = `${mapKey}-direction-arrow`;
+    state.markers.forEach(marker => marker.remove());
+    state.markers = [];
+    if (map.getLayer(directionLayerId)) map.removeLayer(directionLayerId);
+    if (map.getLayer(routeLayerId)) map.removeLayer(routeLayerId);
+    if (map.getSource(sourceId)) map.removeSource(sourceId);
+
+    const lineCoordinates = route.coordinates.map(([lat, lon]) => [lon, lat]);
+    map.addSource(sourceId, {
+      type: 'geojson',
+      data: { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: lineCoordinates } }
+    });
+    map.addLayer({
+      id: routeLayerId,
+      type: 'line',
+      source: sourceId,
+      layout: { 'line-join': 'round', 'line-cap': 'round' },
+      paint: { 'line-color': '#2563eb', 'line-width': 5, 'line-opacity': 0.88 }
+    });
+
+    if (!map.hasImage(arrowImageId)) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 32;
+      canvas.height = 32;
+      const context = canvas.getContext('2d');
+      context.beginPath();
+      context.moveTo(4, 5);
+      context.lineTo(28, 16);
+      context.lineTo(4, 27);
+      context.lineTo(10, 16);
+      context.closePath();
+      context.fillStyle = '#ffffff';
+      context.fill();
+      context.lineWidth = 2;
+      context.strokeStyle = '#1d4ed8';
+      context.stroke();
+      map.addImage(arrowImageId, context.getImageData(0, 0, 32, 32));
+    }
+    map.addLayer({
+      id: directionLayerId,
+      type: 'symbol',
+      source: sourceId,
+      layout: {
+        'symbol-placement': 'line',
+        'symbol-spacing': 100,
+        'icon-image': arrowImageId,
+        'icon-size': 0.65,
+        'icon-rotation-alignment': 'map',
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
+        'icon-keep-upright': false
+      }
+    });
+
+    state.markers.push(
+      new window.maplibregl.Marker({ color: '#16a34a' }).setLngLat([route.pickup[1], route.pickup[0]]).setPopup(new window.maplibregl.Popup().setText('Pickup')).addTo(map),
+      new window.maplibregl.Marker({ color: '#dc2626' }).setLngLat([route.destination[1], route.destination[0]]).setPopup(new window.maplibregl.Popup().setText('Destination')).addTo(map)
+    );
+    const bounds = new window.maplibregl.LngLatBounds();
+    lineCoordinates.forEach(coordinate => bounds.extend(coordinate));
+    map.fitBounds(bounds, { padding: 36, maxZoom: 12 });
   }
 
   setBookingStep(stepNumber) {
@@ -1654,25 +1809,47 @@ class AppController {
       pane.classList.toggle('active', idx + 1 === stepNumber);
     });
     if (stepNumber === 1 && this.bookingMap) window.setTimeout(() => this.bookingMap?.resize(), 100);
+    if (stepNumber === 3 && this.auxiliaryRouteMaps.estimate.route) {
+      const mapElement = document.getElementById('aiEstimateRouteMap');
+      if (mapElement) mapElement.style.display = '';
+      window.setTimeout(() => this.auxiliaryRouteMaps.estimate.map?.resize(), 100);
+      this.renderAuxiliaryRouteMap('estimate', 'aiEstimateRouteMap', this.auxiliaryRouteMaps.estimate.route)
+        .catch(error => {
+          const status = document.getElementById('aiEstimateMapStatus');
+          if (status) status.textContent = error.message || 'Route map could not be loaded.';
+        });
+    }
   }
 
   async generateAIEstimate() {
-    const pickupCity = this.getEffectiveCity('bookPickupCity', 'bookPickupCustomCity', 'Islamabad');
-    const destCity = this.getEffectiveCity('bookDestCity', 'bookDestCustomCity', 'Lahore');
+    const pickupCity = this.getEffectiveCity('bookPickupCity', 'bookPickupCustomCity', 'Lahore');
+    const destCity = this.getEffectiveCity('bookDestCity', 'bookDestCustomCity', 'Muridke');
     const luggageType = document.getElementById('bookLuggageType').value;
     const weightKg = Number(document.getElementById('bookLuggageWeight').value) || 10;
     const bagCount = Number(document.getElementById('bookBagCount').value) || 1;
     const isFragile = document.getElementById('bookIsFragile').checked;
 
-    const pickupAddress = document.getElementById('bookPickupAddress')?.value || '';
-    const destinationAddress = document.getElementById('bookDestAddress')?.value || '';
     let distResult;
+    let routeForMap = null;
     try {
-      const route = await getRoadRoute({ city: pickupCity, addressLine: pickupAddress }, { city: destCity, addressLine: destinationAddress });
+      const route = await getRoadRoute(
+        { city: pickupCity },
+        { city: destCity }
+      );
+      routeForMap = route;
       distResult = { distanceKm: route.distanceKm, corridorName: 'OpenStreetMap road route', drivingTimeHours: route.durationHours };
     } catch {
       distResult = await distanceService.calculateRouteDistance({ city: pickupCity }, { city: destCity });
     }
+    this.auxiliaryRouteMaps.estimate.route = routeForMap;
+    const estimateMapStatus = document.getElementById('aiEstimateMapStatus');
+    if (estimateMapStatus) {
+      estimateMapStatus.textContent = routeForMap
+        ? `${pickupCity} → ${destCity} · ${Number(routeForMap.distanceKm).toFixed(1)} km`
+        : 'Road route is temporarily unavailable.';
+    }
+    const estimateMapElement = document.getElementById('aiEstimateRouteMap');
+    if (estimateMapElement) estimateMapElement.style.display = routeForMap ? '' : 'none';
     const distanceKm = distResult.distanceKm;
 
     const tierRadios = document.getElementsByName('transportTier');
@@ -1689,7 +1866,8 @@ class AppController {
       luggageType,
       sizeCategory: LUGGAGE_SIZES.LARGE,
       transportTier: selectedTier,
-      isFragile
+      isFragile,
+      corridorName: distResult.corridorName
     });
 
     this.activePrediction = prediction;
@@ -1699,15 +1877,15 @@ class AppController {
     const distElem = document.getElementById('aiDistanceDisplay');
 
     if (costElem) costElem.textContent = `PKR ${prediction.predictedCost.toLocaleString()}`;
-    if (timeElem) timeElem.textContent = `${prediction.predictedTimeHours} hrs`;
-    if (distElem) distElem.textContent = `${distanceKm} km (${distResult.corridorName})`;
+    if (timeElem) timeElem.textContent = `${Number(prediction.predictedTimeHours).toFixed(1)} hrs`;
+    if (distElem) distElem.textContent = `${Number(distanceKm).toFixed(1)} km`;
+    const corridorElem = document.getElementById('aiDistanceCorridor');
+    if (corridorElem) corridorElem.textContent = distResult.corridorName || 'Road route';
   }
 
   populateConfirmationSummary() {
-    const pickupCity = this.getEffectiveCity('bookPickupCity', 'bookPickupCustomCity', 'Islamabad');
-    const destCity = this.getEffectiveCity('bookDestCity', 'bookDestCustomCity', 'Lahore');
-    const pickupAddress = document.getElementById('bookPickupAddress')?.value || 'Pickup Address';
-    const destAddress = document.getElementById('bookDestAddress')?.value || 'Destination Address';
+    const pickupCity = this.getEffectiveCity('bookPickupCity', 'bookPickupCustomCity', 'Lahore');
+    const destCity = this.getEffectiveCity('bookDestCity', 'bookDestCustomCity', 'Muridke');
     const luggageType = document.getElementById('bookLuggageType')?.value || 'Suitcase';
     const weightKg = document.getElementById('bookLuggageWeight')?.value || '18';
     const bagCount = document.getElementById('bookBagCount')?.value || '1';
@@ -1719,12 +1897,17 @@ class AppController {
     const costSummary = document.getElementById('confCostSummary');
     const timeSummary = document.getElementById('confTimeSummary');
 
-    if (pickupSummary) pickupSummary.textContent = `${pickupCity} (${pickupAddress})`;
-    if (destSummary) destSummary.textContent = `${destCity} (${destAddress})`;
-    if (routeSummary) routeSummary.textContent = `${this.activePrediction?.inputFeatures?.distanceKm || 380} km (${this.activePrediction?.inputFeatures?.corridorName || 'Motorway Corridor'})`;
+    if (pickupSummary) pickupSummary.textContent = pickupCity;
+    if (destSummary) destSummary.textContent = destCity;
+    const routeDistance = Number(this.activePrediction?.inputFeatures?.distanceKm);
+    if (routeSummary) routeSummary.textContent = `${Number.isFinite(routeDistance) ? routeDistance.toFixed(1) : '—'} km (${this.activePrediction?.inputFeatures?.corridorName || 'Road route'})`;
     if (lugSummary) lugSummary.textContent = `${bagCount}x ${luggageType} (${weightKg} kg, ${this.activePrediction?.inputFeatures?.sizeCategory || 'Standard'})`;
-    if (costSummary) costSummary.textContent = `PKR ${this.activePrediction?.predictedCost?.toLocaleString() || '1,950'}`;
-    if (timeSummary) timeSummary.textContent = `${this.activePrediction?.predictedTimeHours || 10.0} Hours`;
+    if (costSummary) costSummary.textContent = this.activePrediction?.predictedCost
+      ? `PKR ${this.activePrediction.predictedCost.toLocaleString()}`
+      : '—';
+    if (timeSummary) timeSummary.textContent = this.activePrediction?.predictedTimeHours
+      ? `${Number(this.activePrediction.predictedTimeHours).toFixed(1)} Hours`
+      : '—';
   }
 
   async handleConfirmBooking() {
@@ -1741,10 +1924,8 @@ class AppController {
 
     try {
       const user = authService.getCurrentUser();
-      const pickupCity = this.getEffectiveCity('bookPickupCity', 'bookPickupCustomCity', 'Islamabad');
-      const destCity = this.getEffectiveCity('bookDestCity', 'bookDestCustomCity', 'Lahore');
-      const pickupAddress = document.getElementById('bookPickupAddress').value;
-      const destAddress = document.getElementById('bookDestAddress').value;
+      const pickupCity = this.getEffectiveCity('bookPickupCity', 'bookPickupCustomCity', 'Lahore');
+      const destCity = this.getEffectiveCity('bookDestCity', 'bookDestCustomCity', 'Muridke');
       const luggageType = document.getElementById('bookLuggageType').value;
       const weightKg = Number(document.getElementById('bookLuggageWeight').value) || 12;
       const bagCount = Number(document.getElementById('bookBagCount').value) || 1;
@@ -1761,7 +1942,7 @@ class AppController {
       // 1. Create Pickup Location
       const pickupLoc = locationService.createLocation({
         city: pickupCity,
-        addressLine: pickupAddress,
+        addressLine: `${pickupCity} city center`,
         contactPerson: user.fullName,
         contactPhone: user.phone
       });
@@ -1769,7 +1950,7 @@ class AppController {
       // 2. Create Destination Location
       const destLoc = locationService.createLocation({
         city: destCity,
-        addressLine: destAddress,
+        addressLine: `${destCity} city center`,
         contactPerson: 'Consignee / Recipient',
         contactPhone: '+92 300 0000000'
       });
@@ -2077,7 +2258,7 @@ class AppController {
     if (!tbody) return;
 
     if (trips.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">No assigned trips currently.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">No assigned trips currently.</td></tr>`;
       return;
     }
 
@@ -2100,10 +2281,41 @@ class AppController {
           <td>${t.pickupLocation?.city || 'Origin'} → ${t.destinationLocation?.city || 'Dest'} (${t.distanceKm} km)</td>
           <td>${t.luggageItems?.[0]?.type || 'Luggage'} (${t.luggageItems?.[0]?.weightKg || 10} kg)</td>
           <td>${this.renderStatusBadge(t.status)}</td>
+          <td><button class="btn btn-secondary btn-sm" onclick="window.app.showDriverRouteMap('${t.id}')"><i class="fa-solid fa-map-location-dot"></i> Show route</button></td>
           <td>${actionBtn}</td>
         </tr>
       `;
     }).join('');
+  }
+
+  async showDriverRouteMap(bookingId) {
+    const card = document.getElementById('driverRouteMapCard');
+    const mapElement = document.getElementById('driverRouteMap');
+    const status = document.getElementById('driverRouteMapStatus');
+    if (!card || !mapElement || !status) return;
+
+    const requestId = ++this.driverRouteRequestId;
+    card.style.display = 'block';
+    mapElement.style.display = '';
+    status.textContent = 'Loading assigned trip route…';
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    try {
+      const user = authService.getCurrentUser();
+      const booking = bookingService.getBookingById(bookingId, user);
+      const pickupCity = booking.pickupLocation?.city;
+      const destinationCity = booking.destinationLocation?.city;
+      if (!pickupCity || !destinationCity) throw new Error('This trip does not have complete city details.');
+      const route = await getRoadRoute({ city: pickupCity }, { city: destinationCity });
+      if (requestId !== this.driverRouteRequestId) return;
+      status.textContent = `${pickupCity} → ${destinationCity} · ${Number(route.distanceKm).toFixed(1)} km`;
+      await this.renderAuxiliaryRouteMap('driver', 'driverRouteMap', route);
+      window.setTimeout(() => this.auxiliaryRouteMaps.driver.map?.resize(), 100);
+    } catch (error) {
+      if (requestId !== this.driverRouteRequestId) return;
+      mapElement.style.display = 'none';
+      status.textContent = error.message || 'Could not load the road route.';
+    }
   }
 
   advanceDriverStatus(bookingId, targetStatus) {

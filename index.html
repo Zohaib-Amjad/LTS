@@ -364,7 +364,7 @@
         <div class="feature-card">
           <span style="font-size: 2rem; font-weight: 800; color: var(--brand-primary); font-family: var(--font-heading);">01</span>
           <h4 style="margin-top: 10px; font-size: 1.15rem;">Enter Locations</h4>
-          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Select your pickup city/address and domestic destination city within Pakistan.</p>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Select pickup and destination cities within Pakistan.</p>
         </div>
         <div class="feature-card">
           <span style="font-size: 2rem; font-weight: 800; color: var(--brand-primary); font-family: var(--font-heading);">02</span>
@@ -709,9 +709,9 @@
                 <div class="form-group">
                   <label class="form-label">Pickup City <span class="required-star">*</span></label>
                   <select class="form-select" id="bookPickupCity">
-                    <option value="Islamabad" selected>Islamabad</option>
+                    <option value="Lahore" selected>Lahore</option>
                     <option value="Rawalpindi">Rawalpindi</option>
-                    <option value="Lahore">Lahore</option>
+                    <option value="Islamabad">Islamabad</option>
                     <option value="Karachi">Karachi</option>
                     <option value="Peshawar">Peshawar</option>
                     <option value="Multan">Multan</option>
@@ -719,6 +719,7 @@
                     <option value="Quetta">Quetta</option>
                     <option value="Sialkot">Sialkot</option>
                     <option value="Gujranwala">Gujranwala</option>
+                    <option value="Muridke">Muridke</option>
                     <option value="Hyderabad">Hyderabad</option>
                     <option value="__CUSTOM__">Other / Custom City...</option>
                   </select>
@@ -729,7 +730,8 @@
                 <div class="form-group">
                   <label class="form-label">Destination City <span class="required-star">*</span></label>
                   <select class="form-select" id="bookDestCity">
-                    <option value="Lahore" selected>Lahore</option>
+                    <option value="Muridke" selected>Muridke</option>
+                    <option value="Lahore">Lahore</option>
                     <option value="Islamabad">Islamabad</option>
                     <option value="Rawalpindi">Rawalpindi</option>
                     <option value="Karachi">Karachi</option>
@@ -739,6 +741,7 @@
                     <option value="Quetta">Quetta</option>
                     <option value="Sialkot">Sialkot</option>
                     <option value="Gujranwala">Gujranwala</option>
+                    <option value="Muridke">Muridke</option>
                     <option value="Hyderabad">Hyderabad</option>
                     <option value="__CUSTOM__">Other / Custom City...</option>
                   </select>
@@ -748,23 +751,12 @@
                 </div>
               </div>
 
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label class="form-label">Pickup Address Line <span class="required-star">*</span></label>
-                  <input type="text" class="form-input" id="bookPickupAddress" placeholder="House/Flat #, Street, Sector" value="House 12, Street 4, F-7/2" />
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Destination Address Line <span class="required-star">*</span></label>
-                  <input type="text" class="form-input" id="bookDestAddress" placeholder="House/Flat #, Street, Area" value="Plaza 5B, Main Boulevard, Gulberg III" />
-                </div>
-              </div>
-
               <!-- Live Route Distance Preview Card -->
               <div class="card" id="step1DistancePreviewCard" style="background: var(--bg-surface-secondary); margin-top: 8px; border: 1px dashed var(--brand-primary);">
                 <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
                   <div>
                     <span class="badge badge-confirmed" id="step1CorridorBadge"><i class="fa-solid fa-route"></i> Motorway M-2 Corridor</span>
-                    <h4 style="margin-top: 4px;" id="step1RouteTitle">Islamabad → Lahore</h4>
+                    <h4 style="margin-top: 4px;" id="step1RouteTitle">Lahore → Muridke</h4>
                     <p style="font-size: 0.8rem; color: var(--text-muted);" id="step1ProviderInfo">Provider: HighwayMatrixDistanceProvider (Pakistan NHA Network)</p>
                   </div>
                   <div style="text-align: right;">
@@ -780,7 +772,7 @@
                   <span id="bookingMapStatus" role="status">Loading road route…</span>
                 </div>
                 <div id="bookingRouteMap" aria-label="Map showing the pickup to destination road route"></div>
-                <small>Map tiles © Stadia Maps · Map data © OpenStreetMap contributors · Routing by OSRM. Labels use English where available; route distance and ETA are estimates, not live traffic.</small>
+                <small>Arrows show travel direction from pickup to destination. Map tiles © Stadia Maps · Map data © OpenStreetMap contributors · Routing by OSRM. Labels use English where available; route distance and ETA are estimates, not live traffic.</small>
               </div>
 
               <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
@@ -847,31 +839,36 @@
             <!-- Step 3: AI Estimate & Tier Selection -->
             <div class="step-pane" id="bookingStep3">
               <h3 style="margin-bottom: 6px;">Step 3: Supervised AI Prediction & Transport Tier</h3>
-              <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 20px;">AI regression output based on route distance, weight, volumetric size, and domestic highway speed.</p>
-
               <div class="ai-prediction-card">
-                <div class="ai-badge-chip"><i class="fa-solid fa-robot"></i> Regression Model: Random Forest (v1.4.2)</div>
                 <div class="ai-estimate-grid">
                   <div class="ai-metric-box">
-                    <div class="label">Estimated Fair Cost</div>
-                    <div class="value" id="aiEstimatedCostDisplay">PKR 1,950</div>
-                    <p style="font-size: 0.75rem; color: #93c5fd; margin-top: 4px;">Regression Cost Estimate</p>
+                    <div class="label">Estimated Fare</div>
+                    <div class="value" id="aiEstimatedCostDisplay">—</div>
+                    <p style="font-size: 0.75rem; color: #93c5fd; margin-top: 4px;">Approximate fare</p>
                   </div>
                   <div class="ai-metric-box">
                     <div class="label">Estimated Delivery Time</div>
-                    <div class="value" id="aiEstimatedTimeDisplay">10.0 hrs</div>
-                    <p style="font-size: 0.75rem; color: #93c5fd; margin-top: 4px;">Highway Speed Prediction</p>
+                    <div class="value" id="aiEstimatedTimeDisplay">—</div>
+                    <p style="font-size: 0.75rem; color: #93c5fd; margin-top: 4px;">30 km ≈ 1 hour</p>
                   </div>
                   <div class="ai-metric-box">
                     <div class="label">Calculated Route Distance</div>
-                    <div class="value" id="aiDistanceDisplay">380 km</div>
-                    <p style="font-size: 0.75rem; color: #93c5fd; margin-top: 4px;">Domestic Highway Corridor</p>
+                    <div class="value" id="aiDistanceDisplay">—</div>
+                    <p class="ai-metric-note" id="aiDistanceCorridor">Road route</p>
                   </div>
+                </div>
+
+                <div class="booking-map-card ai-estimate-map-card">
+                  <div class="booking-map-heading">
+                    <strong><i class="fa-solid fa-map-location-dot"></i> Estimated road route</strong>
+                    <span id="aiEstimateMapStatus">Route map will appear here</span>
+                  </div>
+                  <div id="aiEstimateRouteMap" aria-label="Map showing the route used for the AI estimate"></div>
                 </div>
 
                 <div class="ai-disclaimer-bar">
                   <i class="fa-solid fa-circle-exclamation"></i>
-                  <span>AI Notice: Prices and times are machine-learning statistical regression estimates based on historical logistics corridors.</span>
+                  <span>Approximate city-to-city estimate. Fare depends on luggage and service tier; final carrier prices may differ.</span>
                 </div>
               </div>
 
@@ -911,11 +908,11 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 0.9rem;">
                   <div>
                     <span style="color: var(--text-muted); font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">PICKUP ORIGIN</span>
-                    <p style="font-weight: 700; margin-top: 2px;" id="confPickupSummary">Islamabad (House 12, Street 4, F-7/2)</p>
+                    <p style="font-weight: 700; margin-top: 2px;" id="confPickupSummary">Lahore</p>
                   </div>
                   <div>
                     <span style="color: var(--text-muted); font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">DESTINATION</span>
-                    <p style="font-weight: 700; margin-top: 2px;" id="confDestSummary">Lahore (Plaza 5B, Main Blvd, Gulberg III)</p>
+                    <p style="font-weight: 700; margin-top: 2px;" id="confDestSummary">Muridke</p>
                   </div>
                   <div>
                     <span style="color: var(--text-muted); font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">ROUTE & CORRIDOR</span>
@@ -1350,6 +1347,7 @@
                     <th>Route</th>
                     <th>Luggage</th>
                     <th>Current Status</th>
+                    <th>Map</th>
                     <th>Workflow Action</th>
                   </tr>
                 </thead>
@@ -1358,6 +1356,14 @@
                 </tbody>
               </table>
             </div>
+          </div>
+
+          <div class="booking-map-card" id="driverRouteMapCard" style="display: none;">
+            <div class="booking-map-heading">
+              <strong><i class="fa-solid fa-map-location-dot"></i> Assigned trip route</strong>
+              <span id="driverRouteMapStatus">Select “Show route” on an assigned trip.</span>
+            </div>
+            <div id="driverRouteMap" aria-label="Map showing a driver's assigned trip route"></div>
           </div>
         </section>
 
