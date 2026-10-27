@@ -36,6 +36,7 @@ class AppController {
     this.bookingRoute = null;
     this.bookingMap = null;
     this.bookingRouteLayer = null;
+    this.bookingMarkers = [];
     this.bookingRouteRequestId = 0;
     this.isHandlingPopstate = false;
 
@@ -1555,7 +1556,7 @@ class AppController {
       if (drivingTime) drivingTime.textContent = `Est. driving time: ${route.durationHours} hours (no live traffic)`;
       if (providerInfo) providerInfo.textContent = 'Provider: OpenStreetMap + OSRM';
       if (mapStatus) mapStatus.textContent = 'Route ready';
-      this.renderBookingRouteMap(route);
+      await this.renderBookingRouteMap(route);
     } catch (e) {
       if (requestId !== this.bookingRouteRequestId) return;
       this.bookingRoute = null;
@@ -1567,31 +1568,77 @@ class AppController {
       if (drivingTime) drivingTime.textContent = `Est. highway driving: ${estimate.drivingTimeHours} hours`;
       if (providerInfo) providerInfo.textContent = `Estimate only: ${estimate.providerUsed}`;
       if (mapStatus) mapStatus.textContent = `${e.message} Showing the project estimate instead.`;
-      if (this.bookingRouteLayer && this.bookingMap) {
-        this.bookingMap.removeLayer(this.bookingRouteLayer);
+      if (this.bookingMap) {
+        this.bookingMarkers.forEach(marker => marker.remove());
+        this.bookingMarkers = [];
+        if (this.bookingMap.getLayer('booking-road-route')) this.bookingMap.removeLayer('booking-road-route');
+        if (this.bookingMap.getSource('booking-road-route')) this.bookingMap.removeSource('booking-road-route');
         this.bookingRouteLayer = null;
       }
     }
   }
 
-  renderBookingRouteMap(route) {
+  async renderBookingRouteMap(route) {
     const mapElement = document.getElementById('bookingRouteMap');
-    if (!mapElement || !window.L) return;
+    if (!mapElement || !window.maplibregl) return;
     if (!this.bookingMap) {
-      this.bookingMap = window.L.map(mapElement, { scrollWheelZoom: false });
-      window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      }).addTo(this.bookingMap);
+      const styleResponse = await fetch('https://tiles.stadiamaps.com/styles/alidade_smooth.json');
+      if (!styleResponse.ok) throw new Error('English map style could not be loaded.');
+      const style = await styleResponse.json();
+      const englishName = ['coalesce', ['get', 'name:en'], ['get', 'name:latin']];
+      style.layers.forEach(layer => {
+        const textField = layer.layout?.['text-field'];
+        if (textField && JSON.stringify(textField).includes('name')) {
+          layer.layout['text-field'] = englishName;
+        }
+      });
+
+      this.bookingMap = new window.maplibregl.Map({
+        container: mapElement,
+        style,
+        center: [route.pickup[1], route.pickup[0]],
+        zoom: 5,
+        attributionControl: true
+      });
+      this.bookingMap.once('load', () => this.drawBookingRouteMap(this.bookingRoute));
+      return;
     }
 
-    if (this.bookingRouteLayer) this.bookingMap.removeLayer(this.bookingRouteLayer);
-    const line = window.L.polyline(route.coordinates, { color: '#2563eb', weight: 5, opacity: 0.85 });
-    const start = window.L.marker(route.pickup).bindPopup('Pickup');
-    const end = window.L.marker(route.destination).bindPopup('Destination');
-    this.bookingRouteLayer = window.L.featureGroup([line, start, end]).addTo(this.bookingMap);
-    this.bookingMap.fitBounds(line.getBounds(), { padding: [24, 24] });
-    window.setTimeout(() => this.bookingMap?.invalidateSize(), 100);
+    this.drawBookingRouteMap(route);
+  }
+
+  drawBookingRouteMap(route) {
+    if (!route || !this.bookingMap?.isStyleLoaded()) return;
+    this.bookingMarkers.forEach(marker => marker.remove());
+    this.bookingMarkers = [];
+    if (this.bookingMap.getLayer('booking-road-route')) this.bookingMap.removeLayer('booking-road-route');
+    if (this.bookingMap.getSource('booking-road-route')) this.bookingMap.removeSource('booking-road-route');
+
+    const lineCoordinates = route.coordinates.map(([lat, lon]) => [lon, lat]);
+    this.bookingMap.addSource('booking-road-route', {
+      type: 'geojson',
+      data: {
+        type: 'Feature',
+        properties: {},
+        geometry: { type: 'LineString', coordinates: lineCoordinates }
+      }
+    });
+    this.bookingMap.addLayer({
+      id: 'booking-road-route',
+      type: 'line',
+      source: 'booking-road-route',
+      layout: { 'line-join': 'round', 'line-cap': 'round' },
+      paint: { 'line-color': '#2563eb', 'line-width': 5, 'line-opacity': 0.88 }
+    });
+
+    this.bookingMarkers.push(
+      new window.maplibregl.Marker({ color: '#16a34a' }).setLngLat([route.pickup[1], route.pickup[0]]).setPopup(new window.maplibregl.Popup().setText('Pickup')).addTo(this.bookingMap),
+      new window.maplibregl.Marker({ color: '#dc2626' }).setLngLat([route.destination[1], route.destination[0]]).setPopup(new window.maplibregl.Popup().setText('Destination')).addTo(this.bookingMap)
+    );
+
+    const bounds = new window.maplibregl.LngLatBounds();
+    lineCoordinates.forEach(coordinate => bounds.extend(coordinate));
+    this.bookingMap.fitBounds(bounds, { padding: 36, maxZoom: 12 });
   }
 
   setBookingStep(stepNumber) {
@@ -1606,7 +1653,7 @@ class AppController {
     document.querySelectorAll('.step-pane').forEach((pane, idx) => {
       pane.classList.toggle('active', idx + 1 === stepNumber);
     });
-    if (stepNumber === 1 && this.bookingMap) window.setTimeout(() => this.bookingMap?.invalidateSize(), 100);
+    if (stepNumber === 1 && this.bookingMap) window.setTimeout(() => this.bookingMap?.resize(), 100);
   }
 
   async generateAIEstimate() {
