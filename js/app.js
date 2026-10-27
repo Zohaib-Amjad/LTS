@@ -1600,7 +1600,7 @@ class AppController {
     const mapElement = document.getElementById('bookingRouteMap');
     if (!mapElement || !window.maplibregl) return;
     if (!this.bookingMap) {
-      const styleResponse = await fetch('https://tiles.stadiamaps.com/styles/alidade_smooth.json');
+      const styleResponse = await fetch('https://tiles.openfreemap.org/styles/liberty');
       if (!styleResponse.ok) throw new Error('English map style could not be loaded.');
       const style = await styleResponse.json();
       const englishName = ['coalesce', ['get', 'name:en'], ['get', 'name:latin']];
@@ -1701,7 +1701,7 @@ class AppController {
     state.route = route;
 
     if (!state.map) {
-      const styleResponse = await fetch('https://tiles.stadiamaps.com/styles/alidade_smooth.json');
+      const styleResponse = await fetch('https://tiles.openfreemap.org/styles/liberty');
       if (!styleResponse.ok) throw new Error('Map style could not be loaded.');
       const style = await styleResponse.json();
       const englishName = ['coalesce', ['get', 'name:en'], ['get', 'name:latin']];
