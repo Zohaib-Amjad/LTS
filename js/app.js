@@ -668,14 +668,12 @@ class AppController {
     // Dashboard Quick Navigation Buttons
     const dashCreateBtn = document.getElementById('dashCreateBookingBtn');
     const navQuickBookBtn = document.getElementById('quickNewBookingNavBtn');
-    const trackActiveBtn = document.getElementById('trackActiveBookingQuickBtn');
     const myBookingsNewBtn = document.getElementById('myBookingsNewBtn');
     const returnDashBtn = document.getElementById('returnDashboardBtn');
 
     if (dashCreateBtn) dashCreateBtn.addEventListener('click', () => this.navigate('view-create-booking'));
     if (navQuickBookBtn) navQuickBookBtn.addEventListener('click', () => this.navigate('view-create-booking'));
     if (myBookingsNewBtn) myBookingsNewBtn.addEventListener('click', () => this.navigate('view-create-booking'));
-    if (trackActiveBtn) trackActiveBtn.addEventListener('click', () => this.showTrackingView('BK-2026-001'));
     if (returnDashBtn) returnDashBtn.addEventListener('click', () => this.navigateToRoleDefault());
 
     // Stat Cards & KPI Metric Tabs Navigation (Admin, Customer, Driver)
@@ -1387,15 +1385,15 @@ class AppController {
       if (!targetId) {
         const user = authService.getCurrentUser();
         const userBookings = user ? bookingService.getCustomerBookings(user.id, user) : [];
-        const latestBooking = userBookings.length > 0 ? userBookings[userBookings.length - 1] : db.tables.bookings.getAll()[0];
+        const latestBooking = userBookings.length > 0
+          ? userBookings[userBookings.length - 1]
+          : (user?.role === USER_ROLES.ADMIN ? db.tables.bookings.getAll()[0] : null);
         if (latestBooking) {
           targetId = latestBooking.id;
           this.currentTrackingBookingId = targetId;
         }
       }
-      if (targetId) {
-        this.renderTrackingView(targetId);
-      }
+      this.renderTrackingView(targetId || null);
     } else if (this.currentView === 'view-customer-profile') {
       this.renderProfile();
     } else if (this.currentView === 'view-feedback') {
@@ -2004,19 +2002,55 @@ class AppController {
 
   renderCustomerDashboard() {
     const user = authService.getCurrentUser();
-    const bookings = bookingService.getCustomerBookings(user.id, user);
-    const luggage = luggageService.getCustomerLuggage(user.id);
+    const bookings = user ? bookingService.getCustomerBookings(user.id, user) : [];
+    const luggage = user ? luggageService.getCustomerLuggage(user.id) : [];
 
-    const activeCount = bookings.filter(b => b.status === BOOKING_STATUS.IN_TRANSIT || b.status === BOOKING_STATUS.PICKED_UP || b.status === BOOKING_STATUS.DRIVER_ASSIGNED).length;
+    const activeBookings = bookings.filter(b => b.status === BOOKING_STATUS.IN_TRANSIT || b.status === BOOKING_STATUS.PICKED_UP || b.status === BOOKING_STATUS.DRIVER_ASSIGNED);
+    const activeCount = activeBookings.length;
     const completedCount = bookings.filter(b => b.status === BOOKING_STATUS.DELIVERED).length;
 
     const statActive = document.getElementById('custStatActive');
     const statCompleted = document.getElementById('custStatCompleted');
     const statLuggage = document.getElementById('custStatLuggage');
+    const trendActive = document.getElementById('custTrendActive');
+    const trendCompleted = document.getElementById('custTrendCompleted');
+    const trendLuggage = document.getElementById('custTrendLuggage');
 
     if (statActive) statActive.textContent = activeCount;
     if (statCompleted) statCompleted.textContent = completedCount;
     if (statLuggage) statLuggage.textContent = luggage.length;
+
+    if (trendActive) {
+      if (activeCount > 0) {
+        trendActive.className = 'stat-trend positive';
+        trendActive.innerHTML = `<i class="fa-solid fa-truck-fast"></i> In Transit to ${activeBookings[0].destinationLocation?.city || 'Destination'}`;
+      } else {
+        trendActive.className = 'stat-trend neutral';
+        trendActive.innerHTML = `<i class="fa-solid fa-circle-info"></i> No active shipments`;
+      }
+    }
+
+    if (trendCompleted) {
+      if (completedCount > 0) {
+        trendCompleted.className = 'stat-trend positive';
+        trendCompleted.innerHTML = `<i class="fa-solid fa-check"></i> ${completedCount} Completed`;
+      } else {
+        trendCompleted.className = 'stat-trend neutral';
+        trendCompleted.innerHTML = `<i class="fa-solid fa-clock"></i> No deliveries yet`;
+      }
+    }
+
+    if (trendLuggage) {
+      if (luggage.length > 0) {
+        trendLuggage.className = 'stat-trend positive';
+        trendLuggage.innerHTML = `<i class="fa-solid fa-suitcase"></i> Ready in catalog`;
+      } else {
+        trendLuggage.className = 'stat-trend neutral';
+        trendLuggage.innerHTML = `<i class="fa-solid fa-plus"></i> Catalog empty`;
+      }
+    }
+
+
 
     const tbody = document.getElementById('custRecentBookingsTbody');
     if (!tbody) return;
@@ -2084,6 +2118,19 @@ class AppController {
   }
 
   renderTrackingView(bookingIdOrNumber) {
+    if (!bookingIdOrNumber) {
+      const numHeader = document.getElementById('trackHeaderNumber');
+      const routeHeader = document.getElementById('trackHeaderRoute');
+      const badgeHeader = document.getElementById('trackHeaderBadge');
+      const container = document.getElementById('trackingTimelineContainer');
+      const historyTbody = document.getElementById('trackStatusHistoryTbody');
+      if (numHeader) numHeader.textContent = 'Trip Tracking';
+      if (routeHeader) routeHeader.textContent = 'No shipment selected';
+      if (badgeHeader) badgeHeader.style.display = 'none';
+      if (container) container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 36px 20px;"><i class="fa-solid fa-box-open" style="font-size: 2rem; margin-bottom: 12px; display: block; opacity: 0.5;"></i>No shipment selected. Please enter a booking reference above or book a new shipment.</div>`;
+      if (historyTbody) historyTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 24px;">No history recorded yet.</td></tr>`;
+      return;
+    }
     const user = authService.getCurrentUser();
     try {
       const timelineData = trackingService.getTrackingTimeline(bookingIdOrNumber, user);

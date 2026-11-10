@@ -32,7 +32,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.23.0/dist/maplibre-gl.css" />
-  <link rel="stylesheet" href="css/style.css?v=1.1.0" />
+  <link rel="stylesheet" href="css/style.css?v=1.2.0" />
 </head>
 <body>
 
@@ -41,7 +41,6 @@
        ========================================================================= -->
   <div class="demo-top-bar" id="demoTopBar">
     <div style="display: flex; align-items: center; gap: 10px;">
-      <span class="demo-bar-badge"><i class="fa-solid fa-graduation-cap"></i> FYP Prototype</span>
       <span style="font-size: 0.8rem; color: #94a3b8; display: none; @media(min-width: 600px){display:inline;}">Role Switcher:</span>
     </div>
     <div class="demo-role-switchers">
@@ -608,42 +607,30 @@
             <div class="stat-card clickable" id="custCardActive" data-nav="view-my-bookings" title="View Active Bookings">
               <div class="stat-info">
                 <div class="stat-label">Active Bookings</div>
-                <div class="stat-value" id="custStatActive">1</div>
-                <div class="stat-trend positive"><i class="fa-solid fa-truck-fast"></i> In Transit to Karachi</div>
+                <div class="stat-value" id="custStatActive">0</div>
+                <div class="stat-trend neutral" id="custTrendActive"><i class="fa-solid fa-circle-info"></i> No active shipments</div>
               </div>
               <div class="stat-icon blue"><i class="fa-solid fa-box-open"></i></div>
             </div>
             <div class="stat-card clickable" id="custCardCompleted" data-nav="view-my-bookings" title="View Booking History">
               <div class="stat-info">
                 <div class="stat-label">Total Completed</div>
-                <div class="stat-value" id="custStatCompleted">1</div>
-                <div class="stat-trend positive"><i class="fa-solid fa-check"></i> 100% Safe Delivery</div>
+                <div class="stat-value" id="custStatCompleted">0</div>
+                <div class="stat-trend neutral" id="custTrendCompleted"><i class="fa-solid fa-clock"></i> No deliveries yet</div>
               </div>
               <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
             </div>
             <div class="stat-card clickable" id="custCardLuggage" data-nav="view-my-luggage" title="View Saved Luggage Catalog">
               <div class="stat-info">
                 <div class="stat-label">Saved Luggage</div>
-                <div class="stat-value" id="custStatLuggage">4</div>
-                <div class="stat-trend neutral"><i class="fa-solid fa-suitcase"></i> Ready in catalog</div>
+                <div class="stat-value" id="custStatLuggage">0</div>
+                <div class="stat-trend neutral" id="custTrendLuggage"><i class="fa-solid fa-suitcase"></i> Catalog empty</div>
               </div>
               <div class="stat-icon purple"><i class="fa-solid fa-briefcase"></i></div>
             </div>
           </div>
 
-          <!-- Quick Actions & Active Delivery Banner -->
-          <div class="card" style="margin-bottom: 24px; background: linear-gradient(135deg, #1e293b, #0f172a); color: white;">
-            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
-              <div>
-                <span class="badge badge-in-transit badge-pulse" style="margin-bottom: 8px;">Active Shipment: BK-2026-001</span>
-                <h3 style="font-size: 1.35rem; color: white;">Islamabad → Karachi (1,410 km)</h3>
-                <p style="color: #94a3b8; font-size: 0.875rem; margin-top: 4px;">Assigned Driver: Bilal Tariq (Toyota HiAce Cargo)</p>
-              </div>
-              <div>
-                <button class="btn btn-primary" id="trackActiveBookingQuickBtn"><i class="fa-solid fa-location-dot"></i> Live Tracking</button>
-              </div>
-            </div>
-          </div>
+
 
           <!-- Recent Customer Bookings Table -->
           <div class="card">
@@ -1004,8 +991,8 @@
               <div class="card" style="margin-bottom: 24px;">
                 <div class="card-header">
                   <div>
-                    <h3 class="card-title" id="trackHeaderNumber">Trip Tracking: BK-2026-001</h3>
-                    <p class="card-subtitle" id="trackHeaderRoute">Islamabad → Karachi (1,410 km)</p>
+                    <h3 class="card-title" id="trackHeaderNumber">Trip Tracking</h3>
+                    <p class="card-subtitle" id="trackHeaderRoute">Select a shipment or search a booking reference</p>
                   </div>
                   <span class="badge badge-in-transit badge-pulse" id="trackHeaderBadge">In Transit</span>
                 </div>
@@ -2589,6 +2576,6 @@
 
   <!-- App Entry Script -->
   <script src="https://unpkg.com/maplibre-gl@5.23.0/dist/maplibre-gl.js"></script>
-  <script type="module" src="js/app.js?v=1.1.0"></script>
+  <script type="module" src="js/app.js?v=1.2.0"></script>
 </body>
 </html>
